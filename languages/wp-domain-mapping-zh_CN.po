@@ -1,0 +1,399 @@
+# Translation of WP Domain Mapping in Chinese (China)
+# This file is distributed under the same license as the WP Domain Mapping package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-03-15 16:58:35+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/3.0.0\n"
+"Language: zh_CN\n"
+"Project-Id-Version: WP Domain Mapping\n"
+
+#. Author URI of the plugin/theme
+msgid "https://wpdomain.com/"
+msgstr "https://wpdomain.com/"
+
+#. Author of the plugin/theme
+msgid "WPDomain.com"
+msgstr "WPDomain.com"
+
+#. Description of the plugin/theme
+msgid "Map any site on a WordPress website to another domain with enhanced management features."
+msgstr "使用增强的管理功能将 WordPress 网站上的任何站点映射到另一个域名。"
+
+#. Plugin URI of the plugin/theme
+msgid "https://wpdomain.com/plugins/wp-domain-mapping/"
+msgstr "https://wpdomain.com/plugins/wp-domain-mapping/"
+
+#. Plugin Name of the plugin/theme
+msgid "WP Domain Mapping"
+msgstr "文派域名映射"
+
+#: wp-domain-mapping.php:1111
+msgid "International Domain Names should be in <a href=\"%s\" target=\"_blank\">punycode</a> format."
+msgstr "国际域名应采用<a href=\"%s\" target=\"_blank\">punycode</a>格式。"
+
+#: wp-domain-mapping.php:1076
+msgid "Mapping"
+msgstr "映射"
+
+#: wp-domain-mapping.php:1049
+msgid "Unknown logout key"
+msgstr "未知的退出密钥"
+
+#: wp-domain-mapping.php:1039
+msgid "Unknown login key"
+msgstr "未知的登录密钥"
+
+#: wp-domain-mapping.php:1036
+msgid "Incorrect or out of date login key"
+msgstr "登录密钥不正确或过期"
+
+#: wp-domain-mapping.php:838
+msgid "Please edit your %swp-config.php and move the line <em>define( 'SUNRISE', 'on' );</em> above the last require_once() in that file or make sure you updated sunrise.php."
+msgstr "请编辑你的 %swp-config.php 和移动行<em>define( 'SUNRISE', 'on' );</em>上面最后一次()需要在文件或确保您sunrise.php更新。"
+
+#: wp-domain-mapping.php:831
+msgid "Please uncomment the line <em>define( 'SUNRISE', 'on' );</em> or add it to your %swp-config.php"
+msgstr "请取消注释行 <em>define( 'SUNRISE', 'on' );</em> 或将其添加到您的 %swp-config.php"
+
+#: wp-domain-mapping.php:824
+msgid "Please copy sunrise.php to %s/sunrise.php and ensure the SUNRISE definition is in %swp-config.php"
+msgstr "请复制sunrise.php到 %s/sunrise.php，并确保SUNRISE定义在%swp-config.php文件"
+
+#: wp-domain-mapping.php:778 wp-domain-mapping.php:807
+msgid "You must enter a domain"
+msgstr "您必须输入一个域名"
+
+#: wp-domain-mapping.php:758
+msgid "Add a DNS \"A\" record pointing to: <strong>%s</strong>"
+msgstr "添加指向 <strong>%s</strong> 的 DNS “A” 记录"
+
+#: wp-domain-mapping.php:755
+msgid "Add a DNS \"CNAME\" record pointing to: <strong>%s</strong>"
+msgstr "添加指向以下地址的 DNS“CNAME”记录：<strong>%s</strong>"
+
+#: wp-domain-mapping.php:751
+msgid "Add"
+msgstr "添加"
+
+#: wp-domain-mapping.php:750
+msgid "Set as Primary Domain"
+msgstr "设置为主域"
+
+#: wp-domain-mapping.php:739
+msgid "* The primary domain cannot be deleted."
+msgstr "*主域名不能被删除。"
+
+#: wp-domain-mapping.php:737
+msgid "Set Primary Domain"
+msgstr "设置为主域"
+
+#: wp-domain-mapping.php:713
+msgid "Active Domains"
+msgstr "活跃域名"
+
+#: wp-domain-mapping.php:702 wp-domain-mapping.php:826
+#: wp-domain-mapping.php:833 wp-domain-mapping.php:840
+msgid "This plugin has not been configured correctly yet."
+msgstr "该插件尚未正确配置。"
+
+#: wp-domain-mapping.php:700
+msgid "Please set the IP address or CNAME of your server in the <a href='wpmu-admin.php?page=domain-mapping'>site admin page</a>."
+msgstr "请在<a href='wpmu-admin.php?page=domain-mapping'>站点管理页面</a>中设置您服务器的 IP 地址或 CNAME。"
+
+#: wp-domain-mapping.php:674
+msgid "Save Configuration"
+msgstr "保存配置"
+
+#: wp-domain-mapping.php:672
+msgid "Disable Primary Domain Check"
+msgstr "禁用主域检查"
+
+#: wp-domain-mapping.php:671
+msgid "Redirect Admin Pages to Original Domain"
+msgstr "将管理页面重定向到原始域"
+
+#: wp-domain-mapping.php:670
+msgid "Enable User Domain Mapping Page"
+msgstr "启用用户域映射页面"
+
+#: wp-domain-mapping.php:669
+msgid "Use Permanent Redirect (301) - Better for SEO"
+msgstr "使用永久重定向（301）-更有利于 SEO"
+
+#: wp-domain-mapping.php:668
+msgid "Enable Remote Login"
+msgstr "启用远程登录"
+
+#: wp-domain-mapping.php:666
+msgid "Domain Options"
+msgstr "域名选项"
+
+#: wp-domain-mapping.php:662
+msgid "Use a CNAME instead of an IP (overrides IP settings). %s"
+msgstr "使用 CNAME 而不是 IP（覆盖 IP 设置）。%s"
+
+#: wp-domain-mapping.php:659
+msgid "Server CNAME Domain:"
+msgstr "服务器 CNAME 域名："
+
+#: wp-domain-mapping.php:655
+msgid "Enter the IP address(es) users should point their DNS A records to. Use commas to separate multiple IPs."
+msgstr "输入用户应将其 DNS A 记录指向的 IP 地址。使用逗号分隔多个 IP。"
+
+#: wp-domain-mapping.php:652
+msgid "Server IP Address:"
+msgstr "服务器 IP 地址："
+
+#: wp-domain-mapping.php:646
+msgid "Configure the IP address or CNAME for domain mapping."
+msgstr "配置域映射的IP地址或CNAME。"
+
+#: wp-domain-mapping.php:645
+msgid "Server Configuration"
+msgstr "服务器配置"
+
+#: wp-domain-mapping.php:643
+msgid "Domain Mapping Configuration"
+msgstr "域映射配置"
+
+#: wp-domain-mapping.php:574
+msgid "Timestamp"
+msgstr "时间戳"
+
+#: wp-domain-mapping.php:571
+msgid "Action"
+msgstr "操作"
+
+#: wp-domain-mapping.php:570
+msgid "User"
+msgstr "用户"
+
+#: wp-domain-mapping.php:563
+msgid "No logs available."
+msgstr "无可用日志。"
+
+#: wp-domain-mapping.php:508 wp-domain-mapping.php:525
+msgid "Edit"
+msgstr "编辑"
+
+#: wp-domain-mapping.php:498
+msgid "Apply"
+msgstr "应用"
+
+#: wp-domain-mapping.php:496 wp-domain-mapping.php:718
+#: wp-domain-mapping.php:729
+msgid "Delete"
+msgstr "删除"
+
+#: wp-domain-mapping.php:495
+msgid "Bulk Actions"
+msgstr "批量操作"
+
+#: wp-domain-mapping.php:486
+msgid "No domains found."
+msgstr "未找到域名。"
+
+#: wp-domain-mapping.php:476
+msgid "Add Domain"
+msgstr "添加域名"
+
+#: wp-domain-mapping.php:476
+msgid "Update Domain"
+msgstr "更新域名"
+
+#: wp-domain-mapping.php:472 wp-domain-mapping.php:540
+#: wp-domain-mapping.php:740
+msgid "<strong>Warning!</strong> Primary domains are currently disabled."
+msgstr "<strong>警告！</strong>主域名目前已被禁用。"
+
+#: wp-domain-mapping.php:467 wp-domain-mapping.php:507
+#: wp-domain-mapping.php:718
+msgid "Primary"
+msgstr "主域名"
+
+#: wp-domain-mapping.php:463
+msgid "Enter the domain without http:// or https:// (e.g., example.com)"
+msgstr "输入不带 http:// 或 https:// 的域名（例如 example.com）"
+
+#: wp-domain-mapping.php:460 wp-domain-mapping.php:506
+#: wp-domain-mapping.php:572 wp-domain-mapping.php:718
+msgid "Domain"
+msgstr "域名"
+
+#: wp-domain-mapping.php:456 wp-domain-mapping.php:505
+#: wp-domain-mapping.php:573
+msgid "Site ID"
+msgstr "站点 ID"
+
+#: wp-domain-mapping.php:384
+msgid "Failed to delete domains."
+msgstr "无法删除域名。"
+
+#: wp-domain-mapping.php:369
+msgid "Processing..."
+msgstr "正在处理…"
+
+#: wp-domain-mapping.php:362
+msgid "Please select at least one domain."
+msgstr "请至少选择一个域名。"
+
+#: wp-domain-mapping.php:350 wp-domain-mapping.php:388
+msgid "Server error occurred."
+msgstr "发生服务器错误。"
+
+#: wp-domain-mapping.php:346
+msgid "Failed to save domain."
+msgstr "无法保存域名。"
+
+#: wp-domain-mapping.php:336
+msgid "Saving..."
+msgstr "正在保存..."
+
+#: wp-domain-mapping.php:303
+msgid "Primary Domains"
+msgstr "主域"
+
+#: wp-domain-mapping.php:302
+msgid "Total Domains"
+msgstr "域名总数"
+
+#: wp-domain-mapping.php:299
+msgid "Domain Statistics"
+msgstr "域名统计"
+
+#: wp-domain-mapping.php:289 wp-domain-mapping.php:761
+msgid "<strong>Note:</strong> %s"
+msgstr "<strong>注意：</strong> %s"
+
+#: wp-domain-mapping.php:285
+msgid "%s item"
+msgid_plural "%s items"
+msgstr[0] "%s 项"
+
+#: wp-domain-mapping.php:279
+msgid "&raquo;"
+msgstr "»"
+
+#: wp-domain-mapping.php:278
+msgid "&laquo;"
+msgstr "«"
+
+#: wp-domain-mapping.php:250
+msgid "Domain Logs"
+msgstr "域名日志"
+
+#: wp-domain-mapping.php:249
+msgid "Manage Domains"
+msgstr "管理域名"
+
+#: wp-domain-mapping.php:242
+msgid "Filter"
+msgstr "筛选"
+
+#: wp-domain-mapping.php:240 wp-domain-mapping.php:521
+msgid "No"
+msgstr "否"
+
+#: wp-domain-mapping.php:239 wp-domain-mapping.php:519
+msgid "Yes"
+msgstr "是"
+
+#: wp-domain-mapping.php:238
+msgid "All"
+msgstr "全部"
+
+#: wp-domain-mapping.php:236
+msgid "Primary:"
+msgstr "主域："
+
+#: wp-domain-mapping.php:234
+msgid "Site ID:"
+msgstr "站点 ID："
+
+#: wp-domain-mapping.php:232 wp-domain-mapping.php:748
+msgid "Domain:"
+msgstr "域名："
+
+#: wp-domain-mapping.php:228
+msgid "Search & Filter Domains"
+msgstr "搜索和过滤域名"
+
+#: wp-domain-mapping.php:222 wp-domain-mapping.php:744
+msgid "Add New Domain"
+msgstr "添加新域名"
+
+#: wp-domain-mapping.php:222
+msgid "Edit Domain"
+msgstr "编辑域名"
+
+#: wp-domain-mapping.php:204 wp-domain-mapping.php:611
+msgid "<strong>Warning!</strong> This plugin will only work if WordPress is installed in the root directory of your webserver. It is currently installed in ’%s’."
+msgstr "<strong>警告！</strong>此插件仅当 WordPress 安装在您的网络服务器的根目录中时才有效。它当前安装在『%s』中。"
+
+#: wp-domain-mapping.php:188
+msgid "Invalid action."
+msgstr "无效操作。"
+
+#: wp-domain-mapping.php:185
+msgid "Selected domains deleted successfully."
+msgstr "选定的域名已成功删除。"
+
+#: wp-domain-mapping.php:175
+msgid "Invalid site ID or domain already exists."
+msgstr "无效的站点 ID 或域名已存在。"
+
+#: wp-domain-mapping.php:172
+msgid "Domain updated successfully."
+msgstr "域名更新成功。"
+
+#: wp-domain-mapping.php:168
+msgid "Domain added successfully."
+msgstr "域名添加成功。"
+
+#: wp-domain-mapping.php:149
+msgid "Permission denied."
+msgstr "没有权限。"
+
+#: wp-domain-mapping.php:139
+msgid "Domain mapping database table created."
+msgstr "域映射创建数据库表。"
+
+#: wp-domain-mapping.php:66
+msgid "Domain deleted."
+msgstr "域名已删除。"
+
+#: wp-domain-mapping.php:63
+msgid "New primary domain."
+msgstr "新的主域名。"
+
+#: wp-domain-mapping.php:60
+msgid "New domain already exists."
+msgstr "新的域名已经存在。"
+
+#: wp-domain-mapping.php:57
+msgid "New domain added."
+msgstr "已添加新域名。"
+
+#: wp-domain-mapping.php:49 wp-domain-mapping.php:219 wp-domain-mapping.php:595
+msgid "Domains"
+msgstr "域名"
+
+#: wp-domain-mapping.php:41 wp-domain-mapping.php:48 wp-domain-mapping.php:711
+msgid "Domain Mapping"
+msgstr "域名映射"
+
+#: wp-domain-mapping.php:37
+msgid "The domain mapping plugin only works if the site is installed in /. This is a limitation of how virtual servers work and is very difficult to work around."
+msgstr "域映射插件只能在站点是安装位于根目录时才有效。这是虚拟服务器工作方式的限制，很难解决。"
+
+#: wp-domain-mapping.php:25
+msgid "You must <a href=\"%1$s\">create a network</a> for it to work."
+msgstr "您必须<a href=\"%1$s\">创建网络</a>才能使其正常工作。"
+
+#: wp-domain-mapping.php:25
+msgid "Domain Mapping Disabled."
+msgstr "域映射已禁用。"
