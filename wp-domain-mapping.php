@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP Domain Mapping
- * Plugin URI: https://wpdomain.com/plugins/wp-domain-mapping/
+ * Plugin URI: https://wenpai.org/plugins/wp-domain-mapping/
  * Description: Map any site on a WordPress website to another domain with enhanced management features.
  * Version: 1.3.3
  * Author: WPDomain.com
@@ -213,7 +213,7 @@ function dm_domains_admin() {
         $edit_domain = sanitize_text_field($_GET['edit_domain']);
         $edit_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->dmtable} WHERE domain = %s", $edit_domain));
     }
-    
+
     ?>
     <div class="wrap">
         <h1><?php _e('Domains', 'wp-domain-mapping'); ?></h1>
@@ -543,7 +543,7 @@ function dm_domain_listing($rows) {
 
 function dm_ensure_protocol($domain) {
     if (preg_match('#^https?://#', $domain)) {
-        return $domain; 
+        return $domain;
     }
     return 'http://' . $domain;
 }
