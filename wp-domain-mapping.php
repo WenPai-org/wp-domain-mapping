@@ -20,6 +20,17 @@ function wp_domain_mapping_text_domain() {
 }
 add_action('init', 'wp_domain_mapping_text_domain');
 
+
+// Integrate UpdatePulse Server for updates using PUC v5.3
+require_once plugin_dir_path(__FILE__) . 'lib/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5p3\PucFactory;
+
+$WpDomainMappingUpdateChecker = PucFactory::buildUpdateChecker(
+    'https://updates.weixiaoduo.com/wp-domain-mapping.json',
+    __FILE__,
+    'wp-domain-mapping'
+);
+
 // Warning: Network not configured
 function domain_mapping_warning() {
     echo '<div class="notice notice-error"><p><strong>' . __('Domain Mapping Disabled.', 'wp-domain-mapping') . '</strong> ' . sprintf(__('You must <a href="%1$s">create a network</a> for it to work.', 'wp-domain-mapping'), 'http://codex.wordpress.org/Create_A_Network') . '</p></div>';
