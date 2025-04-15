@@ -3,7 +3,7 @@
  * Plugin Name: WP Domain Mapping
  * Plugin URI: https://wenpai.org/plugins/wp-domain-mapping/
  * Description: Map any site on a WordPress website to another domain with enhanced management features.
- * Version: 1.3.3
+ * Version: 1.3.4
  * Author: WPDomain.com
  * Author URI: https://wpdomain.com/
  * Network: true
@@ -13,6 +13,16 @@
  * Domain Path: /languages
  * Requires at least: 6.7.2
  */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+define('WP_DOMAIN_MAPPING_VERSION', '1.3.4');
+define('WP_DOMAIN_MAPPING_DIR_URL', plugin_dir_url(__FILE__));
+define('WP_DOMAIN_MAPPING_DIR_PATH', plugin_dir_path(__FILE__));
+define('WP_DOMAIN_MAPPING_BASENAME', plugin_basename(__FILE__));
+
 
 // Load text domain
 function wp_domain_mapping_text_domain() {
@@ -227,7 +237,11 @@ function dm_domains_admin() {
 
     ?>
     <div class="wrap">
-        <h1><?php _e('Domains', 'wp-domain-mapping'); ?></h1>
+            <h1><?php echo esc_html(get_admin_page_title()); ?>
+                <span style="font-size: 13px; padding-left: 10px;"><?php printf(esc_html__('Version: %s', 'wp-domain-mapping'), esc_html(WP_DOMAIN_MAPPING_VERSION)); ?></span>
+                <a href="https://wpmultisite.com/document/wp-domain-mapping" target="_blank" class="button button-secondary" style="margin-left: 10px;"><?php esc_html_e('Document', 'wp-domain-mapping'); ?></a>
+                <a href="https://wpmultisite.com/forums/" target="_blank" class="button button-secondary"><?php esc_html_e('Support', 'wp-domain-mapping'); ?></a>
+            </h1>
 
         <div class="card">
             <h2><?php echo $edit_row ? __('Edit Domain', 'wp-domain-mapping') : __('Add New Domain', 'wp-domain-mapping'); ?></h2>
@@ -651,8 +665,12 @@ function dm_admin_page() {
 
     ?>
     <div class="wrap">
-        <h1><?php _e('Domain Mapping Configuration', 'wp-domain-mapping'); ?></h1>
-        <div class="card">
+            <h1><?php echo esc_html(get_admin_page_title()); ?>
+                <span style="font-size: 13px; padding-left: 10px;"><?php printf(esc_html__('Version: %s', 'wp-domain-mapping'), esc_html(WP_DOMAIN_MAPPING_VERSION)); ?></span>
+                <a href="https://wpmultisite.com/document/wp-domain-mapping" target="_blank" class="button button-secondary" style="margin-left: 10px;"><?php esc_html_e('Document', 'wp-domain-mapping'); ?></a>
+                <a href="https://wpmultisite.com/forums/" target="_blank" class="button button-secondary"><?php esc_html_e('Support', 'wp-domain-mapping'); ?></a>
+            </h1>
+            <div class="card">
             <h2><?php _e('Server Configuration', 'wp-domain-mapping'); ?></h2>
             <p><?php _e('Configure the IP address or CNAME for domain mapping.', 'wp-domain-mapping'); ?></p>
             <form method="POST">
