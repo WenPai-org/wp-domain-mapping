@@ -1,53 +1,61 @@
 <?php
 /**
- * Sunrise script for WP Domain Mapping plugin
+ * Sunrise.php for WordPress Domain Mapping
  *
- * This file enables domain mapping functionality for WordPress multisite networks by
- * overriding the default blog routing based on custom domains stored in the database.
- * It must be placed in wp-content/sunrise.php and activated via define('SUNRISE', 'on')
- * in wp-config.php.
- *
- * @package WP Domain Mapping
- * @author WPDomain.com
- * @link https://wpdomain.com/plugins/wp-domain-mapping/
- * @version 1.3.3
- * @license GPL v2 or later
- * @license URI https://www.gnu.org/licenses/gpl-2.0.html
+ * This file must be copied to wp-content/sunrise.php
+ * Also, you must add "define('SUNRISE', 'on');" to wp-config.php
+ * Make sure the SUNRISE definition appears before the last require_once in wp-config.php
  */
- 
-if ( !defined( 'SUNRISE_LOADED' ) )
-	define( 'SUNRISE_LOADED', 1 );
 
-if ( defined( 'COOKIE_DOMAIN' ) ) {
-	die( 'The constant "COOKIE_DOMAIN" is defined (probably in wp-config.php). Please remove or comment out that define() line.' );
+// Mark as loaded
+define('SUNRISE_LOADED', true);
+
+// Check if we're in WP multi-site mode
+if (!defined('MULTISITE') || !MULTISITE) {
+    return;
 }
 
-$wpdb->dmtable = $wpdb->base_prefix . 'domain_mapping';
-$dm_domain = $_SERVER[ 'HTTP_HOST' ];
+// Enable domain mapping
+define('DOMAIN_MAPPING', 1);
 
-if( ( $nowww = preg_replace( '|^www\.|', '', $dm_domain ) ) != $dm_domain )
-	$where = $wpdb->prepare( 'domain IN (%s,%s)', $dm_domain, $nowww );
-else
-	$where = $wpdb->prepare( 'domain = %s', $dm_domain );
+// Check if we're on the main site already
+if (defined('COOKIE_DOMAIN') && COOKIE_DOMAIN == $_SERVER['HTTP_HOST']) {
+    return;
+}
 
-$wpdb->suppress_errors();
-$domain_mapping_id = $wpdb->get_var( "SELECT blog_id FROM {$wpdb->dmtable} WHERE {$where} ORDER BY CHAR_LENGTH(domain) DESC LIMIT 1" );
-$wpdb->suppress_errors( false );
-if( $domain_mapping_id ) {
-	$current_blog = $wpdb->get_row("SELECT * FROM {$wpdb->blogs} WHERE blog_id = '$domain_mapping_id' LIMIT 1");
-	$current_blog->domain = $dm_domain;
-	$current_blog->path = '/';
-	$blog_id = $domain_mapping_id;
-	$site_id = $current_blog->site_id;
+global $wpdb, $current_blog, $current_site;
 
-	define( 'COOKIE_DOMAIN', $dm_domain );
+// Get domains table name
+$domain_mapping_table = $wpdb->base_prefix . 'domain_mapping';
 
-	$current_site = $wpdb->get_row( "SELECT * from {$wpdb->site} WHERE id = '{$current_blog->site_id}' LIMIT 0,1" );
-	$current_site->blog_id = $wpdb->get_var( "SELECT blog_id FROM {$wpdb->blogs} WHERE domain='{$current_site->domain}' AND path='{$current_site->path}'" );
-	if ( function_exists( 'get_site_option' ) )
-		$current_site->site_name = get_site_option( 'site_name' );
-	elseif ( function_exists( 'get_current_site_name' ) )
-		$current_site = get_current_site_name( $current_site );
+// Check for the current domain in the domain mapping table
+$domain = $wpdb->escape($_SERVER['HTTP_HOST']);
+$blog_id = $wpdb->get_var("SELECT blog_id FROM {$domain_mapping_table} WHERE domain = '{$domain}' LIMIT 1");
 
-	define( 'DOMAIN_MAPPING', 1 );
+// If we found a mapped domain, override current_blog
+if (!empty($blog_id)) {
+    // Get the mapped blog details
+    $mapped_blog = $wpdb->get_row("SELECT * FROM {$wpdb->blogs} WHERE blog_id = '{$blog_id}' LIMIT 1");
+
+    if ($mapped_blog) {
+        // Override current_blog
+        $current_blog = $mapped_blog;
+
+        // Also set the cookie domain to the current domain
+        define('COOKIE_DOMAIN', $_SERVER['HTTP_HOST']);
+
+        // Define the mapped domain constant
+        define('MAPPED_DOMAIN', true);
+
+        // Allow other plugins to know this is a mapped domain
+        $GLOBALS['dm_domain'] = array(
+            'original' => $current_blog->domain,
+            'mapped' => $_SERVER['HTTP_HOST']
+        );
+
+        // Fix request URI for path sites
+        if ($current_blog->path != '/' && ($current_blog->path != '/wp/' || strpos($_SERVER['REQUEST_URI'], '/wp/') === false)) {
+            $current_blog->path = '/';
+        }
+    }
 }
