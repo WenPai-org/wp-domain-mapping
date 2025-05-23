@@ -47,6 +47,12 @@ function dm_render_admin_page() {
                  '</p></div>';
         }
 
+        if ( isset( $_GET['checking'] ) && $_GET['checking'] && $current_tab === 'health' ) {
+            echo '<div class="notice notice-info"><p>' .
+                 __( 'Domain health check started. The check is running in the background.', 'wp-domain-mapping' ) .
+                 '</p></div>';
+        }
+
         if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] && $current_tab === 'health' ) {
             echo '<div class="notice notice-success is-dismissible"><p>' .
                  __( 'Settings saved.', 'wp-domain-mapping' ) .
@@ -74,7 +80,7 @@ function dm_render_admin_page() {
                  '</p></div>';
         }
         ?>
-
+    <div class="card domain-mapping-card">
         <!-- Tab Navigation -->
         <div class="domain-mapping-tabs">
             <?php foreach ( $tabs as $tab_key => $tab_label ) : ?>
@@ -104,7 +110,7 @@ function dm_render_admin_page() {
             </div>
         </div>
     </div>
-
+                </div>
     <script>
     function switchTab(tab) {
         // Update URL without reloading
@@ -549,18 +555,72 @@ function dm_render_health_content() {
 
     // Get health check results
     $health_results = get_site_option( 'dm_domain_health_results', array() );
+
+    // Check if batch processing is in progress
+    $health_check_progress = get_site_option( 'dm_health_check_progress', false );
     ?>
 
     <div class="card domain-mapping-card">
         <h2><?php _e( 'Domain Health Status', 'wp-domain-mapping' ); ?></h2>
 
-        <p>
-            <form method="post" action="">
-                <?php wp_nonce_field( 'dm_manual_health_check', 'dm_manual_health_check_nonce' ); ?>
-                <input type="hidden" name="dm_manual_health_check" value="1">
-                <input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Check All Domains Now', 'wp-domain-mapping' ); ?>">
-            </form>
-        </p>
+        <?php if ( $health_check_progress !== false ) : ?>
+            <div class="notice notice-info">
+                <p>
+                    <?php _e( 'Health check in progress...', 'wp-domain-mapping' ); ?>
+                    <span id="health-check-progress-text">
+                        <?php
+                        printf(
+                            __( 'Processed %d of %d domains (%d%%)', 'wp-domain-mapping' ),
+                            $health_check_progress['processed'],
+                            $health_check_progress['total'],
+                            round( ( $health_check_progress['processed'] / $health_check_progress['total'] ) * 100 )
+                        );
+                        ?>
+                    </span>
+                </p>
+                <div class="progress-bar-outer" style="background-color: #f0f0f1; border-radius: 4px; height: 20px; width: 100%; overflow: hidden; margin-top: 10px;">
+                    <div id="health-check-progress-bar" class="progress-bar-inner" style="background-color: #2271b1; height: 100%; width: <?php echo round( ( $health_check_progress['processed'] / $health_check_progress['total'] ) * 100 ); ?>%; transition: width 0.5s;"></div>
+                </div>
+            </div>
+            <script>
+            jQuery(document).ready(function($) {
+                var healthCheckInterval = setInterval(function() {
+                    $.ajax({
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'dm_check_domain_health_batch',
+                            nonce: '<?php echo wp_create_nonce( 'dm_check_domain_health_batch' ); ?>'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                if (response.data.complete) {
+                                    clearInterval(healthCheckInterval);
+                                    location.reload();
+                                } else {
+                                    $('#health-check-progress-text').text(
+                                        '<?php _e( 'Processed ', 'wp-domain-mapping' ); ?>' +
+                                        response.data.processed + ' <?php _e( 'of', 'wp-domain-mapping' ); ?> ' +
+                                        response.data.total + ' <?php _e( 'domains', 'wp-domain-mapping' ); ?> (' +
+                                        response.data.percentage + '%)'
+                                    );
+                                    $('#health-check-progress-bar').css('width', response.data.percentage + '%');
+                                }
+                            }
+                        }
+                    });
+                }, 2000);
+            });
+            </script>
+        <?php else : ?>
+            <p>
+                <form method="post" action="">
+                    <?php wp_nonce_field( 'dm_manual_health_check', 'dm_manual_health_check_nonce' ); ?>
+                    <input type="hidden" name="dm_manual_health_check" value="1">
+                    <input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Check All Domains Now', 'wp-domain-mapping' ); ?>">
+                </form>
+            </p>
+        <?php endif; ?>
 
         <div class="tablenav top">
             <div class="tablenav-pages">
@@ -720,6 +780,14 @@ function dm_render_health_content() {
                         <input name="ssl_expiry_threshold" type="number" id="ssl_expiry_threshold" min="1" max="90" class="small-text" value="<?php echo esc_attr( get_site_option( 'dm_ssl_expiry_threshold', 14 ) ); ?>">
                         <span><?php _e( 'days', 'wp-domain-mapping' ); ?></span>
                         <p class="description"><?php _e( 'Send notifications when SSL certificates are expiring within this many days.', 'wp-domain-mapping' ); ?></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="health_check_batch_size"><?php _e( 'Batch Size', 'wp-domain-mapping' ); ?></label></th>
+                    <td>
+                        <input name="health_check_batch_size" type="number" id="health_check_batch_size" min="5" max="50" class="small-text" value="<?php echo esc_attr( get_site_option( 'dm_health_check_batch_size', 10 ) ); ?>">
+                        <span><?php _e( 'domains per batch', 'wp-domain-mapping' ); ?></span>
+                        <p class="description"><?php _e( 'Number of domains to check in each batch. Lower values prevent timeouts but take longer.', 'wp-domain-mapping' ); ?></p>
                     </td>
                 </tr>
             </table>

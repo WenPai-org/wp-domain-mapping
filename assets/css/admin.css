@@ -346,8 +346,13 @@
 
     .search-form-field {
         min-width: 100%;
+        width: auto;
     }
 
+    .regular-text {
+        max-width: 100%;
+        width: auto;
+    }
     .form-table th {
         width: 100%;
         display: block;

@@ -73,14 +73,22 @@ class WP_Domain_Mapping_Tools {
             add_filter( 'manage_sites-network_columns', array( $this, 'add_site_id_column' ), 20 );
             add_action( 'manage_sites_custom_column', array( $this, 'display_site_id_column' ), 10, 2 );
             add_action( 'admin_print_styles', array( $this, 'site_id_column_style' ) );
+
+            // Add SSL and Reachable columns
+            add_filter( 'manage_sites-network_columns', array( $this, 'add_ssl_reachable_columns' ), 25 );
+            add_filter( 'wpmu_blogs_columns', array( $this, 'add_ssl_reachable_columns' ), 25 );
+            add_action( 'manage_blogs_custom_column', array( $this, 'display_ssl_reachable_column' ), 15, 3 );
+            add_action( 'manage_sites_custom_column', array( $this, 'display_ssl_reachable_column' ), 15, 3 );
         }
 
         // AJAX handlers
         add_action( 'wp_ajax_dm_check_domain_health', array( $this, 'ajax_check_domain_health' ) );
+        add_action( 'wp_ajax_dm_check_domain_health_batch', array( $this, 'ajax_check_domain_health_batch' ) );
         add_action( 'wp_ajax_dm_import_csv', array( $this, 'ajax_import_csv' ) );
 
         // Scheduled tasks
         add_action( 'dm_domain_health_check', array( $this, 'scheduled_health_check' ) );
+        add_action( 'dm_domain_health_check_batch', array( $this, 'process_health_check_batch' ) );
 
         // Admin init actions
         add_action( 'admin_init', array( $this, 'handle_export' ) );
@@ -153,6 +161,99 @@ class WP_Domain_Mapping_Tools {
     }
 
     /**
+     * Add SSL and Reachable columns
+     */
+    public function add_ssl_reachable_columns( $columns ) {
+        $new_columns = array();
+        $ssl_reachable_added = false;
+
+        foreach ( $columns as $key => $value ) {
+            // First add the current column
+            $new_columns[$key] = $value;
+
+            // Insert SSL and Reachable columns after the Site ID column
+            if ( $key === 'dm_site_id' && ! $ssl_reachable_added ) {
+                $new_columns['ssl_status'] = __( 'SSL', 'wp-domain-mapping' );
+                $new_columns['reachable_status'] = __( 'Reachable', 'wp-domain-mapping' );
+                $ssl_reachable_added = true;
+            }
+        }
+
+        // If Site ID column wasn't found but columns need to be added
+        if ( ! $ssl_reachable_added ) {
+            // Insert after checkbox (cb) column, before everything else
+            $final_columns = array();
+            foreach ( $new_columns as $key => $value ) {
+                $final_columns[$key] = $value;
+                if ( $key === 'cb' && ! $ssl_reachable_added ) {
+                    $final_columns['ssl_status'] = __( 'SSL', 'wp-domain-mapping' );
+                    $final_columns['reachable_status'] = __( 'Reachable', 'wp-domain-mapping' );
+                    $ssl_reachable_added = true;
+                }
+            }
+            return $final_columns;
+        }
+
+        return $new_columns;
+    }
+
+    /**
+     * Display SSL and Reachable column content
+     */
+    public function display_ssl_reachable_column( $column, $blog_id ) {
+        global $wpdb;
+
+        if ( $column == 'ssl_status' ) {
+            // Check if site uses HTTPS
+            $site_url = get_blog_option( $blog_id, 'siteurl', '' );
+            if ( strpos( $site_url, 'https://' ) === 0 ) {
+                echo '<span class="dashicons dashicons-lock" style="color: #46b450;" title="' . esc_attr__( 'SSL Enabled', 'wp-domain-mapping' ) . '"></span>';
+            } else {
+                echo '<span class="dashicons dashicons-unlock" style="color: #999;" title="' . esc_attr__( 'No SSL', 'wp-domain-mapping' ) . '"></span>';
+            }
+        }
+
+        if ( $column == 'reachable_status' ) {
+            // Check if this is the main site
+            if ( is_main_site( $blog_id ) ) {
+                // Main site is always reachable if we can access the admin
+                echo '<span class="dashicons dashicons-yes-alt" style="color: #46b450;" title="' . esc_attr__( 'Main site is accessible', 'wp-domain-mapping' ) . '"></span>';
+                return;
+            }
+
+            // Get primary domain for this blog
+            $domain = $wpdb->get_var( $wpdb->prepare(
+                "SELECT domain FROM {$this->tables['domains']} WHERE blog_id = %d AND active = 1 LIMIT 1",
+                $blog_id
+            ));
+
+            if ( ! $domain ) {
+                // No mapped domain, check original domain
+                $blog_details = get_blog_details( $blog_id );
+                if ( $blog_details ) {
+                    $domain = $blog_details->domain;
+                }
+            }
+
+            if ( $domain ) {
+                $health_result = dm_get_health_result( $domain );
+
+                if ( $health_result && isset( $health_result['accessible'] ) ) {
+                    if ( $health_result['accessible'] ) {
+                        echo '<span class="dashicons dashicons-yes-alt" style="color: #46b450;" title="' . esc_attr__( 'Site is accessible', 'wp-domain-mapping' ) . '"></span>';
+                    } else {
+                        echo '<span class="dashicons dashicons-warning" style="color: #dc3232;" title="' . esc_attr__( 'Site is not accessible', 'wp-domain-mapping' ) . '"></span>';
+                    }
+                } else {
+                    echo '<span class="dashicons dashicons-minus" style="color: #999;" title="' . esc_attr__( 'Not checked', 'wp-domain-mapping' ) . '"></span>';
+                }
+            } else {
+                echo '<span class="dashicons dashicons-minus" style="color: #999;" title="' . esc_attr__( 'No domain', 'wp-domain-mapping' ) . '"></span>';
+            }
+        }
+    }
+
+    /**
      * Add custom styles for site ID column
      */
     public function site_id_column_style() {
@@ -160,6 +261,8 @@ class WP_Domain_Mapping_Tools {
             ?>
             <style type="text/css">
                 th#dm_site_id { width: 3.5em; }
+                th#ssl_status { width: 3em; }
+                th#reachable_status { width: 5em; }
                 .dm-site-id-badge {
                     display: inline-block;
                     background: #2271b1;
@@ -195,6 +298,12 @@ class WP_Domain_Mapping_Tools {
         if ( $timestamp ) {
             wp_unschedule_event( $timestamp, 'dm_domain_health_check' );
         }
+
+        // Also clear any batch processing
+        $timestamp = wp_next_scheduled( 'dm_domain_health_check_batch' );
+        if ( $timestamp ) {
+            wp_unschedule_event( $timestamp, 'dm_domain_health_check_batch' );
+        }
     }
 
     /**
@@ -212,11 +321,11 @@ class WP_Domain_Mapping_Tools {
                 wp_die( __( 'You do not have sufficient permissions to perform this action.', 'wp-domain-mapping' ) );
             }
 
-            // Run the health check
-            $this->run_health_check_for_all_domains();
+            // Start batch processing
+            $this->start_health_check_batch();
 
             // Redirect back to health page
-            wp_redirect( add_query_arg( array( 'page' => 'domain-mapping', 'tab' => 'health', 'checked' => 1 ), network_admin_url( 'settings.php' ) ) );
+            wp_redirect( add_query_arg( array( 'page' => 'domain-mapping', 'tab' => 'health', 'checking' => 1 ), network_admin_url( 'settings.php' ) ) );
             exit;
         }
     }
@@ -241,11 +350,13 @@ class WP_Domain_Mapping_Tools {
             $health_notifications_enabled = isset( $_POST['health_notifications_enabled'] ) ? (bool) $_POST['health_notifications_enabled'] : false;
             $notification_email = isset( $_POST['notification_email'] ) ? sanitize_email( $_POST['notification_email'] ) : '';
             $ssl_expiry_threshold = isset( $_POST['ssl_expiry_threshold'] ) ? intval( $_POST['ssl_expiry_threshold'] ) : 14;
+            $batch_size = isset( $_POST['health_check_batch_size'] ) ? intval( $_POST['health_check_batch_size'] ) : 10;
 
             update_site_option( 'dm_health_check_enabled', $health_check_enabled );
             update_site_option( 'dm_health_notifications_enabled', $health_notifications_enabled );
             update_site_option( 'dm_notification_email', $notification_email );
             update_site_option( 'dm_ssl_expiry_threshold', $ssl_expiry_threshold );
+            update_site_option( 'dm_health_check_batch_size', max( 5, min( 50, $batch_size ) ) );
 
             // If auto check is enabled, ensure cron is set
             if ( $health_check_enabled ) {
@@ -280,6 +391,27 @@ class WP_Domain_Mapping_Tools {
             wp_send_json_error( __( 'No domain specified.', 'wp-domain-mapping' ) );
         }
 
+        // Check if this domain belongs to the main site
+        $main_site = get_site( get_main_site_id() );
+        if ( $main_site && $domain === $main_site->domain ) {
+            // Return success for main site without checking
+            $result = array(
+                'domain' => $domain,
+                'last_check' => current_time( 'mysql' ),
+                'dns_status' => 'success',
+                'dns_message' => __( 'Main site is always accessible', 'wp-domain-mapping' ),
+                'resolved_ip' => '',
+                'ssl_valid' => strpos( home_url(), 'https://' ) === 0,
+                'ssl_expiry' => '',
+                'accessible' => true,
+                'response_code' => 200
+            );
+
+            dm_save_health_result( $domain, $result );
+            wp_send_json_success( $result );
+            return;
+        }
+
         // Run health check
         $result = $this->check_domain_health( $domain );
 
@@ -287,6 +419,26 @@ class WP_Domain_Mapping_Tools {
         dm_save_health_result( $domain, $result );
 
         // Return result
+        wp_send_json_success( $result );
+    }
+
+    /**
+     * AJAX handler for batch domain health check
+     */
+    public function ajax_check_domain_health_batch() {
+        // Check permissions
+        if ( ! current_user_can( 'manage_network' ) ) {
+            wp_send_json_error( __( 'You do not have sufficient permissions to perform this action.', 'wp-domain-mapping' ) );
+        }
+
+        // Verify nonce
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'dm_check_domain_health_batch' ) ) {
+            wp_send_json_error( __( 'Security check failed.', 'wp-domain-mapping' ) );
+        }
+
+        // Process next batch
+        $result = $this->process_health_check_batch( true );
+
         wp_send_json_success( $result );
     }
 
@@ -299,38 +451,132 @@ class WP_Domain_Mapping_Tools {
             return;
         }
 
-        $this->run_health_check_for_all_domains();
+        $this->start_health_check_batch();
     }
 
     /**
-     * Run health check for all domains
+     * Start batch health check processing
      */
-    private function run_health_check_for_all_domains() {
+    private function start_health_check_batch() {
         global $wpdb;
 
         // Get all domains
         $domains = $wpdb->get_col( "SELECT domain FROM {$this->tables['domains']}" );
 
-        // Initialize issues array
-        $issues = array();
+        // Add original domains for sites without mapped domains (excluding main site)
+        $sites = get_sites( array( 'number' => 0 ) );
+        foreach ( $sites as $site ) {
+            // Skip main site
+            if ( is_main_site( $site->blog_id ) ) {
+                continue;
+            }
 
-        // Check each domain
-        foreach ( $domains as $domain ) {
+            // Check if this site has a mapped domain
+            $has_mapped = $wpdb->get_var( $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$this->tables['domains']} WHERE blog_id = %d",
+                $site->blog_id
+            ));
+
+            if ( ! $has_mapped ) {
+                $domains[] = $site->domain;
+            }
+        }
+
+        if ( empty( $domains ) ) {
+            return;
+        }
+
+        // Store domains in queue
+        update_site_option( 'dm_health_check_queue', $domains );
+        update_site_option( 'dm_health_check_progress', array(
+            'total' => count( $domains ),
+            'processed' => 0,
+            'started' => current_time( 'mysql' ),
+            'issues' => array()
+        ) );
+
+        // Schedule first batch
+        wp_schedule_single_event( time() + 1, 'dm_domain_health_check_batch' );
+    }
+
+    /**
+     * Process health check batch
+     *
+     * @param bool $return_data Whether to return data for AJAX
+     * @return array|void
+     */
+    public function process_health_check_batch( $return_data = false ) {
+        $queue = get_site_option( 'dm_health_check_queue', array() );
+        $progress = get_site_option( 'dm_health_check_progress', array() );
+
+        if ( empty( $queue ) ) {
+            // Batch processing complete
+            if ( ! empty( $progress['issues'] ) && get_site_option( 'dm_health_notifications_enabled', true ) ) {
+                $this->send_health_notification( $progress['issues'] );
+            }
+
+            // Clean up
+            delete_site_option( 'dm_health_check_queue' );
+            delete_site_option( 'dm_health_check_progress' );
+
+            if ( $return_data ) {
+                return array(
+                    'complete' => true,
+                    'message' => __( 'Health check completed.', 'wp-domain-mapping' )
+                );
+            }
+            return;
+        }
+
+        // Get batch size
+        $batch_size = get_site_option( 'dm_health_check_batch_size', 10 );
+
+        // Process batch
+        $batch = array_splice( $queue, 0, $batch_size );
+        $processed = 0;
+
+        // Get main site domain to skip it
+        $main_site = get_site( get_main_site_id() );
+        $main_domain = $main_site ? $main_site->domain : '';
+
+        foreach ( $batch as $domain ) {
+            // Skip main site domain
+            if ( $domain === $main_domain ) {
+                $processed++;
+                $progress['processed']++;
+                continue;
+            }
+
             $result = $this->check_domain_health( $domain );
             dm_save_health_result( $domain, $result );
 
             // Check for issues
             if ( $this->has_health_issues( $result ) ) {
-                $issues[$domain] = $result;
+                $progress['issues'][$domain] = $result;
             }
+
+            $processed++;
+            $progress['processed']++;
         }
 
-        // Send notifications if enabled and issues exist
-        if ( ! empty( $issues ) && get_site_option( 'dm_health_notifications_enabled', true ) ) {
-            $this->send_health_notification( $issues );
+        // Update queue and progress
+        update_site_option( 'dm_health_check_queue', $queue );
+        update_site_option( 'dm_health_check_progress', $progress );
+
+        // Schedule next batch if needed
+        if ( ! empty( $queue ) && ! $return_data ) {
+            wp_schedule_single_event( time() + 2, 'dm_domain_health_check_batch' );
         }
 
-        return true;
+        if ( $return_data ) {
+            return array(
+                'complete' => empty( $queue ),
+                'total' => $progress['total'],
+                'processed' => $progress['processed'],
+                'remaining' => count( $queue ),
+                'percentage' => round( ( $progress['processed'] / $progress['total'] ) * 100 )
+            );
+        }
     }
 
     /**
@@ -675,6 +921,9 @@ class WP_Domain_Mapping_Tools {
         $errors = 0;
         $log = array();
 
+        // Track processed domains to prevent duplicates
+        $processed_domains = array();
+
         // Skip header row
         if ( $has_header ) {
             fgetcsv( $file );
@@ -699,6 +948,20 @@ class WP_Domain_Mapping_Tools {
             $blog_id = intval( $data[0] );
             $domain = dm_clean_domain( trim( $data[1] ) );
             $active = intval( $data[2] );
+
+            // Check if we've already processed this domain
+            if ( isset( $processed_domains[$domain] ) ) {
+                $log[] = array(
+                    'status' => 'warning',
+                    'message' => sprintf( __( 'Row %d: Domain %s already processed in this import. Skipped duplicate.', 'wp-domain-mapping' ), $row_num, $domain )
+                );
+                $skipped++;
+                $row_num++;
+                continue;
+            }
+
+            // Mark domain as processed
+            $processed_domains[$domain] = true;
 
             // Validate blog_id
             if ( $blog_id <= 0 ) {
