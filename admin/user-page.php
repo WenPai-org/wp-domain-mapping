@@ -9,11 +9,6 @@ defined('ABSPATH') || exit;
 
 $protocol = isset($protocol) ? $protocol : (is_ssl() ? 'https://' : 'http://');
 $domains = isset($domains) ? $domains : array();
-
-// Initialize logs array if not set to prevent PHP warnings
-if (!isset($logs) || !is_array($logs)) {
-    $logs = array();
-}
 ?>
 
 <div class="wrap">
@@ -97,18 +92,18 @@ if (!isset($logs) || !is_array($logs)) {
                 <?php foreach ($domains as $domain): ?>
                 <tr>
                     <td>
-                        <a href="<?php echo esc_url($protocol . $domain['domain']); ?>" target="_blank">
-                            <?php echo esc_html($domain['domain']); ?>
+                        <a href="<?php echo esc_url($protocol . $domain->domain); ?>" target="_blank">
+                            <?php echo esc_html($domain->domain); ?>
                             <span class="dashicons dashicons-external" style="font-size: 14px; line-height: 1.3; opacity: 0.7;"></span>
                         </a>
                     </td>
                     <td>
-                        <?php if ($domain['active'] == 1): ?>
+                        <?php if ($domain->active == 1): ?>
                             <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
                             <span class="screen-reader-text"><?php _e('Yes', 'wp-domain-mapping'); ?></span>
                         <?php else: ?>
                             <a href="<?php echo wp_nonce_url(add_query_arg(
-                                array('page' => 'domainmapping', 'action' => 'primary', 'domain' => $domain['domain']),
+                                array('page' => 'domainmapping', 'action' => 'primary', 'domain' => $domain->domain),
                                 admin_url('tools.php')
                             ), 'domain_mapping'); ?>" class="button button-small">
                                 <?php _e('Make Primary', 'wp-domain-mapping'); ?>
@@ -116,11 +111,11 @@ if (!isset($logs) || !is_array($logs)) {
                         <?php endif; ?>
                     </td>
                     <td>
-                        <?php if ($domain['active'] != 1): ?>
+                        <?php if ($domain->active != 1): ?>
                             <a href="<?php echo wp_nonce_url(add_query_arg(
-                                array('page' => 'domainmapping', 'action' => 'delete', 'domain' => $domain['domain']),
+                                array('page' => 'domainmapping', 'action' => 'delete', 'domain' => $domain->domain),
                                 admin_url('tools.php')
-                            ), 'delete' . $domain['domain']); ?>" class="button button-small button-link-delete" onclick="return confirm('<?php _e('Are you sure you want to delete this domain?', 'wp-domain-mapping'); ?>');">
+                            ), 'delete' . $domain->domain); ?>" class="button button-small button-link-delete" onclick="return confirm('<?php _e('Are you sure you want to delete this domain?', 'wp-domain-mapping'); ?>');">
                                 <?php _e('Delete', 'wp-domain-mapping'); ?>
                             </a>
                         <?php endif; ?>
@@ -160,24 +155,3 @@ if (!isset($logs) || !is_array($logs)) {
         <?php endif; ?>
     </div>
 </div>
-
-<style>
-/* Main cards */
-.domain-mapping-card {
-    background: #fff;
-    border: 1px solid #ccd0d4;
-    border-radius: 4px;
-    margin-top: 20px;
-    padding: 20px;
-    box-shadow: 0 1px 1px rgba(0,0,0,.04);
-}
-
-.domains-table .column-primary {
-    width: 150px;
-    text-align: center;
-}
-
-.domains-table .column-actions {
-    width: 120px;
-}
-</style>

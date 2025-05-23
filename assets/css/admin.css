@@ -1,19 +1,26 @@
-.card {
+/* WP Domain Mapping Admin Styles */
+
+/* Main cards */
+.domain-mapping-card {
     background: #fff;
     border: 1px solid #ccd0d4;
     border-radius: 4px;
     max-width: unset;
     margin-top: 20px;
     padding: 20px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
 }
-.styles-sync-tabs {
+
+/* Tabs */
+.domain-mapping-tabs {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
     border-bottom: 1px solid #c3c4c7;
     margin-bottom: 20px;
 }
-.styles-tab {
+
+.domain-mapping-tab {
     padding: 8px 16px;
     border: none;
     background: none;
@@ -21,44 +28,362 @@
     font-size: 14px;
     border-bottom: 2px solid transparent;
 }
-.styles-tab.active {
+
+.domain-mapping-tab.active {
     border-bottom: 2px solid #007cba;
     font-weight: 600;
     background: #f0f0f1;
 }
-.styles-tab:hover:not(.active) {
+
+.domain-mapping-tab:hover:not(.active) {
     background: #f0f0f1;
     border-bottom-color: #dcdcde;
 }
-.styles-sync-content { flex: 1; }
-.tablenav { margin: 10px 0; }
-.tablenav-pages { float: right; }
-.tablenav-pages a, .tablenav-pages span { padding: 5px 10px; }
-.form-table th { width: 200px; }
-.form-table td { padding: 10px 
 
-System: 0; }
-.description { color: #666; font-size: 12px; }
-.notice { padding: 8px 12px; border-radius: 3px; }
-.notice-success { background-color: #dff0d8; border-left: 4px solid #46b450; }
-.notice-error { background-color: #f2dede; border-left: 4px solid #dc3232; }
+.domain-mapping-content {
+    flex: 1;
+}
 
-/* Responsive Styles */
+/* Search form */
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.search-form-field {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+}
+
+.search-form-field label {
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.search-form-submit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Tables */
+.tablenav {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.tablenav-pages {
+    margin-left: auto;
+}
+
+.tablenav-pages a,
+.tablenav-pages span.current {
+    display: inline-block;
+    min-width: 17px;
+    padding: 3px 5px 7px;
+    background: #f0f0f1;
+    font-size: 16px;
+    line-height: 1;
+    font-weight: 400;
+    text-align: center;
+    text-decoration: none;
+}
+
+.tablenav-pages span.current {
+    background: #007cba;
+    color: #fff;
+    border-color: #007cba;
+}
+
+.displaying-num {
+    margin-left: 10px;
+    color: #555;
+}
+
+.domains-table th,
+.logs-table th,
+.domains-health-table th {
+    font-weight: 600;
+}
+
+.column-site-id {
+    width: 80px;
+}
+
+.column-site-name {
+    width: 20%;
+}
+
+.column-primary {
+    width: 80px;
+}
+
+.column-actions {
+    width: 120px;
+}
+
+/* Health table specific */
+.column-domain {
+    width: 20%;
+}
+
+.column-site {
+    width: 20%;
+}
+
+.column-dns,
+.column-ssl,
+.column-status {
+    width: 10%;
+}
+
+.column-last-check {
+    width: 15%;
+}
+
+/* Site ID Badge */
+.dm-site-id-badge {
+    display: inline-block;
+    background: #2271b1;
+    color: #fff;
+    font-weight: 500;
+    padding: 0 5px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+/* Form elements */
+.form-table th {
+    width: 200px;
+    padding: 15px 10px 15px 0;
+}
+
+.form-table td {
+    padding: 15px 0;
+}
+
+.description {
+    color: #666;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* Notices */
+.notice {
+    padding: 8px 12px;
+    border-radius: 3px;
+    margin: 5px 0 15px;
+}
+
+.notice p {
+    margin: 0.5em 0;
+    padding: 2px;
+}
+
+.notice-success {
+    background-color: #f0f9eb;
+    border-left: 4px solid #46b450;
+}
+
+.notice-error {
+    background-color: #fef0f0;
+    border-left: 4px solid #dc3232;
+}
+
+.notice-warning {
+    background-color: #fff8e5;
+    border-left: 4px solid #ffb900;
+}
+
+.notice-info {
+    background-color: #f0f6fa;
+    border-left: 4px solid #00a0d2;
+}
+
+/* DNS instructions */
+.dns-instructions {
+    margin-top: 10px;
+}
+
+.dns-example {
+    background: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.dns-example h4 {
+    margin-top: 0;
+}
+
+.dns-tips {
+    list-style: disc;
+    margin-left: 20px;
+}
+
+.dns-tips li {
+    margin-bottom: 8px;
+}
+
+/* Status indicators */
+.dashicons-yes-alt,
+.dashicons-no-alt {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+}
+
+/* Logs table styles */
+.logs-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.logs-table .column-user,
+.logs-table .column-site {
+    width: 15%;
+}
+
+.logs-table .column-action {
+    width: 10%;
+}
+
+.logs-table .column-date {
+    width: 15%;
+}
+
+.log-action {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.log-action-add {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.log-action-edit {
+    background-color: #d9edf7;
+    color: #31708f;
+}
+
+.log-action-delete {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+/* Health details */
+.health-details-content {
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 3px;
+}
+
+.health-details-content h4 {
+    margin-top: 0;
+}
+
+/* Progress bar */
+.progress-bar-outer {
+    background-color: #f0f0f1;
+    border-radius: 4px;
+    height: 20px;
+    width: 100%;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-bar-inner {
+    background-color: #2271b1;
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Import/Export specific */
+.import-summary,
+.import-details {
+    margin-top: 15px;
+}
+
+.import-details table {
+    margin-top: 10px;
+}
+
+.import-details .notice-success {
+    background-color: #f0f9eb;
+}
+
+.import-details .notice-error {
+    background-color: #fef0f0;
+}
+
+.import-details .notice-warning {
+    background-color: #fff8e5;
+}
+
+/* Responsive */
 @media screen and (max-width: 782px) {
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-form-field {
+        min-width: 100%;
+    }
+
     .form-table th {
         width: 100%;
         display: block;
     }
+
     .form-table td {
         display: block;
-        padding: 5px 0 15px;
+        padding: 0 0 15px;
     }
-    .wp-list-table th.column-primary ~ th,
-    .wp-list-table td.column-primary ~ td {
+
+    .domain-mapping-tabs {
+        flex-direction: column;
+    }
+
+    .domain-mapping-tab {
+        width: 100%;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        border-radius: 0;
+    }
+
+    .domain-mapping-tab.active {
+        border-bottom: 1px solid #007cba;
+        border-left: 4px solid #007cba;
+    }
+
+    /* Hide less important columns on mobile */
+    .wp-list-table th.column-primary ~ th:not(.column-actions),
+    .wp-list-table td.column-primary ~ td:not(.column-actions) {
         display: none;
     }
+
     .wp-list-table th.column-primary,
-    .wp-list-table td.column-primary {
+    .wp-list-table td.column-primary,
+    .wp-list-table th.column-actions,
+    .wp-list-table td.column-actions {
         display: table-cell;
     }
 }

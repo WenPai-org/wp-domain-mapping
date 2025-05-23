@@ -1,6 +1,6 @@
 <?php
 /**
- * Domains administration page
+ * Domains administration page template
  *
  * @package WP Domain Mapping
  */
@@ -9,6 +9,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+// This file is included from the render_domains_admin method
 ?>
 <div class="wrap">
     <h1><?php echo esc_html( get_admin_page_title() ); ?>
@@ -16,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <?php printf( esc_html__( 'Version: %s', 'wp-domain-mapping' ), esc_html( WP_DOMAIN_MAPPING_VERSION ) ); ?>
         </span>
         <a href="https://wpmultisite.com/document/wp-domain-mapping" target="_blank" class="button button-secondary" style="margin-left: 10px;">
-            <?php esc_html_e( 'Documentation', 'wp-domain-mapping' ); ?>
+            <?php esc_html_e( 'Document', 'wp-domain-mapping' ); ?>
         </a>
         <a href="https://wpmultisite.com/forums/" target="_blank" class="button button-secondary">
             <?php esc_html_e( 'Support', 'wp-domain-mapping' ); ?>
@@ -26,7 +28,70 @@ if ( ! defined( 'ABSPATH' ) ) {
     <div class="card domain-mapping-card">
         <h2><?php echo $edit_row ? esc_html__( 'Edit Domain', 'wp-domain-mapping' ) : esc_html__( 'Add New Domain', 'wp-domain-mapping' ); ?></h2>
         <div id="edit-domain-status" class="notice" style="display:none;"></div>
-        <?php dm_edit_domain( $edit_row ); ?>
+
+        <form id="edit-domain-form" method="POST">
+            <input type="hidden" name="orig_domain" value="<?php echo esc_attr( $edit_row ? $edit_row->domain : '' ); ?>" />
+            <table class="form-table">
+                <tr>
+                    <th><label for="blog_id"><?php esc_html_e( 'Site ID', 'wp-domain-mapping' ); ?></label></th>
+                    <td>
+                        <input type="number" id="blog_id" name="blog_id" value="<?php echo esc_attr( $edit_row ? $edit_row->blog_id : '' ); ?>" class="regular-text" required />
+                        <?php if ( ! $edit_row ) : ?>
+                            <p class="description">
+                                <?php
+                                $site_list_url = network_admin_url( 'sites.php' );
+                                printf(
+                                    /* translators: %s: URL to sites list */
+                                    wp_kses(
+                                        __( 'Not sure about Site ID? <a href="%s" target="_blank">View all sites</a> to find the ID.', 'wp-domain-mapping' ),
+                                        array( 'a' => array( 'href' => array(), 'target' => array() ) )
+                                    ),
+                                    esc_url( $site_list_url )
+                                );
+                                ?>
+                            </p>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="domain"><?php esc_html_e( 'Domain', 'wp-domain-mapping' ); ?></label></th>
+                    <td>
+                        <input type="text" id="domain" name="domain" value="<?php echo esc_attr( $edit_row ? $edit_row->domain : '' ); ?>" class="regular-text" required
+                               placeholder="example.com" pattern="^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$" />
+                        <p class="description">
+                            <?php esc_html_e( 'Enter the domain without http:// or https:// (e.g., example.com)', 'wp-domain-mapping' ); ?>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="active"><?php esc_html_e( 'Primary', 'wp-domain-mapping' ); ?></label></th>
+                    <td>
+                        <input type="checkbox" id="active" name="active" value="1" <?php checked( $edit_row ? $edit_row->active : 0, 1 ); ?> />
+                        <span class="description">
+                            <?php esc_html_e( 'Set as the primary domain for this site', 'wp-domain-mapping' ); ?>
+                        </span>
+                    </td>
+                </tr>
+                <?php if ( get_site_option( 'dm_no_primary_domain' ) == 1 ) : ?>
+                    <tr>
+                        <td colspan="2" class="notice notice-warning">
+                            <p><?php esc_html_e( 'Warning! Primary domains are currently disabled in network settings.', 'wp-domain-mapping' ); ?></p>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+            <p>
+                <input type="submit" class="button button-primary" value="<?php echo $edit_row
+                    ? esc_attr__( 'Update Domain', 'wp-domain-mapping' )
+                    : esc_attr__( 'Add Domain', 'wp-domain-mapping' ); ?>" />
+
+                <?php if ( $edit_row ) : ?>
+                    <a href="<?php echo esc_url( admin_url( 'network/sites.php?page=domains' ) ); ?>" class="button button-secondary">
+                        <?php esc_html_e( 'Cancel', 'wp-domain-mapping' ); ?>
+                    </a>
+                <?php endif; ?>
+            </p>
+        </form>
     </div>
 
     <div class="card domain-mapping-card">
@@ -112,14 +177,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                     }
 
                     $where_sql = $where ? ' WHERE ' . implode( ' AND ', $where ) : '';
+                    $tables = dm_get_table_names();
 
                     // Count total items for pagination
-                    $total_items = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->base_prefix}" . WP_DOMAIN_MAPPING_TABLE_DOMAINS . $where_sql );
+                    $total_items = $wpdb->get_var( "SELECT COUNT(*) FROM {$tables['domains']}" . $where_sql );
                     $total_pages = ceil( $total_items / $per_page );
 
                     // Get the domains with pagination
                     $rows = $wpdb->get_results( $wpdb->prepare(
-                        "SELECT * FROM {$wpdb->base_prefix}" . WP_DOMAIN_MAPPING_TABLE_DOMAINS . $where_sql . " ORDER BY id DESC LIMIT %d, %d",
+                        "SELECT * FROM {$tables['domains']}" . $where_sql . " ORDER BY id DESC LIMIT %d, %d",
                         $offset,
                         $per_page
                     ));
@@ -191,7 +257,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                     <th><?php esc_html_e( 'Sites with Mapped Domains', 'wp-domain-mapping' ); ?></th>
                     <td>
                         <?php
-                        $sites_with_domains = $wpdb->get_var( "SELECT COUNT(DISTINCT blog_id) FROM {$wpdb->base_prefix}" . WP_DOMAIN_MAPPING_TABLE_DOMAINS );
+                        $sites_with_domains = $wpdb->get_var( "SELECT COUNT(DISTINCT blog_id) FROM {$tables['domains']}" );
                         echo esc_html( $sites_with_domains );
                         ?>
                     </td>
@@ -201,314 +267,162 @@ if ( ! defined( 'ABSPATH' ) ) {
     </div>
 </div>
 
-<script>
-jQuery(document).ready(function($) {
-    // Tab switching functionality
-    $('.domain-mapping-tab').on('click', function() {
-        $('.domain-mapping-tab').removeClass('active');
-        $(this).addClass('active');
+<?php
+/**
+ * Render domain listing table
+ *
+ * @param array $rows Domain data rows
+ */
+function dm_domain_listing( $rows ) {
+    global $wpdb;
 
-        var tab = $(this).data('tab');
-        $('.domain-mapping-section').hide();
-        $('.domain-mapping-section[data-section="' + tab + '"]').show();
-    });
-
-    // Helper function for showing notices
-    function showNotice(selector, message, type) {
-        $(selector)
-            .removeClass('notice-success notice-error notice-warning notice-info')
-            .addClass('notice-' + type)
-            .html('<p>' + message + '</p>')
-            .show()
-            .delay(3000)
-            .fadeOut();
+    if ( ! $rows ) {
+        echo '<div class="notice notice-info"><p>' . esc_html__( 'No domains found.', 'wp-domain-mapping' ) . '</p></div>';
+        return;
     }
 
-    // Handle domain edit/add form submission
-    $('#edit-domain-form').on('submit', function(e) {
-        e.preventDefault();
+    $edit_url = network_admin_url(
+        file_exists( ABSPATH . 'wp-admin/network/site-info.php' )
+            ? 'site-info.php'
+            : ( file_exists( ABSPATH . 'wp-admin/ms-sites.php' ) ? 'ms-sites.php' : 'wpmu-blogs.php' )
+    );
+    ?>
+    <div class="tablenav top">
+        <div class="alignleft actions bulkactions">
+            <label for="bulk-action-selector-top" class="screen-reader-text"><?php esc_html_e( 'Select bulk action', 'wp-domain-mapping' ); ?></label>
+            <select id="bulk-action-selector-top" name="action">
+                <option value="-1"><?php esc_html_e( 'Bulk Actions', 'wp-domain-mapping' ); ?></option>
+                <option value="delete"><?php esc_html_e( 'Delete', 'wp-domain-mapping' ); ?></option>
+            </select>
+            <input type="submit" class="button action" value="<?php esc_attr_e( 'Apply', 'wp-domain-mapping' ); ?>" />
+        </div>
+    </div>
 
-        // Validate form
-        var blogId = $('#blog_id').val();
-        var domain = $('#domain').val();
+    <table class="wp-list-table widefat striped domains-table">
+        <thead>
+            <tr>
+                <td class="manage-column column-cb check-column">
+                    <input id="select-all" type="checkbox" />
+                </td>
+                <th scope="col" class="column-site-id"><?php esc_html_e( 'Site ID', 'wp-domain-mapping' ); ?></th>
+                <th scope="col" class="column-site-name"><?php esc_html_e( 'Site Name', 'wp-domain-mapping' ); ?></th>
+                <th scope="col" class="column-domain"><?php esc_html_e( 'Domain', 'wp-domain-mapping' ); ?></th>
+                <th scope="col" class="column-primary"><?php esc_html_e( 'Primary', 'wp-domain-mapping' ); ?></th>
+                <th scope="col" class="column-actions"><?php esc_html_e( 'Actions', 'wp-domain-mapping' ); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ( $rows as $row ) :
+                $site_name = get_blog_option( $row->blog_id, 'blogname', esc_html__( 'Unknown', 'wp-domain-mapping' ) );
+            ?>
+                <tr>
+                    <th scope="row" class="check-column">
+                        <input type="checkbox" class="domain-checkbox" value="<?php echo esc_attr( $row->domain ); ?>" />
+                    </th>
+                    <td class="column-site-id">
+                        <a href="<?php echo esc_url( add_query_arg( array( 'action' => 'editblog', 'id' => $row->blog_id ), $edit_url ) ); ?>">
+                            <?php echo esc_html( $row->blog_id ); ?>
+                        </a>
+                    </td>
+                    <td class="column-site-name">
+                        <?php echo esc_html( $site_name ); ?>
+                    </td>
+                    <td class="column-domain">
+                        <a href="<?php echo esc_url( dm_ensure_protocol( $row->domain ) ); ?>" target="_blank">
+                            <?php echo esc_html( $row->domain ); ?>
+                            <span class="dashicons dashicons-external" style="font-size: 14px; line-height: 1.3; opacity: 0.7;"></span>
+                        </a>
+                    </td>
+                    <td class="column-primary">
+                        <?php if ( $row->active == 1 ) : ?>
+                            <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
+                            <span class="screen-reader-text"><?php esc_html_e( 'Yes', 'wp-domain-mapping' ); ?></span>
+                        <?php else : ?>
+                            <span class="dashicons dashicons-no-alt" style="color: #dc3232;"></span>
+                            <span class="screen-reader-text"><?php esc_html_e( 'No', 'wp-domain-mapping' ); ?></span>
+                        <?php endif; ?>
+                    </td>
+                    <td class="column-actions">
+                        <div class="row-actions">
+                            <span class="edit">
+                                <a href="<?php echo esc_url( add_query_arg( array( 'edit_domain' => $row->domain ), admin_url( 'network/sites.php?page=domains' ) ) ); ?>" class="button button-small">
+                                    <?php esc_html_e( 'Edit', 'wp-domain-mapping' ); ?>
+                                </a>
+                            </span>
+                            <?php if ( $row->active != 1 ) : ?>
+                                <span class="delete">
+                                    <a href="#" class="button button-small domain-delete-button" data-domain="<?php echo esc_attr( $row->domain ); ?>">
+                                        <?php esc_html_e( 'Delete', 'wp-domain-mapping' ); ?>
+                                    </a>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 
-        if (!blogId || !domain) {
-            showNotice('#edit-domain-status', '<?php esc_html_e( 'Please fill in all required fields.', 'wp-domain-mapping' ); ?>', 'error');
-            return;
-        }
-
-        var formData = $(this).serializeArray();
-        formData.push({name: 'action', value: 'dm_handle_actions'});
-        formData.push({name: 'action_type', value: 'save'});
-        formData.push({name: 'nonce', value: '<?php echo wp_create_nonce( 'domain_mapping' ); ?>'});
-
-        $('#edit-domain-status').html('<p><?php esc_html_e( 'Saving...', 'wp-domain-mapping' ); ?></p>').show();
-
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                if (response.success) {
-                    showNotice('#edit-domain-status', response.data, 'success');
-                    setTimeout(function() {
-                        location.href = '<?php echo esc_js( admin_url( 'network/sites.php?page=domains' ) ); ?>';
-                    }, 1000);
-                } else {
-                    showNotice('#edit-domain-status', response.data || '<?php esc_html_e( 'Failed to save domain.', 'wp-domain-mapping' ); ?>', 'error');
-                }
-            },
-            error: function() {
-                showNotice('#edit-domain-status', '<?php esc_html_e( 'Server error occurred.', 'wp-domain-mapping' ); ?>', 'error');
-            }
-        });
-    });
-
-    // Handle domain list bulk actions
-    $('#domain-list-form').on('submit', function(e) {
-        e.preventDefault();
-
-        var selectedDomains = [];
-        $('.domain-checkbox:checked').each(function() {
-            selectedDomains.push($(this).val());
-        });
-
-        if (selectedDomains.length === 0) {
-            showNotice('#domain-status', '<?php esc_html_e( 'Please select at least one domain.', 'wp-domain-mapping' ); ?>', 'error');
-            return;
-        }
-
-        var action = $('#bulk-action-selector-top').val();
-        if (action === '-1') return;
-
-        if (!confirm('<?php esc_html_e( 'Are you sure you want to delete the selected domains?', 'wp-domain-mapping' ); ?>')) {
-            return;
-        }
-
-        $('#domain-status').html('<p><?php esc_html_e( 'Processing...', 'wp-domain-mapping' ); ?></p>').show();
-
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'dm_handle_actions',
-                action_type: 'delete',
-                domains: selectedDomains,
-                nonce: '<?php echo wp_create_nonce( 'domain_mapping' ); ?>'
-            },
-            success: function(response) {
-                if (response.success) {
-                    showNotice('#domain-status', response.data, 'success');
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1000);
-                } else {
-                    showNotice('#domain-status', response.data || '<?php esc_html_e( 'Failed to delete domains.', 'wp-domain-mapping' ); ?>', 'error');
-                }
-            },
-            error: function() {
-                showNotice('#domain-status', '<?php esc_html_e( 'Server error occurred.', 'wp-domain-mapping' ); ?>', 'error');
-            }
-        });
-    });
-});
-</script>
-
-<style>
-/* Main cards */
-.domain-mapping-card {
-    background: #fff;
-    border: 1px solid #ccd0d4;
-    border-radius: 4px;
-    max-width: unset;
-    margin-top: 20px;
-    padding: 20px;
-    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    <?php if ( get_site_option( 'dm_no_primary_domain' ) == 1 ) : ?>
+        <div class="notice notice-warning inline">
+            <p><?php esc_html_e( 'Warning! Primary domains are currently disabled in network settings.', 'wp-domain-mapping' ); ?></p>
+        </div>
+    <?php endif; ?>
+    <?php
 }
 
-/* Tabs */
-.domain-mapping-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    border-bottom: 1px solid #c3c4c7;
-    margin-bottom: 20px;
-}
+/**
+ * Render domain logs table
+ */
+function dm_domain_logs() {
+    global $wpdb;
 
-.domain-mapping-tab {
-    padding: 8px 16px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 14px;
-    border-bottom: 2px solid transparent;
-}
+    $tables = dm_get_table_names();
 
-.domain-mapping-tab.active {
-    border-bottom: 2px solid #007cba;
-    font-weight: 600;
-    background: #f0f0f1;
-}
-
-.domain-mapping-tab:hover:not(.active) {
-    background: #f0f0f1;
-    border-bottom-color: #dcdcde;
-}
-
-.domain-mapping-content {
-    flex: 1;
-}
-
-/* Search form */
-.search-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.search-form-field {
-    display: flex;
-    flex-direction: column;
-    min-width: 180px;
-}
-
-.search-form-field label {
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-.search-form-submit {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Tables */
-.tablenav {
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-}
-
-.tablenav-pages {
-    margin-left: auto;
-}
-
-.tablenav-pages a,
-.tablenav-pages span.current {
-    display: inline-block;
-    min-width: 17px;
-    padding: 3px 5px 7px;
-    background: #f0f0f1;
-    font-size: 16px;
-    line-height: 1;
-    font-weight: 400;
-    text-align: center;
-    text-decoration: none;
-}
-
-.tablenav-pages span.current {
-    background: #007cba;
-    color: #fff;
-    border-color: #007cba;
-}
-
-.displaying-num {
-    margin-left: 10px;
-    color: #555;
-}
-
-.domains-table th,
-.logs-table th {
-    font-weight: 600;
-}
-
-.column-site-id {
-    width: 80px;
-}
-
-.column-site-name {
-    width: 20%;
-}
-
-.column-primary {
-    width: 80px;
-    text-align: center;
-}
-
-.column-actions {
-    width: 120px;
-}
-
-/* Form elements */
-.form-table th {
-    width: 200px;
-    padding: 15px 10px 15px 0;
-}
-
-.form-table td {
-    padding: 15px 0;
-}
-
-.description {
-    color: #666;
-    font-size: 13px;
-    margin-top: 4px;
-}
-
-/* Notices */
-.notice {
-    padding: 8px 12px;
-    border-radius: 3px;
-    margin: 5px 0 15px;
-}
-
-.notice p {
-    margin: 0.5em 0;
-    padding: 2px;
-}
-
-.notice-success {
-    background-color: #f0f9eb;
-    border-left: 4px solid #46b450;
-}
-
-.notice-error {
-    background-color: #fef0f0;
-    border-left: 4px solid #dc3232;
-}
-
-.notice-warning {
-    background-color: #fff8e5;
-    border-left: 4px solid #ffb900;
-}
-
-.notice-info {
-    background-color: #f0f6fa;
-    border-left: 4px solid #00a0d2;
-}
-
-/* Responsive */
-@media screen and (max-width: 782px) {
-    .search-form {
-        flex-direction: column;
-        align-items: stretch;
+    // Make sure the table exists
+    if ( $wpdb->get_var( "SHOW TABLES LIKE '{$tables['logs']}'" ) != $tables['logs'] ) {
+        echo '<div class="notice notice-error"><p>' .
+             esc_html__('Domain mapping logs table is missing. Please deactivate and reactivate the plugin.', 'wp-domain-mapping') .
+             '</p></div>';
+        return;
     }
 
-    .search-form-field {
-        min-width: 100%;
+    // Get pagination parameters
+    $per_page = isset( $_GET['logs_per_page'] ) ? absint( $_GET['logs_per_page'] ) : 50;
+    $paged = isset( $_GET['logs_paged'] ) ? absint( $_GET['logs_paged'] ) : 1;
+    $offset = ( $paged - 1 ) * $per_page;
+
+    // Get action filter
+    $action_filter = isset( $_GET['log_action'] ) ? sanitize_text_field( $_GET['log_action'] ) : '';
+
+    // Build WHERE clause for filtering
+    $where = array();
+    if ( ! empty( $action_filter ) ) {
+        $where[] = $wpdb->prepare( "action = %s", $action_filter );
     }
 
-    .form-table th {
-        width: 100%;
-        display: block;
+    $where_sql = $where ? ' WHERE ' . implode( ' AND ', $where ) : '';
+
+    // Count total logs for pagination
+    $total_logs = $wpdb->get_var( "SELECT COUNT(*) FROM {$tables['logs']}" . $where_sql );
+    $total_pages = ceil( $total_logs / $per_page );
+
+    // Get logs with pagination
+    $logs = $wpdb->get_results( $wpdb->prepare(
+        "SELECT * FROM {$tables['logs']}" . $where_sql . " ORDER BY timestamp DESC LIMIT %d, %d",
+        $offset,
+        $per_page
+    ));
+
+    // Get available actions for filter
+    $actions = $wpdb->get_col( "SELECT DISTINCT action FROM {$tables['logs']}" );
+
+    if ( ! $logs ) {
+        echo '<div class="notice notice-info"><p>' . esc_html__( 'No domain mapping logs available.', 'wp-domain-mapping' ) . '</p></div>';
+        return;
     }
 
-    .form-table td {
-        display: block;
-        padding: 0 0 15px;
-    }
+    // Include the logs table template
+    include WP_DOMAIN_MAPPING_DIR_PATH . 'admin/logs-table.php';
 }
-</style>
+?>

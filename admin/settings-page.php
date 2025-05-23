@@ -39,7 +39,7 @@ settings_errors( 'dm_settings' );
             <?php printf( esc_html__( 'Version: %s', 'wp-domain-mapping' ), esc_html( WP_DOMAIN_MAPPING_VERSION ) ); ?>
         </span>
         <a href="https://wpmultisite.com/document/wp-domain-mapping" target="_blank" class="button button-secondary" style="margin-left: 10px;">
-            <?php esc_html_e( 'Documentation', 'wp-domain-mapping' ); ?>
+            <?php esc_html_e( 'Document', 'wp-domain-mapping' ); ?>
         </a>
         <a href="https://wpmultisite.com/forums/" target="_blank" class="button button-secondary">
             <?php esc_html_e( 'Support', 'wp-domain-mapping' ); ?>
