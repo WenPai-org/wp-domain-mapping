@@ -25,6 +25,7 @@ function dm_ensure_protocol( $domain ) {
 
 /**
  * Clean domain name (remove protocol and trailing slash)
+ * UPDATED: Keep www prefix to distinguish www.domain.com from domain.com
  *
  * @param string $domain Domain name
  * @return string Cleaned domain
@@ -35,6 +36,14 @@ function dm_clean_domain( $domain ) {
 
     // Remove trailing slash
     $domain = rtrim( $domain, '/' );
+
+    // Remove path if exists
+    if ( strpos( $domain, '/' ) !== false ) {
+        $domain = substr( $domain, 0, strpos( $domain, '/' ) );
+    }
+
+    // Convert to lowercase for consistency
+    $domain = strtolower( $domain );
 
     // Convert IDN to ASCII (Punycode)
     if ( function_exists( 'idn_to_ascii' ) && preg_match( '/[^a-z0-9\-\.]/i', $domain ) ) {
@@ -52,13 +61,29 @@ function dm_clean_domain( $domain ) {
 
 /**
  * Validate a domain name
+ * UPDATED: Accept www prefix as valid
  *
  * @param string $domain The domain
  * @return bool True if valid
  */
 function dm_validate_domain( $domain ) {
-    // Basic validation
-    return (bool) preg_match( '/^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}$/i', $domain );
+    // Basic validation - now accepts www prefix
+    return (bool) preg_match( '/^(www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}$/i', $domain );
+}
+
+/**
+ * Check if two domains are the same (ignoring www prefix)
+ *
+ * @param string $domain1 First domain
+ * @param string $domain2 Second domain
+ * @return bool True if domains are essentially the same
+ */
+function dm_domains_are_equivalent( $domain1, $domain2 ) {
+    // Remove www. prefix for comparison
+    $clean1 = preg_replace( '/^www\./i', '', $domain1 );
+    $clean2 = preg_replace( '/^www\./i', '', $domain2 );
+
+    return strcasecmp( $clean1, $clean2 ) === 0;
 }
 
 /**
@@ -148,6 +173,30 @@ function dm_get_domain_by_name( $domain ) {
 }
 
 /**
+ * Check if domain exists for another blog
+ * UPDATED: More precise checking for domain conflicts
+ *
+ * @param string $domain Domain name
+ * @param int $exclude_blog_id Blog ID to exclude from check (optional)
+ * @return object|null Domain object if exists for another blog, null otherwise
+ */
+function dm_domain_exists_for_another_blog( $domain, $exclude_blog_id = 0 ) {
+    global $wpdb;
+
+    $tables = dm_get_table_names();
+
+    $query = "SELECT * FROM {$tables['domains']} WHERE domain = %s";
+    $params = array( $domain );
+
+    if ( $exclude_blog_id > 0 ) {
+        $query .= " AND blog_id != %d";
+        $params[] = $exclude_blog_id;
+    }
+
+    return $wpdb->get_row( $wpdb->prepare( $query, $params ) );
+}
+
+/**
  * Get domains by blog ID
  *
  * @param int $blog_id Blog ID
@@ -212,6 +261,7 @@ function dm_add_domain( $blog_id, $domain, $active = 0 ) {
 
     if ( $result ) {
         dm_log_action( 'add', $domain, $blog_id );
+        dm_clear_domain_cache( $blog_id );
         return $wpdb->insert_id;
     }
 
@@ -220,16 +270,34 @@ function dm_add_domain( $blog_id, $domain, $active = 0 ) {
 
 /**
  * Update domain mapping
+ * UPDATED: Support changing domain name and blog_id
  *
- * @param string $domain Domain name
+ * @param string $domain Domain name (current)
  * @param int $blog_id Blog ID
  * @param int $active Whether domain is primary (1) or not (0)
+ * @param string $new_domain New domain name (optional)
  * @return bool True on success, false on failure
  */
-function dm_update_domain( $domain, $blog_id, $active ) {
+function dm_update_domain( $domain, $blog_id, $active, $new_domain = null ) {
     global $wpdb;
 
     $tables = dm_get_table_names();
+
+    // If changing domain name
+    if ( $new_domain && $new_domain !== $domain ) {
+        $new_domain = dm_clean_domain( $new_domain );
+
+        // Validate new domain
+        if ( ! dm_validate_domain( $new_domain ) ) {
+            return false;
+        }
+
+        // Check if new domain exists for another blog
+        $existing = dm_domain_exists_for_another_blog( $new_domain, $blog_id );
+        if ( $existing ) {
+            return false;
+        }
+    }
 
     // If setting as primary, reset other domains
     if ( $active ) {
@@ -242,17 +310,30 @@ function dm_update_domain( $domain, $blog_id, $active ) {
         );
     }
 
+    // Prepare update data
+    $data = array(
+        'active' => $active,
+        'blog_id' => $blog_id
+    );
+    $data_format = array( '%d', '%d' );
+
+    if ( $new_domain && $new_domain !== $domain ) {
+        $data['domain'] = $new_domain;
+        $data_format[] = '%s';
+    }
+
     // Update domain
     $result = $wpdb->update(
         $tables['domains'],
-        array( 'active' => $active ),
+        $data,
         array( 'domain' => $domain ),
-        array( '%d' ),
+        $data_format,
         array( '%s' )
     );
 
     if ( $result !== false ) {
-        dm_log_action( 'edit', $domain, $blog_id );
+        dm_log_action( 'edit', $new_domain ?: $domain, $blog_id );
+        dm_clear_domain_cache( $blog_id );
         return true;
     }
 
@@ -286,6 +367,7 @@ function dm_delete_domain( $domain ) {
 
     if ( $result ) {
         dm_log_action( 'delete', $domain, $domain_info->blog_id );
+        dm_clear_domain_cache( $domain_info->blog_id );
         return true;
     }
 
@@ -320,6 +402,27 @@ function dm_get_health_result( $domain ) {
 }
 
 /**
+ * Check if domain has all health checks passing
+ *
+ * @param string $domain Domain name
+ * @return bool True if all health checks pass
+ */
+function dm_is_domain_healthy( $domain ) {
+    $health_result = dm_get_health_result( $domain );
+
+    if ( ! $health_result ) {
+        return false;
+    }
+
+    // Check all three criteria: DNS, SSL, and Accessibility
+    $dns_ok = isset( $health_result['dns_status'] ) && $health_result['dns_status'] === 'success';
+    $ssl_ok = isset( $health_result['ssl_valid'] ) && $health_result['ssl_valid'] === true;
+    $accessible_ok = isset( $health_result['accessible'] ) && $health_result['accessible'] === true;
+
+    return $dns_ok && $ssl_ok && $accessible_ok;
+}
+
+/**
  * Format action name for display
  *
  * @param string $action Action name
@@ -338,4 +441,22 @@ function dm_format_action_name( $action ) {
         default:
             return ucfirst( $action );
     }
+}
+
+// Cache functions
+function dm_get_domains_by_blog_id_cached($blog_id) {
+    $cache_key = 'dm_domains_' . $blog_id;
+    $domains = wp_cache_get($cache_key, 'domain_mapping');
+
+    if (false === $domains) {
+        $domains = dm_get_domains_by_blog_id($blog_id);
+        wp_cache_set($cache_key, $domains, 'domain_mapping', HOUR_IN_SECONDS);
+    }
+
+    return $domains;
+}
+
+// Clear cache function
+function dm_clear_domain_cache($blog_id) {
+    wp_cache_delete('dm_domains_' . $blog_id, 'domain_mapping');
 }

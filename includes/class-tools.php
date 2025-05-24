@@ -585,7 +585,7 @@ class WP_Domain_Mapping_Tools {
      * @param string $domain Domain to check
      * @return array Health check result
      */
-    private function check_domain_health( $domain ) {
+    public function check_domain_health( $domain ) {
         $result = array(
             'domain' => $domain,
             'last_check' => current_time( 'mysql' ),
@@ -899,6 +899,12 @@ class WP_Domain_Mapping_Tools {
             wp_send_json_error( __( 'Invalid security token. Please try again.', 'wp-domain-mapping' ) );
         }
 
+        // 在处理文件之前添加：
+        if ($_FILES['csv_file']['size'] > 5 * 1024 * 1024) {
+            wp_send_json_error(__('File size exceeds 5MB limit.', 'wp-domain-mapping'));
+            return;
+        }
+
         // Check file
         if ( ! isset( $_FILES['csv_file'] ) || $_FILES['csv_file']['error'] != UPLOAD_ERR_OK ) {
             wp_send_json_error( __( 'No file uploaded or upload error.', 'wp-domain-mapping' ) );
@@ -908,6 +914,13 @@ class WP_Domain_Mapping_Tools {
         $has_header = isset( $_POST['has_header'] ) ? (bool) $_POST['has_header'] : false;
         $update_existing = isset( $_POST['update_existing'] ) ? (bool) $_POST['update_existing'] : false;
         $validate_sites = isset( $_POST['validate_sites'] ) ? (bool) $_POST['validate_sites'] : true;
+
+        // 验证文件类型
+        $file_type = wp_check_filetype($_FILES['csv_file']['name']);
+        if (!in_array($file_type['ext'], array('csv', 'txt'))) {
+            wp_send_json_error(__('Only CSV files are allowed.', 'wp-domain-mapping'));
+            return;
+        }
 
         // Open file
         $file = fopen( $_FILES['csv_file']['tmp_name'], 'r' );

@@ -335,7 +335,7 @@ function dm_domain_listing( $rows ) {
                     </td>
                     <td class="column-primary">
                         <?php if ( $row->active == 1 ) : ?>
-                            <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
+                            <span class="dashicons dashicons-yes" style="color: #46b450;"></span>
                             <span class="screen-reader-text"><?php esc_html_e( 'Yes', 'wp-domain-mapping' ); ?></span>
                         <?php else : ?>
                             <span class="dashicons dashicons-no-alt" style="color: #dc3232;"></span>

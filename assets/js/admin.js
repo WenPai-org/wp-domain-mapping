@@ -586,3 +586,156 @@ jQuery(document).ready(function($) {
     // Initialize when document is ready
     initializePage();
 });
+// Domain Mapping Dashboard Widget JavaScript
+jQuery(document).ready(function($) {
+
+    // 健康状态刷新按钮
+    $(document).on('click', '.dm-refresh-health', function(e) {
+        e.preventDefault();
+
+        var $button = $(this);
+        var $healthContent = $button.closest('.dm-health-status').find('.dm-health-content');
+        var blogId = $button.data('blog-id');
+
+        $button.prop('disabled', true);
+        $healthContent.addClass('dm-loading');
+
+        // 旋转图标
+        $button.find('.dashicons').addClass('dashicons-update-spin');
+
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'dm_quick_health_check',
+                blog_id: blogId,
+                nonce: wpDomainMapping.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $healthContent.html(response.data.html);
+
+                    // 显示成功消息
+                    var $notice = $('<div class="notice notice-success is-dismissible"><p>' +
+                                  response.data.message + '</p></div>');
+                    $('#dm_domain_status_widget .inside').prepend($notice);
+
+                    setTimeout(function() {
+                        $notice.fadeOut(function() {
+                            $(this).remove();
+                        });
+                    }, 3000);
+                }
+            },
+            complete: function() {
+                $button.prop('disabled', false);
+                $button.find('.dashicons').removeClass('dashicons-update-spin');
+                $healthContent.removeClass('dm-loading');
+            }
+        });
+    });
+
+    // 检查所有域名健康状态
+    $(document).on('click', '.dm-check-all-health', function(e) {
+        e.preventDefault();
+
+        var $button = $(this);
+        var blogId = $button.data('blog-id');
+        var originalText = $button.html();
+
+        $button.prop('disabled', true).html(
+            '<span class="dashicons dashicons-update dashicons-update-spin"></span> ' +
+            wpDomainMapping.messages.processing
+        );
+
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'dm_quick_health_check',
+                blog_id: blogId,
+                nonce: wpDomainMapping.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    // 刷新健康状态区域
+                    if ($('#dm-widget-health-status').length) {
+                        $('#dm-widget-health-status .dm-health-content').html(response.data.html);
+                    }
+
+                    // 显示成功消息
+                    var $notice = $('<div class="notice notice-success is-dismissible"><p>' +
+                                  response.data.message + '</p></div>');
+                    $('#dm_domain_status_widget .inside').prepend($notice);
+
+                    setTimeout(function() {
+                        $notice.fadeOut(function() {
+                            $(this).remove();
+                        });
+                    }, 3000);
+                } else {
+                    alert(response.data || wpDomainMapping.messages.error);
+                }
+            },
+            error: function() {
+                alert(wpDomainMapping.messages.error);
+            },
+            complete: function() {
+                $button.prop('disabled', false).html(originalText);
+            }
+        });
+    });
+
+    // 自动刷新（可选）
+    if ($('#dm_domain_status_widget').length && $('#dm_domain_status_widget').is(':visible')) {
+        // 每10分钟自动刷新一次
+        var autoRefreshInterval = setInterval(function() {
+            if ($('#dm_domain_status_widget').is(':visible')) {
+                $('.dm-refresh-health').first().trigger('click');
+            }
+        }, 600000); // 10分钟
+
+        // 页面卸载时清除定时器
+        $(window).on('beforeunload', function() {
+            clearInterval(autoRefreshInterval);
+        });
+    }
+
+    // 小工具配置保存
+    $(document).on('submit', '#dm_domain_status_widget form', function(e) {
+        // 配置会自动保存，这里可以添加额外的处理
+        var showHealth = $('#dm_widget_show_health').is(':checked');
+
+        // 如果取消勾选健康状态，隐藏相关区域
+        if (!showHealth) {
+            $('#dm-widget-health-status').fadeOut();
+        } else {
+            $('#dm-widget-health-status').fadeIn();
+        }
+    });
+
+    // 为域名链接添加外部图标
+    $('.dm-domains-list a, .dm-domain-primary a').each(function() {
+        if (!$(this).find('.dashicons-external').length) {
+            $(this).append(' <span class="dashicons dashicons-external" style="font-size: 14px; vertical-align: middle;"></span>');
+        }
+    });
+
+    // 工具提示
+    if ($.fn.tooltip) {
+        $('#dm_domain_status_widget [title]').tooltip({
+            position: {
+                my: 'center bottom-5',
+                at: 'center top',
+                using: function(position, feedback) {
+                    $(this).css(position);
+                    $('<div>')
+                        .addClass('dm-tooltip-arrow')
+                        .addClass(feedback.vertical)
+                        .addClass(feedback.horizontal)
+                        .appendTo(this);
+                }
+            }
+        });
+    }
+});

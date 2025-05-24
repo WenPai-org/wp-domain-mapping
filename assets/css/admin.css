@@ -392,3 +392,32 @@
         display: table-cell;
     }
 }
+
+/* 在文件末尾添加移动端优化 */
+@media screen and (max-width: 600px) {
+    .wp-list-table {
+        font-size: 12px;
+    }
+
+    .column-actions .button {
+        padding: 2px 8px;
+        font-size: 11px;
+    }
+
+    .domain-mapping-card {
+        padding: 15px;
+    }
+}
+
+/* 添加验证消息样式 */
+#domain-validation-message {
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+#domain-validation-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}

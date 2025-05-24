@@ -155,3 +155,20 @@ $domains = isset($domains) ? $domains : array();
         <?php endif; ?>
     </div>
 </div>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    // Make Primary 按钮 AJAX 处理
+    $('.button[href*="action=primary"]').on('click', function(e) {
+        e.preventDefault();
+
+        var $button = $(this);
+        var href = $button.attr('href');
+        var domain = new URLSearchParams(href.split('?')[1]).get('domain');
+
+        $button.prop('disabled', true).text('<?php _e('Processing...', 'wp-domain-mapping'); ?>');
+
+        // 直接访问链接
+        window.location.href = href;
+    });
+});
+</script>

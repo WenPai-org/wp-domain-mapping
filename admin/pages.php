@@ -80,7 +80,7 @@ function dm_render_admin_page() {
                  '</p></div>';
         }
         ?>
-    <div class="card domain-mapping-card">
+
         <!-- Tab Navigation -->
         <div class="domain-mapping-tabs">
             <?php foreach ( $tabs as $tab_key => $tab_label ) : ?>
@@ -110,7 +110,7 @@ function dm_render_admin_page() {
             </div>
         </div>
     </div>
-                </div>
+
     <script>
     function switchTab(tab) {
         // Update URL without reloading
@@ -838,11 +838,60 @@ function dm_render_health_content() {
 }
 
 /**
+ * Check if WP China Yes plugin is active
+ */
+function dm_is_wp_china_yes_active() {
+    if ( ! function_exists( 'is_plugin_active' ) ) {
+        include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+    }
+
+    // Check for common WP China Yes plugin paths
+    $possible_plugins = array(
+        'wp-china-yes/wp-china-yes.php',
+        'wp-china-yes/index.php',
+        'wp-china-yes/main.php'
+    );
+
+    foreach ( $possible_plugins as $plugin ) {
+        if ( is_plugin_active( $plugin ) ) {
+            return true;
+        }
+    }
+
+    // Also check if the WP_CHINA_YES constant is defined
+    return defined( 'WP_CHINA_YES' );
+}
+
+/**
  * Render import/export tab content
  */
 function dm_render_import_export_content() {
+    $wp_china_yes_active = dm_is_wp_china_yes_active();
     ?>
-    <div class="card domain-mapping-card">
+
+    <?php if ( ! $wp_china_yes_active ) : ?>
+        <div class="notice notice-info inline">
+            <p>
+              <?php
+              $wpcy_installed = class_exists('WP_China_Yes'); // 检查是否安装了文派叶子插件
+              $wpcy_link = $wpcy_installed
+                  ? admin_url('admin.php?page=wp-china-yes')
+                  : 'https://wpcy.com';
+
+              printf(
+                  __('Install the %s high-performance component to use batch domain import/export.', 'wp-domain-mapping'),
+                  sprintf(
+                      '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+                      esc_url($wpcy_link),
+                      __('文派叶子 🍃（WPCY.COM）', 'wp-domain-mapping')
+                  )
+              );
+              ?>
+            </p>
+        </div>
+    <?php endif; ?>
+
+    <div class="card domain-mapping-card" <?php echo ! $wp_china_yes_active ? 'style="opacity: 0.5; pointer-events: none;"' : ''; ?>>
         <h2><?php _e( 'Export Domain Mappings', 'wp-domain-mapping' ); ?></h2>
         <p><?php _e( 'Export all domain mappings to a CSV file.', 'wp-domain-mapping' ); ?></p>
 
@@ -852,24 +901,24 @@ function dm_render_import_export_content() {
 
             <div style="margin-bottom: 15px;">
                 <label>
-                    <input type="checkbox" name="include_header" value="1" checked>
+                    <input type="checkbox" name="include_header" value="1" checked <?php echo ! $wp_china_yes_active ? 'disabled' : ''; ?>>
                     <?php _e( 'Include column headers', 'wp-domain-mapping' ); ?>
                 </label>
             </div>
 
             <div style="margin-bottom: 15px;">
                 <label for="blog_id_filter"><?php _e( 'Export for specific site ID (optional):', 'wp-domain-mapping' ); ?></label>
-                <input type="number" id="blog_id_filter" name="blog_id_filter" min="1" class="regular-text">
+                <input type="number" id="blog_id_filter" name="blog_id_filter" min="1" class="regular-text" <?php echo ! $wp_china_yes_active ? 'disabled' : ''; ?>>
                 <p class="description"><?php _e( 'Leave empty to export all domains.', 'wp-domain-mapping' ); ?></p>
             </div>
 
             <p>
-                <input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Export to CSV', 'wp-domain-mapping' ); ?>">
+                <input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Export to CSV', 'wp-domain-mapping' ); ?>" <?php echo ! $wp_china_yes_active ? 'disabled' : ''; ?>>
             </p>
         </form>
     </div>
 
-    <div class="card domain-mapping-card">
+    <div class="card domain-mapping-card" <?php echo ! $wp_china_yes_active ? 'style="opacity: 0.5; pointer-events: none;"' : ''; ?>>
         <h2><?php _e( 'Import Domain Mappings', 'wp-domain-mapping' ); ?></h2>
         <p><?php _e( 'Import domain mappings from a CSV file.', 'wp-domain-mapping' ); ?></p>
 
@@ -879,7 +928,7 @@ function dm_render_import_export_content() {
 
             <div style="margin-bottom: 15px;">
                 <label for="csv_file"><?php _e( 'CSV File:', 'wp-domain-mapping' ); ?></label><br>
-                <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                <input type="file" id="csv_file" name="csv_file" accept=".csv" required <?php echo ! $wp_china_yes_active ? 'disabled' : ''; ?>>
                 <p class="description">
                     <?php _e( 'The CSV file should have the columns: blog_id, domain, active (1 or 0).', 'wp-domain-mapping' ); ?><br>
                     <?php _e( 'Example: 1,example.com,1', 'wp-domain-mapping' ); ?>
@@ -888,14 +937,14 @@ function dm_render_import_export_content() {
 
             <div style="margin-bottom: 15px;">
                 <label>
-                    <input type="checkbox" name="has_header" value="1" checked>
+                    <input type="checkbox" name="has_header" value="1" checked <?php echo ! $wp_china_yes_active ? 'disabled' : ''; ?>>
                     <?php _e( 'First row contains column headers', 'wp-domain-mapping' ); ?>
                 </label>
             </div>
 
             <div style="margin-bottom: 15px;">
                 <label>
-                    <input type="checkbox" name="update_existing" value="1" checked>
+                    <input type="checkbox" name="update_existing" value="1" checked <?php echo ! $wp_china_yes_active ? 'disabled' : ''; ?>>
                     <?php _e( 'Update existing mappings', 'wp-domain-mapping' ); ?>
                 </label>
                 <p class="description"><?php _e( 'If unchecked, will skip domains that already exist.', 'wp-domain-mapping' ); ?></p>
@@ -903,14 +952,14 @@ function dm_render_import_export_content() {
 
             <div style="margin-bottom: 15px;">
                 <label>
-                    <input type="checkbox" name="validate_sites" value="1" checked>
+                    <input type="checkbox" name="validate_sites" value="1" checked <?php echo ! $wp_china_yes_active ? 'disabled' : ''; ?>>
                     <?php _e( 'Validate site IDs', 'wp-domain-mapping' ); ?>
                 </label>
                 <p class="description"><?php _e( 'If checked, will only import domains for existing sites.', 'wp-domain-mapping' ); ?></p>
             </div>
 
             <p>
-                <input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Import from CSV', 'wp-domain-mapping' ); ?>">
+                <input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Import from CSV', 'wp-domain-mapping' ); ?>" <?php echo ! $wp_china_yes_active ? 'disabled' : ''; ?>>
             </p>
         </form>
 
@@ -962,6 +1011,7 @@ function dm_render_import_export_content() {
         </ul>
     </div>
 
+    <?php if ( $wp_china_yes_active ) : ?>
     <script type="text/javascript">
     jQuery(document).ready(function($) {
         $('#domain-mapping-import-form').on('submit', function(e) {
@@ -1047,6 +1097,7 @@ function dm_render_import_export_content() {
         });
     });
     </script>
+    <?php endif; ?>
     <?php
 }
 

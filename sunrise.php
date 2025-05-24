@@ -29,8 +29,11 @@ global $wpdb, $current_blog, $current_site;
 $domain_mapping_table = $wpdb->base_prefix . 'domain_mapping';
 
 // Check for the current domain in the domain mapping table
-$domain = $wpdb->escape($_SERVER['HTTP_HOST']);
-$blog_id = $wpdb->get_var("SELECT blog_id FROM {$domain_mapping_table} WHERE domain = '{$domain}' LIMIT 1");
+$domain = sanitize_text_field($_SERVER['HTTP_HOST']);
+$blog_id = $wpdb->get_var($wpdb->prepare(
+    "SELECT blog_id FROM {$domain_mapping_table} WHERE domain = %s LIMIT 1",
+    $domain
+));
 
 // If we found a mapped domain, override current_blog
 if (!empty($blog_id)) {

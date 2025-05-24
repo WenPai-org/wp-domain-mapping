@@ -449,7 +449,7 @@ class WP_Domain_Mapping_Core {
 
         $protocol = is_ssl() ? 'https://' : 'http://';
         $hash = $this->get_hash();
-        $key = md5( time() );
+        $key = wp_generate_password(32, true, true);
 
         $wpdb->insert(
             $this->tables['logins'],
@@ -474,6 +474,10 @@ class WP_Domain_Mapping_Core {
      */
     public function remote_login_js() {
         global $current_blog, $current_user, $wpdb;
+
+        if (strtotime($details->t) < (time() - 300)) { 
+            wp_die(__('Login key expired', 'wp-domain-mapping'));
+        }
 
         if ( 0 == get_site_option( 'dm_remote_login' ) ) {
             return;
