@@ -3,7 +3,7 @@
  * Plugin Name: WP Domain Mapping
  * Plugin URI: https://wenpai.org/plugins/wp-domain-mapping/
  * Description: Map any site on a WordPress website to another domain with enhanced management features.
- * Version: 2.1.0
+ * Version: 2.2.0
  * Author: WPDomain.com
  * Author URI: https://wpdomain.com/
  * Network: true
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'WP_DOMAIN_MAPPING_VERSION', '2.1.0' );
+define( 'WP_DOMAIN_MAPPING_VERSION', '2.2.0' );
 define( 'WP_DOMAIN_MAPPING_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_DOMAIN_MAPPING_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WP_DOMAIN_MAPPING_BASENAME', plugin_basename( __FILE__ ) );
