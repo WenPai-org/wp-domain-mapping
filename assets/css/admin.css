@@ -1,4 +1,4 @@
-/* WP Domain Mapping Admin Styles */
+/* WP Domain Mapping Admin Styles - Optimized Layout */
 
 /* Main cards */
 .domain-mapping-card {
@@ -9,9 +9,14 @@
     margin-top: 20px;
     padding: 20px;
     box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    overflow: hidden;
 }
 
-/* Tabs */
+/* Tabs - Now inside the main card */
+.domain-mapping-wrapper {
+    margin-bottom: 20px;
+}
+
 .domain-mapping-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -40,8 +45,21 @@
     border-bottom-color: #dcdcde;
 }
 
+/* Tab Content */
 .domain-mapping-content {
-    flex: 1;
+    background: #fff;
+    min-height: 400px;
+}
+
+.domain-mapping-content h2:first-child {
+    margin-top: 0;
+}
+
+.domain-mapping-content h3 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: #1d2327;
+    font-size: 16px;
 }
 
 /* Search form */
@@ -50,7 +68,11 @@
     flex-wrap: wrap;
     align-items: flex-end;
     gap: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 .search-form-field {
@@ -62,6 +84,7 @@
 .search-form-field label {
     margin-bottom: 5px;
     font-weight: 500;
+    color: #1d2327;
 }
 
 .search-form-submit {
@@ -72,9 +95,10 @@
 
 /* Tables */
 .tablenav {
-    margin: 10px 0;
+    margin: 15px 0;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .tablenav-pages {
@@ -92,23 +116,32 @@
     font-weight: 400;
     text-align: center;
     text-decoration: none;
+    border-radius: 3px;
+    margin: 0 2px;
 }
 
 .tablenav-pages span.current {
-    background: #007cba;
+    background: #2271b1;
     color: #fff;
-    border-color: #007cba;
+    border-color: #2271b1;
+}
+
+.tablenav-pages a:hover {
+    background: #2271b1;
+    color: #fff;
 }
 
 .displaying-num {
     margin-left: 10px;
-    color: #555;
+    color: #646970;
+    font-size: 13px;
 }
 
 .domains-table th,
 .logs-table th,
 .domains-health-table th {
     font-weight: 600;
+    color: #1d2327;
 }
 
 .column-site-id {
@@ -152,8 +185,8 @@
     background: #2271b1;
     color: #fff;
     font-weight: 500;
-    padding: 0 5px;
-    border-radius: 3px;
+    padding: 2px 8px;
+    border-radius: 4px;
     font-size: 12px;
 }
 
@@ -161,6 +194,8 @@
 .form-table th {
     width: 200px;
     padding: 15px 10px 15px 0;
+    font-weight: 600;
+    color: #1d2327;
 }
 
 .form-table td {
@@ -168,16 +203,23 @@
 }
 
 .description {
-    color: #666;
+    color: #646970;
     font-size: 13px;
     margin-top: 4px;
+    line-height: 1.4;
+}
+
+.regular-text {
+    width: 25em;
+    max-width: 100%;
 }
 
 /* Notices */
 .notice {
     padding: 8px 12px;
-    border-radius: 3px;
+    border-radius: 4px;
     margin: 5px 0 15px;
+    border-left: 4px solid #ddd;
 }
 
 .notice p {
@@ -187,63 +229,85 @@
 
 .notice-success {
     background-color: #f0f9eb;
-    border-left: 4px solid #46b450;
+    border-left-color: #46b450;
 }
 
 .notice-error {
     background-color: #fef0f0;
-    border-left: 4px solid #dc3232;
+    border-left-color: #dc3232;
 }
 
 .notice-warning {
     background-color: #fff8e5;
-    border-left: 4px solid #ffb900;
+    border-left-color: #ffb900;
 }
 
 .notice-info {
     background-color: #f0f6fa;
-    border-left: 4px solid #00a0d2;
+    border-left-color: #00a0d2;
+}
+
+.notice.inline {
+    display: block;
+    margin: 15px 0;
 }
 
 /* DNS instructions */
 .dns-instructions {
-    margin-top: 10px;
+    margin-top: 15px;
+}
+
+.dns-instructions h3 {
+    color: #1d2327;
+    margin-top: 25px;
+    margin-bottom: 10px;
 }
 
 .dns-example {
-    background: #f9f9f9;
-    border: 1px solid #e5e5e5;
-    border-radius: 3px;
+    background: #f6f7f7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     padding: 15px;
     margin: 15px 0;
 }
 
 .dns-example h4 {
     margin-top: 0;
+    margin-bottom: 10px;
+    color: #1d2327;
+}
+
+.dns-example table {
+    margin-top: 10px;
 }
 
 .dns-tips {
     list-style: disc;
     margin-left: 20px;
+    line-height: 1.6;
 }
 
 .dns-tips li {
     margin-bottom: 8px;
+    color: #50575e;
 }
 
 /* Status indicators */
 .dashicons-yes-alt,
-.dashicons-no-alt {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
+.dashicons-no-alt,
+.dashicons-warning,
+.dashicons-minus {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
 }
 
 /* Logs table styles */
 .logs-filter {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    gap: 10px;
 }
 
 .logs-table .column-user,
@@ -261,41 +325,49 @@
 
 .log-action {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 3px 8px;
     border-radius: 3px;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: uppercase;
 }
 
 .log-action-add {
-    background-color: #dff0d8;
-    color: #3c763d;
+    background-color: #d1e7dd;
+    color: #0f5132;
 }
 
 .log-action-edit {
-    background-color: #d9edf7;
-    color: #31708f;
+    background-color: #cce7ff;
+    color: #004085;
 }
 
 .log-action-delete {
-    background-color: #f2dede;
-    color: #a94442;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.log-action-import {
+    background-color: #fff3cd;
+    color: #856404;
 }
 
 /* Health details */
 .health-details-content {
     padding: 15px;
     background: #f9f9f9;
-    border-radius: 3px;
+    border-radius: 4px;
+    margin-top: 10px;
 }
 
 .health-details-content h4 {
     margin-top: 0;
+    color: #1d2327;
 }
 
 /* Progress bar */
 .progress-bar-outer {
-    background-color: #f0f0f1;
+    background-color: #e9ecef;
     border-radius: 4px;
     height: 20px;
     width: 100%;
@@ -304,18 +376,30 @@
 }
 
 .progress-bar-inner {
-    background-color: #2271b1;
+    background: linear-gradient(90deg, #2271b1 0%, #72aee6 100%);
     height: 100%;
     width: 0%;
     transition: width 0.3s ease;
+    border-radius: 4px 0 0 4px;
 }
 
 .progress-text {
     text-align: center;
     font-weight: 500;
+    color: #1d2327;
+    margin-top: 5px;
 }
 
 /* Import/Export specific */
+.export-section,
+.import-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
 .import-summary,
 .import-details {
     margin-top: 15px;
@@ -337,11 +421,414 @@
     background-color: #fff8e5;
 }
 
-/* Responsive */
+/* Buttons */
+.button {
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 4px;
+    border: 1px solid;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 2.15384615;
+    margin: 0;
+    padding: 0 10px;
+    text-align: center;
+    white-space: nowrap;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.button-primary {
+    background: #2271b1;
+    border-color: #2271b1;
+    color: #fff;
+}
+
+.button-primary:hover,
+.button-primary:focus {
+    background: #135e96;
+    border-color: #135e96;
+    color: #fff;
+}
+
+.button-secondary {
+    background: #f6f7f7;
+    border-color: #dcdcde;
+    color: #50575e;
+}
+
+.button-secondary:hover,
+.button-secondary:focus {
+    background: #f0f0f1;
+    border-color: #8c8f94;
+    color: #1d2327;
+}
+
+.button-small {
+    font-size: 11px;
+    height: auto;
+    line-height: 1.5;
+    padding: 4px 8px;
+}
+
+.button:disabled,
+.button[disabled] {
+    background: #f6f7f7 !important;
+    border-color: #dcdcde !important;
+    color: #a7aaad !important;
+    cursor: default;
+}
+
+/* Health check specific buttons */
+.check-domain-health {
+    font-size: 11px;
+    padding: 4px 8px;
+    line-height: 1.4;
+}
+
+/* Table row hover effects */
+.wp-list-table tbody tr:hover {
+    background-color: #f6f7f7;
+}
+
+.wp-list-table tbody tr.hover {
+    background-color: #f0f6fa;
+}
+
+/* Bulk actions */
+.bulkactions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.bulkactions select {
+    margin-right: 5px;
+}
+
+/* Row actions */
+.row-actions {
+    visibility: hidden;
+    padding: 2px 0 0;
+    color: #646970;
+}
+
+.wp-list-table tbody tr:hover .row-actions {
+    visibility: visible;
+}
+
+.row-actions span {
+    display: inline;
+}
+
+.row-actions a {
+    color: #2271b1;
+    text-decoration: none;
+}
+
+.row-actions a:hover {
+    color: #135e96;
+}
+
+/* Dashboard Widget Styles */
+.dm-dashboard-widget {
+    padding: 0;
+}
+
+.dm-dashboard-widget > div {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.dm-dashboard-widget > div:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.dm-dashboard-widget h4 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dm-domain-primary {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dm-domain-primary a {
+    text-decoration: none;
+    color: #2271b1;
+}
+
+.dm-domain-primary a:hover {
+    color: #135e96;
+    text-decoration: underline;
+}
+
+.dm-no-primary {
+    color: #646970;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dm-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    text-align: center;
+}
+
+.dm-stat {
+    background: #f0f0f1;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.dm-stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 600;
+    color: #2271b1;
+    line-height: 1;
+}
+
+.dm-stat-label {
+    display: block;
+    font-size: 11px;
+    color: #646970;
+    margin-top: 5px;
+}
+
+.dm-domains-list ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dm-domains-list li {
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.dm-domains-list a {
+    text-decoration: none;
+    color: #50575e;
+}
+
+.dm-domains-list a:hover {
+    color: #2271b1;
+}
+
+.dm-badge-primary {
+    background: #2271b1;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: auto;
+}
+
+.dm-health-status {
+    position: relative;
+}
+
+.dm-refresh-health {
+    padding: 2px 4px !important;
+    min-height: 24px !important;
+    line-height: 1 !important;
+}
+
+.dm-refresh-health .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.dm-health-good {
+    color: #46b450;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+}
+
+.dm-health-issues {
+    background: #fcf0f1;
+    border: 1px solid #f0c4c6;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.dm-issue-item {
+    margin-bottom: 5px;
+}
+
+.dm-issue-item:last-child {
+    margin-bottom: 0;
+}
+
+.dm-issue-list {
+    color: #d63638;
+    font-size: 12px;
+}
+
+.dm-last-check {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #646970;
+    font-style: italic;
+}
+
+.dm-dns-info code {
+    background: #f0f0f1;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 12px;
+}
+
+.dm-activity-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dm-activity-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f1;
+    font-size: 12px;
+}
+
+.dm-activity-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.dm-activity-action {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+.dm-action-add {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.dm-action-edit {
+    background-color: #d9edf7;
+    color: #31708f;
+}
+
+.dm-action-delete {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+.dm-activity-domain {
+    font-weight: 500;
+    color: #1d2327;
+}
+
+.dm-activity-meta {
+    display: block;
+    color: #646970;
+    margin-top: 2px;
+}
+
+.dm-quick-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.dm-quick-actions .button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.dm-quick-actions .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 1;
+}
+
+.dm-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.dm-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f0f0f1;
+    border-top-color: #2271b1;
+    border-radius: 50%;
+    animation: dm-spin 1s linear infinite;
+}
+
+@keyframes dm-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive design */
 @media screen and (max-width: 782px) {
+    .domain-mapping-tabs {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .domain-mapping-tab {
+        width: 100%;
+        text-align: left;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        border: 1px solid #ddd;
+    }
+
+    .domain-mapping-tab.active {
+        border-color: #2271b1;
+        border-left: 4px solid #2271b1;
+    }
+
+    .domain-mapping-tab.active::after {
+        display: none;
+    }
+
+    .domain-mapping-content {
+        padding: 15px;
+    }
+
     .search-form {
         flex-direction: column;
         align-items: stretch;
+        padding: 15px;
     }
 
     .search-form-field {
@@ -353,9 +840,11 @@
         max-width: 100%;
         width: auto;
     }
+
     .form-table th {
         width: 100%;
         display: block;
+        padding-bottom: 5px;
     }
 
     .form-table td {
@@ -363,20 +852,25 @@
         padding: 0 0 15px;
     }
 
-    .domain-mapping-tabs {
+    .dm-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+    }
+
+    .dm-stat {
+        padding: 8px 5px;
+    }
+
+    .dm-stat-value {
+        font-size: 20px;
+    }
+
+    .dm-quick-actions {
         flex-direction: column;
     }
 
-    .domain-mapping-tab {
+    .dm-quick-actions .button {
         width: 100%;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-        border-radius: 0;
-    }
-
-    .domain-mapping-tab.active {
-        border-bottom: 1px solid #007cba;
-        border-left: 4px solid #007cba;
     }
 
     /* Hide less important columns on mobile */
@@ -391,9 +885,19 @@
     .wp-list-table td.column-actions {
         display: table-cell;
     }
+
+    .tablenav {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .tablenav-pages {
+        margin-left: 0;
+        text-align: center;
+    }
 }
 
-/* 在文件末尾添加移动端优化 */
 @media screen and (max-width: 600px) {
     .wp-list-table {
         font-size: 12px;
@@ -405,11 +909,24 @@
     }
 
     .domain-mapping-card {
+        margin-top: 15px;
+    }
+
+    .domain-mapping-content {
         padding: 15px;
     }
 }
 
-/* 添加验证消息样式 */
+/* Widget specific styles */
+#dm_domain_status_widget .postbox-header {
+    cursor: move;
+}
+
+#dm_domain_status_widget.closed .inside {
+    display: none;
+}
+
+/* Domain validation feedback */
 #domain-validation-message {
     margin-top: 5px;
     padding: 5px;
@@ -420,4 +937,100 @@
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+}
+
+#domain-validation-message.success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+}
+
+/* Animation utilities */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Accessibility improvements */
+.screen-reader-text {
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute !important;
+    width: 1px;
+    word-wrap: normal !important;
+}
+
+/* Focus styles */
+.domain-mapping-tab:focus,
+.button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    box-shadow: 0 0 0 2px #2271b1;
+    outline: none;
+}
+
+/* Loading states */
+.button.loading {
+    position: relative;
+    color: transparent;
+}
+
+.button.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: dm-spin 1s linear infinite;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .domain-mapping-tab.active {
+        border-width: 2px;
+    }
+
+    .button-primary {
+        border-width: 2px;
+    }
+
+    .notice {
+        border-left-width: 6px;
+    }
 }

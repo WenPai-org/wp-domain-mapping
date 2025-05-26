@@ -105,7 +105,7 @@ class WP_Domain_Mapping_Core {
     }
 
     /**
-     * Create required database tables
+     * Create required database tables - OPTIMIZED
      */
     public function create_tables() {
         global $wpdb;
@@ -127,7 +127,7 @@ class WP_Domain_Mapping_Core {
         $created = 0;
         $charset_collate = $wpdb->get_charset_collate();
 
-        // Create domain_mapping table
+        // Create domain_mapping table - IMPROVED INDEXES
         if ( $wpdb->get_var( "SHOW TABLES LIKE '{$this->tables['domains']}'" ) != $this->tables['domains'] ) {
             $wpdb->query( "CREATE TABLE IF NOT EXISTS `{$this->tables['domains']}` (
                 `id` bigint(20) NOT NULL auto_increment,
@@ -135,24 +135,29 @@ class WP_Domain_Mapping_Core {
                 `domain` varchar(255) NOT NULL,
                 `active` tinyint(4) default '1',
                 PRIMARY KEY  (`id`),
-                KEY `blog_id` (`blog_id`,`domain`,`active`)
+                UNIQUE KEY `domain` (`domain`),
+                KEY `blog_id` (`blog_id`),
+                KEY `blog_active` (`blog_id`, `active`),
+                KEY `active_domain` (`active`, `domain`)
             ) $charset_collate;" );
             $created = 1;
         }
 
-        // Create domain_mapping_logins table
+        // Create domain_mapping_logins table - IMPROVED INDEXES
         if ( $wpdb->get_var( "SHOW TABLES LIKE '{$this->tables['logins']}'" ) != $this->tables['logins'] ) {
             $wpdb->query( "CREATE TABLE IF NOT EXISTS `{$this->tables['logins']}` (
                 `id` varchar(32) NOT NULL,
                 `user_id` bigint(20) NOT NULL,
                 `blog_id` bigint(20) NOT NULL,
                 `t` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-                PRIMARY KEY  (`id`)
+                PRIMARY KEY  (`id`),
+                KEY `user_blog` (`user_id`, `blog_id`),
+                KEY `timestamp` (`t`)
             ) $charset_collate;" );
             $created = 1;
         }
 
-        // Create domain_mapping_logs table
+        // Create domain_mapping_logs table - IMPROVED INDEXES
         if ( $wpdb->get_var( "SHOW TABLES LIKE '{$this->tables['logs']}'" ) != $this->tables['logs'] ) {
             $wpdb->query( "CREATE TABLE IF NOT EXISTS `{$this->tables['logs']}` (
                 `id` bigint(20) NOT NULL auto_increment,
@@ -161,7 +166,11 @@ class WP_Domain_Mapping_Core {
                 `domain` varchar(255) NOT NULL,
                 `blog_id` bigint(20) NOT NULL,
                 `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
-                PRIMARY KEY (`id`)
+                PRIMARY KEY (`id`),
+                KEY `blog_timestamp` (`blog_id`, `timestamp`),
+                KEY `user_action` (`user_id`, `action`),
+                KEY `domain_action` (`domain`, `action`),
+                KEY `timestamp` (`timestamp`)
             ) $charset_collate;" );
             $created = 1;
         }
@@ -176,7 +185,7 @@ class WP_Domain_Mapping_Core {
             $tables_created = true;
         }
     }
-
+    
     /**
      * Delete blog domain mappings when a blog is deleted
      *
@@ -472,109 +481,115 @@ class WP_Domain_Mapping_Core {
     /**
      * Handle remote login JS
      */
-    public function remote_login_js() {
-        global $current_blog, $current_user, $wpdb;
+     public function remote_login_js() {
+         global $current_blog, $current_user, $wpdb;
 
-        if (strtotime($details->t) < (time() - 300)) { 
-            wp_die(__('Login key expired', 'wp-domain-mapping'));
-        }
+         if ( 0 == get_site_option( 'dm_remote_login' ) ) {
+             return;
+         }
 
-        if ( 0 == get_site_option( 'dm_remote_login' ) ) {
-            return;
-        }
+         $hash = $this->get_hash();
+         $protocol = is_ssl() ? 'https://' : 'http://';
 
-        $hash = $this->get_hash();
-        $protocol = is_ssl() ? 'https://' : 'http://';
+         if ( $_GET['dm'] == $hash ) {
+             if ( $_GET['action'] == 'load' ) {
+                 if ( ! is_user_logged_in() ) {
+                     exit;
+                 }
 
-        if ( $_GET['dm'] == $hash ) {
-            if ( $_GET['action'] == 'load' ) {
-                if ( ! is_user_logged_in() ) {
-                    exit;
-                }
+                 $key = md5( time() . mt_rand() );
 
-                $key = md5( time() . mt_rand() );
+                 $wpdb->insert(
+                     $this->tables['logins'],
+                     array(
+                         'id' => $key,
+                         'user_id' => $current_user->ID,
+                         'blog_id' => $_GET['blogid'],
+                         't' => current_time( 'mysql' )
+                     ),
+                     array( '%s', '%d', '%d', '%s' )
+                 );
 
-                $wpdb->insert(
-                    $this->tables['logins'],
-                    array(
-                        'id' => $key,
-                        'user_id' => $current_user->ID,
-                        'blog_id' => $_GET['blogid'],
-                        't' => current_time( 'mysql' )
-                    ),
-                    array( '%s', '%d', '%d', '%s' )
-                );
+                 $url = add_query_arg(
+                     array(
+                         'action' => 'login',
+                         'dm' => $hash,
+                         'k' => $key,
+                         't' => mt_rand()
+                     ),
+                     $_GET['back']
+                 );
 
-                $url = add_query_arg(
-                    array(
-                        'action' => 'login',
-                        'dm' => $hash,
-                        'k' => $key,
-                        't' => mt_rand()
-                    ),
-                    $_GET['back']
-                );
+                 echo "window.location = '" . esc_url( $url ) . "'";
+                 exit;
 
-                echo "window.location = '" . esc_url( $url ) . "'";
-                exit;
+             } elseif ( $_GET['action'] == 'login' ) {
+                 $details = $wpdb->get_row( $wpdb->prepare(
+                     "SELECT * FROM {$this->tables['logins']} WHERE id = %s AND blog_id = %d",
+                     $_GET['k'], $wpdb->blogid
+                 ));
 
-            } elseif ( $_GET['action'] == 'login' ) {
-                $details = $wpdb->get_row( $wpdb->prepare(
-                    "SELECT * FROM {$this->tables['logins']} WHERE id = %s AND blog_id = %d",
-                    $_GET['k'], $wpdb->blogid
-                ));
+                 if ( $details ) {
+                     // FIX: Add time validation that was missing
+                     if ( strtotime( $details->t ) < ( time() - 300 ) ) {
+                         wp_die( __( 'Login key expired', 'wp-domain-mapping' ) );
+                     }
 
-                if ( $details ) {
-                    if ( $details->blog_id == $wpdb->blogid ) {
-                        $wpdb->delete(
-                            $this->tables['logins'],
-                            array( 'id' => $_GET['k'] ),
-                            array( '%s' )
-                        );
+                     if ( $details->blog_id == $wpdb->blogid ) {
+                         $wpdb->delete(
+                             $this->tables['logins'],
+                             array( 'id' => $_GET['k'] ),
+                             array( '%s' )
+                         );
 
-                        $wpdb->query( $wpdb->prepare(
-                            "DELETE FROM {$this->tables['logins']} WHERE t < %s",
-                            date( 'Y-m-d H:i:s', time() - 120 )
-                        ));
+                         $wpdb->query( $wpdb->prepare(
+                             "DELETE FROM {$this->tables['logins']} WHERE t < %s",
+                             date( 'Y-m-d H:i:s', time() - 120 )
+                         ));
 
-                        wp_set_auth_cookie( $details->user_id );
+                         wp_set_auth_cookie( $details->user_id );
 
-                        wp_redirect( remove_query_arg(
-                            array( 'dm', 'action', 'k', 't' ),
-                            $protocol . $current_blog->domain . $_SERVER['REQUEST_URI']
-                        ));
-                        exit;
+                         wp_redirect( remove_query_arg(
+                             array( 'dm', 'action', 'k', 't' ),
+                             $protocol . $current_blog->domain . $_SERVER['REQUEST_URI']
+                         ));
+                         exit;
 
-                    } else {
-                        wp_die( esc_html__( "Incorrect or out of date login key", 'wp-domain-mapping' ) );
-                    }
-                } else {
-                    wp_die( esc_html__( "Unknown login key", 'wp-domain-mapping' ) );
-                }
+                     } else {
+                         wp_die( esc_html__( "Incorrect or out of date login key", 'wp-domain-mapping' ) );
+                     }
+                 } else {
+                     wp_die( esc_html__( "Unknown login key", 'wp-domain-mapping' ) );
+                 }
 
-            } elseif ( $_GET['action'] == 'logout' ) {
-                $details = $wpdb->get_row( $wpdb->prepare(
-                    "SELECT * FROM {$this->tables['logins']} WHERE id = %s AND blog_id = %d",
-                    $_GET['k'], $_GET['blogid']
-                ));
+             } elseif ( $_GET['action'] == 'logout' ) {
+                 $details = $wpdb->get_row( $wpdb->prepare(
+                     "SELECT * FROM {$this->tables['logins']} WHERE id = %s AND blog_id = %d",
+                     $_GET['k'], $_GET['blogid']
+                 ));
 
-                if ( $details ) {
-                    $wpdb->delete(
-                        $this->tables['logins'],
-                        array( 'id' => $_GET['k'] ),
-                        array( '%s' )
-                    );
+                 if ( $details ) {
+                     // FIX: Add time validation for logout too
+                     if ( strtotime( $details->t ) < ( time() - 300 ) ) {
+                         wp_die( __( 'Logout key expired', 'wp-domain-mapping' ) );
+                     }
 
-                    $blog = get_blog_details( $_GET['blogid'] );
-                    wp_clear_auth_cookie();
-                    wp_redirect( trailingslashit( $blog->siteurl ) . "wp-login.php?loggedout=true" );
-                    exit;
-                } else {
-                    wp_die( esc_html__( "Unknown logout key", 'wp-domain-mapping' ) );
-                }
-            }
-        }
-    }
+                     $wpdb->delete(
+                         $this->tables['logins'],
+                         array( 'id' => $_GET['k'] ),
+                         array( '%s' )
+                     );
+
+                     $blog = get_blog_details( $_GET['blogid'] );
+                     wp_clear_auth_cookie();
+                     wp_redirect( trailingslashit( $blog->siteurl ) . "wp-login.php?loggedout=true" );
+                     exit;
+                 } else {
+                     wp_die( esc_html__( "Unknown logout key", 'wp-domain-mapping' ) );
+                 }
+             }
+         }
+     }
 
     /**
      * Add JS loader for remote login

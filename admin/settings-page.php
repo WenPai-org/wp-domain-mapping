@@ -358,24 +358,44 @@ settings_errors( 'dm_settings' );
                 </tr>
                 <tr>
                     <td>
-                        <?php if ( ! defined( 'COOKIE_DOMAIN' ) ) : ?>
+                        <?php
+                        // Use the improved COOKIE_DOMAIN check function from pages.php
+                        $cookie_domain_status = dm_check_cookie_domain_status();
+
+                        if ($cookie_domain_status['is_optimal']): ?>
                             <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
-                        <?php else : ?>
+                        <?php elseif ($cookie_domain_status['has_warning']): ?>
+                            <span class="dashicons dashicons-warning" style="color: #f56e28;"></span>
+                        <?php else: ?>
                             <span class="dashicons dashicons-no-alt" style="color: #dc3232;"></span>
                         <?php endif; ?>
                     </td>
-                    <td><?php esc_html_e( 'COOKIE_DOMAIN', 'wp-domain-mapping' ); ?></td>
+                    <td><?php esc_html_e('COOKIE_DOMAIN', 'wp-domain-mapping'); ?></td>
                     <td>
-                        <?php if ( ! defined( 'COOKIE_DOMAIN' ) ) : ?>
-                            <?php esc_html_e( 'Not defined (correct)', 'wp-domain-mapping' ); ?>
-                        <?php else : ?>
-                            <?php
-                            printf(
-                                /* translators: %s: COOKIE_DOMAIN constant value */
-                                esc_html__( 'Defined as: %s - remove this from wp-config.php', 'wp-domain-mapping' ),
-                                '<code>' . esc_html( COOKIE_DOMAIN ) . '</code>'
-                            );
-                            ?>
+                        <?php if ($cookie_domain_status['is_optimal']): ?>
+                            <span style="color: #46b450;">
+                                <?php echo esc_html($cookie_domain_status['message']); ?>
+                            </span>
+                        <?php elseif ($cookie_domain_status['has_warning']): ?>
+                            <span style="color: #f56e28;">
+                                <?php echo esc_html($cookie_domain_status['message']); ?>
+                            </span>
+                            <br><small style="color: #666;">
+                                <?php esc_html_e('This may cause login issues on mapped domains. Consider removing the COOKIE_DOMAIN definition from wp-config.php.', 'wp-domain-mapping'); ?>
+                            </small>
+                        <?php else: ?>
+                            <span style="color: #dc3232;">
+                                <?php echo esc_html($cookie_domain_status['message']); ?>
+                            </span>
+                            <br><small style="color: #666;">
+                                <?php esc_html_e('Remove the define(\'COOKIE_DOMAIN\', ...) line from wp-config.php to enable dynamic cookie domain handling.', 'wp-domain-mapping'); ?>
+                            </small>
+                        <?php endif; ?>
+
+                        <?php if (defined('WP_DEBUG') && WP_DEBUG && !empty($cookie_domain_status['debug_info'])): ?>
+                            <br><small style="color: #999; font-style: italic;">
+                                <?php echo esc_html($cookie_domain_status['debug_info']); ?>
+                            </small>
                         <?php endif; ?>
                     </td>
                 </tr>

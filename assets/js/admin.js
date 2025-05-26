@@ -33,11 +33,11 @@ jQuery(document).ready(function($) {
             return false;
         }
 
-        // Basic domain format validation
-        var domainPattern = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+        // Enhanced domain format validation - more flexible validation
+        var domainPattern = /^[a-zA-Z0-9][a-zA-Z0-9.-]*[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
         if (!domainPattern.test(domain)) {
             e.preventDefault();
-            showNotice('#edit-domain-status', 'Please enter a valid domain format (e.g., example.com)', 'error');
+            showNotice('#edit-domain-status', 'Please enter a valid domain format (e.g., example.com, www.example.com)', 'error');
             $('#domain').focus();
             return false;
         }
@@ -527,7 +527,7 @@ jQuery(document).ready(function($) {
                 $feedback.html('<span style="color: #dc3232;">Please remove http:// or https://</span>').show();
             } else if (domain.indexOf('/') !== -1) {
                 $feedback.html('<span style="color: #dc3232;">Please remove any paths or slashes</span>').show();
-            } else if (!/^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/.test(domain)) {
+            } else if (!/^[a-zA-Z0-9][a-zA-Z0-9.-]*[a-zA-Z0-9]\.[a-zA-Z]{2,}$/.test(domain)) {
                 $feedback.html('<span style="color: #dc3232;">Please enter a valid domain format</span>').show();
             } else {
                 $feedback.html('<span style="color: #46b450;">Domain format looks good</span>').show();
@@ -586,10 +586,11 @@ jQuery(document).ready(function($) {
     // Initialize when document is ready
     initializePage();
 });
+
 // Domain Mapping Dashboard Widget JavaScript
 jQuery(document).ready(function($) {
 
-    // 健康状态刷新按钮
+    // Health status refresh button
     $(document).on('click', '.dm-refresh-health', function(e) {
         e.preventDefault();
 
@@ -600,7 +601,7 @@ jQuery(document).ready(function($) {
         $button.prop('disabled', true);
         $healthContent.addClass('dm-loading');
 
-        // 旋转图标
+        // Rotate icon
         $button.find('.dashicons').addClass('dashicons-update-spin');
 
         $.ajax({
@@ -615,7 +616,7 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     $healthContent.html(response.data.html);
 
-                    // 显示成功消息
+                    // Show success message
                     var $notice = $('<div class="notice notice-success is-dismissible"><p>' +
                                   response.data.message + '</p></div>');
                     $('#dm_domain_status_widget .inside').prepend($notice);
@@ -635,7 +636,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // 检查所有域名健康状态
+    // Check all domain health status
     $(document).on('click', '.dm-check-all-health', function(e) {
         e.preventDefault();
 
@@ -658,12 +659,12 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    // 刷新健康状态区域
+                    // Refresh health status area
                     if ($('#dm-widget-health-status').length) {
                         $('#dm-widget-health-status .dm-health-content').html(response.data.html);
                     }
 
-                    // 显示成功消息
+                    // Show success message
                     var $notice = $('<div class="notice notice-success is-dismissible"><p>' +
                                   response.data.message + '</p></div>');
                     $('#dm_domain_status_widget .inside').prepend($notice);
@@ -686,27 +687,27 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // 自动刷新（可选）
+    // Auto-refresh (optional)
     if ($('#dm_domain_status_widget').length && $('#dm_domain_status_widget').is(':visible')) {
-        // 每10分钟自动刷新一次
+        // Auto-refresh every 10 minutes
         var autoRefreshInterval = setInterval(function() {
             if ($('#dm_domain_status_widget').is(':visible')) {
                 $('.dm-refresh-health').first().trigger('click');
             }
-        }, 600000); // 10分钟
+        }, 600000); // 10 minutes
 
-        // 页面卸载时清除定时器
+        // Clear timer on page unload
         $(window).on('beforeunload', function() {
             clearInterval(autoRefreshInterval);
         });
     }
 
-    // 小工具配置保存
+    // Widget configuration save
     $(document).on('submit', '#dm_domain_status_widget form', function(e) {
-        // 配置会自动保存，这里可以添加额外的处理
+        // Configuration will auto-save, here we can add additional processing
         var showHealth = $('#dm_widget_show_health').is(':checked');
 
-        // 如果取消勾选健康状态，隐藏相关区域
+        // If unchecked health status, hide related areas
         if (!showHealth) {
             $('#dm-widget-health-status').fadeOut();
         } else {
@@ -714,14 +715,14 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // 为域名链接添加外部图标
+    // Add external icons for domain links
     $('.dm-domains-list a, .dm-domain-primary a').each(function() {
         if (!$(this).find('.dashicons-external').length) {
             $(this).append(' <span class="dashicons dashicons-external" style="font-size: 14px; vertical-align: middle;"></span>');
         }
     });
 
-    // 工具提示
+    // Tooltips
     if ($.fn.tooltip) {
         $('#dm_domain_status_widget [title]').tooltip({
             position: {

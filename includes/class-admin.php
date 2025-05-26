@@ -822,173 +822,205 @@ class WP_Domain_Mapping_Admin {
     }
 
     /**
-     * AJAX handler for domain actions
-     * UPDATED: Support editing domain names and better conflict checking
+     * AJAX handler for domain actions - IMPROVED SECURITY
      */
     public function ajax_handle_actions() {
-        check_ajax_referer( 'domain_mapping', 'nonce' );
+        // Verify nonce first
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'domain_mapping' ) ) {
+            wp_send_json_error( __( 'Security check failed.', 'wp-domain-mapping' ) );
+        }
 
+        // Check permissions
         if ( ! current_user_can( 'manage_network' ) ) {
             wp_send_json_error( __( 'Permission denied.', 'wp-domain-mapping' ) );
         }
 
         global $wpdb;
 
-        $action = sanitize_text_field( $_POST['action_type'] );
-        $domain = dm_clean_domain( sanitize_text_field( isset( $_POST['domain'] ) ? strtolower( $_POST['domain'] ) : '' ) );
+        // Sanitize and validate inputs
+        $action = isset( $_POST['action_type'] ) ? sanitize_key( $_POST['action_type'] ) : '';
+        $domain = isset( $_POST['domain'] ) ? dm_clean_domain( sanitize_text_field( $_POST['domain'] ) ) : '';
         $blog_id = isset( $_POST['blog_id'] ) ? absint( $_POST['blog_id'] ) : 0;
         $active = isset( $_POST['active'] ) ? absint( $_POST['active'] ) : 0;
         $orig_domain = isset( $_POST['orig_domain'] ) ? dm_clean_domain( sanitize_text_field( $_POST['orig_domain'] ) ) : '';
         $current_user_id = get_current_user_id();
 
+        // Validate action type
+        $allowed_actions = array( 'save', 'delete' );
+        if ( ! in_array( $action, $allowed_actions ) ) {
+            wp_send_json_error( __( 'Invalid action.', 'wp-domain-mapping' ) );
+        }
+
         switch ( $action ) {
             case 'save':
-                if ( $blog_id != 0 && $blog_id != 1 ) {
-                    // Validate domain format
-                    if ( ! dm_validate_domain( $domain ) ) {
-                        wp_send_json_error( __( 'Invalid domain format.', 'wp-domain-mapping' ) );
+                // Enhanced validation for save action
+                if ( $blog_id <= 0 || $blog_id === 1 ) {
+                    wp_send_json_error( __( 'Invalid site ID.', 'wp-domain-mapping' ) );
+                }
+
+                // Validate domain format
+                if ( empty( $domain ) || ! dm_validate_domain( $domain ) ) {
+                    wp_send_json_error( __( 'Invalid domain format.', 'wp-domain-mapping' ) );
+                }
+
+                // Check if blog exists
+                if ( ! get_blog_details( $blog_id ) ) {
+                    wp_send_json_error( __( 'Site does not exist.', 'wp-domain-mapping' ) );
+                }
+
+                // For editing, check if domain changed
+                $domain_changed = ! empty( $orig_domain ) && $orig_domain !== $domain;
+
+                if ( $domain_changed || empty( $orig_domain ) ) {
+                    // Check if domain exists for another blog
+                    $exists = dm_domain_exists_for_another_blog( $domain, $blog_id );
+
+                    if ( $exists ) {
+                        wp_send_json_error( sprintf(
+                            __( 'Domain %s is already mapped to site ID %d.', 'wp-domain-mapping' ),
+                            esc_html( $domain ),
+                            intval( $exists->blog_id )
+                        ));
                     }
+                }
 
-                    // For editing, check if domain changed
-                    $domain_changed = ! empty( $orig_domain ) && $orig_domain !== $domain;
+                $wpdb->query( 'START TRANSACTION' );
 
-                    if ( $domain_changed || empty( $orig_domain ) ) {
-                        // Check if domain exists for another blog
-                        $exists = dm_domain_exists_for_another_blog( $domain, $blog_id );
-
-                        if ( $exists ) {
-                            wp_send_json_error( sprintf(
-                                __( 'Domain %s is already mapped to site ID %d.', 'wp-domain-mapping' ),
-                                $domain,
-                                $exists->blog_id
-                            ));
-                        }
-                    }
-
-                    $wpdb->query( 'START TRANSACTION' );
-
-                    try {
-                        if ( empty( $orig_domain ) ) {
-                            // Insert new domain
-                            $success = $wpdb->insert(
-                                $this->tables['domains'],
-                                array(
-                                    'blog_id' => $blog_id,
-                                    'domain' => $domain,
-                                    'active' => $active
-                                ),
-                                array( '%d', '%s', '%d' )
-                            );
-
-                            if ( $success ) {
-                                // If setting as primary, reset other domains
-                                if ( $active ) {
-                                    $wpdb->update(
-                                        $this->tables['domains'],
-                                        array( 'active' => 0 ),
-                                        array(
-                                            'blog_id' => $blog_id,
-                                            'domain !=' => $domain
-                                        ),
-                                        array( '%d' ),
-                                        array( '%d', '%s' )
-                                    );
-                                }
-
-                                // Log the action
-                                dm_log_action( 'add', $domain, $blog_id, $current_user_id );
-
-                                $wpdb->query( 'COMMIT' );
-                                wp_send_json_success( __( 'Domain added successfully.', 'wp-domain-mapping' ) );
-                            } else {
-                                $wpdb->query( 'ROLLBACK' );
-                                wp_send_json_error( __( 'Failed to add domain.', 'wp-domain-mapping' ) );
-                            }
-                        } else {
-                            // Update existing domain
-
-                            // Prepare update data
-                            $update_data = array(
+                try {
+                    if ( empty( $orig_domain ) ) {
+                        // Insert new domain
+                        $success = $wpdb->insert(
+                            $this->tables['domains'],
+                            array(
                                 'blog_id' => $blog_id,
+                                'domain' => $domain,
                                 'active' => $active
-                            );
-                            $update_format = array( '%d', '%d' );
+                            ),
+                            array( '%d', '%s', '%d' )
+                        );
 
-                            // If domain changed, update it
-                            if ( $domain_changed ) {
-                                $update_data['domain'] = $domain;
-                                $update_format[] = '%s';
-                            }
-
-                            // If setting as primary, reset other domains first
+                        if ( $success ) {
+                            // If setting as primary, reset other domains
                             if ( $active ) {
                                 $wpdb->update(
                                     $this->tables['domains'],
                                     array( 'active' => 0 ),
-                                    array( 'blog_id' => $blog_id ),
+                                    array(
+                                        'blog_id' => $blog_id,
+                                        'domain' => array( 'NOT LIKE', $domain )
+                                    ),
                                     array( '%d' ),
                                     array( '%d' )
                                 );
                             }
 
-                            $success = $wpdb->update(
-                                $this->tables['domains'],
-                                $update_data,
-                                array( 'domain' => $orig_domain ),
-                                $update_format,
-                                array( '%s' )
-                            );
+                            // Log the action
+                            dm_log_action( 'add', $domain, $blog_id, $current_user_id );
 
-                            if ( $success !== false ) {
-                                // Log the action
-                                dm_log_action( 'edit', $domain, $blog_id, $current_user_id );
-
-                                $wpdb->query( 'COMMIT' );
-                                wp_send_json_success( __( 'Domain updated successfully.', 'wp-domain-mapping' ) );
-                            } else {
-                                $wpdb->query( 'ROLLBACK' );
-                                wp_send_json_error( __( 'No changes were made or update failed.', 'wp-domain-mapping' ) );
-                            }
+                            $wpdb->query( 'COMMIT' );
+                            wp_send_json_success( __( 'Domain added successfully.', 'wp-domain-mapping' ) );
+                        } else {
+                            $wpdb->query( 'ROLLBACK' );
+                            wp_send_json_error( __( 'Failed to add domain.', 'wp-domain-mapping' ) );
                         }
-                    } catch ( Exception $e ) {
-                        $wpdb->query( 'ROLLBACK' );
-                        wp_send_json_error( __( 'An error occurred while saving domain.', 'wp-domain-mapping' ) );
+                    } else {
+                        // Validate original domain exists
+                        $orig_exists = dm_get_domain_by_name( $orig_domain );
+                        if ( ! $orig_exists || $orig_exists->blog_id != $blog_id ) {
+                            $wpdb->query( 'ROLLBACK' );
+                            wp_send_json_error( __( 'Original domain not found or access denied.', 'wp-domain-mapping' ) );
+                        }
+
+                        // Update existing domain
+                        $update_data = array(
+                            'blog_id' => $blog_id,
+                            'active' => $active
+                        );
+                        $update_format = array( '%d', '%d' );
+
+                        // If domain changed, update it
+                        if ( $domain_changed ) {
+                            $update_data['domain'] = $domain;
+                            $update_format[] = '%s';
+                        }
+
+                        // If setting as primary, reset other domains first
+                        if ( $active ) {
+                            $wpdb->update(
+                                $this->tables['domains'],
+                                array( 'active' => 0 ),
+                                array( 'blog_id' => $blog_id ),
+                                array( '%d' ),
+                                array( '%d' )
+                            );
+                        }
+
+                        $success = $wpdb->update(
+                            $this->tables['domains'],
+                            $update_data,
+                            array( 'domain' => $orig_domain ),
+                            $update_format,
+                            array( '%s' )
+                        );
+
+                        if ( $success !== false ) {
+                            // Log the action
+                            dm_log_action( 'edit', $domain, $blog_id, $current_user_id );
+
+                            $wpdb->query( 'COMMIT' );
+                            wp_send_json_success( __( 'Domain updated successfully.', 'wp-domain-mapping' ) );
+                        } else {
+                            $wpdb->query( 'ROLLBACK' );
+                            wp_send_json_error( __( 'No changes were made or update failed.', 'wp-domain-mapping' ) );
+                        }
                     }
-                } else {
-                    wp_send_json_error( __( 'Invalid site ID.', 'wp-domain-mapping' ) );
+                } catch ( Exception $e ) {
+                    $wpdb->query( 'ROLLBACK' );
+                    error_log( 'Domain mapping error: ' . $e->getMessage() );
+                    wp_send_json_error( __( 'An error occurred while saving domain.', 'wp-domain-mapping' ) );
                 }
                 break;
 
             case 'delete':
                 $domains = isset( $_POST['domains'] ) ? array_map( 'sanitize_text_field', (array) $_POST['domains'] ) : array( $domain );
 
+                // Validate domains array
+                $domains = array_filter( $domains, function( $d ) {
+                    return ! empty( $d ) && dm_validate_domain( $d );
+                });
+
+                if ( empty( $domains ) ) {
+                    wp_send_json_error( __( 'No valid domains provided for deletion.', 'wp-domain-mapping' ) );
+                }
+
                 $wpdb->query( 'START TRANSACTION' );
                 $deleted = 0;
 
                 try {
                     foreach ( $domains as $del_domain ) {
-                        if ( empty( $del_domain ) ) continue;
+                        // Get domain info before deletion for logging and validation
+                        $domain_info = dm_get_domain_by_name( $del_domain );
 
-                        // Get blog_id before deletion for logging
-                        $affected_blog_id = $wpdb->get_var( $wpdb->prepare(
-                            "SELECT blog_id FROM {$this->tables['domains']} WHERE domain = %s",
-                            $del_domain
-                        ));
+                        if ( ! $domain_info ) {
+                            continue; // Skip non-existent domains
+                        }
 
-                        if ( $affected_blog_id ) {
-                            // Delete the domain
-                            $result = $wpdb->delete(
-                                $this->tables['domains'],
-                                array( 'domain' => $del_domain ),
-                                array( '%s' )
-                            );
+                        // Check if user has permission to delete this domain
+                        if ( ! current_user_can( 'manage_network' ) ) {
+                            continue; // Skip if no permission
+                        }
 
-                            if ( $result ) {
-                                $deleted++;
+                        // Delete the domain
+                        $result = $wpdb->delete(
+                            $this->tables['domains'],
+                            array( 'domain' => $del_domain ),
+                            array( '%s' )
+                        );
 
-                                // Log the action
-                                dm_log_action( 'delete', $del_domain, $affected_blog_id, $current_user_id );
-                            }
+                        if ( $result ) {
+                            $deleted++;
+                            // Log the action
+                            dm_log_action( 'delete', $del_domain, $domain_info->blog_id, $current_user_id );
                         }
                     }
 
@@ -1010,6 +1042,7 @@ class WP_Domain_Mapping_Admin {
                     }
                 } catch ( Exception $e ) {
                     $wpdb->query( 'ROLLBACK' );
+                    error_log( 'Domain mapping deletion error: ' . $e->getMessage() );
                     wp_send_json_error( __( 'An error occurred while deleting domains.', 'wp-domain-mapping' ) );
                 }
                 break;
@@ -1313,7 +1346,7 @@ class WP_Domain_Mapping_Admin {
         if ( ! get_site_option( 'dm_ipaddress' ) && ! get_site_option( 'dm_cname' ) ) {
             if ( dm_is_site_admin() ) {
                 echo wp_kses(
-                    __( "Please set the IP address or CNAME of your server in the <a href='wpmu-admin.php?page=domain-mapping'>site admin page</a>.", 'wp-domain-mapping' ),
+                    __( "Please set the IP address or CNAME of your server in the <a href='wp-admin/network/settings.php?page=domain-mapping'>site admin page</a>.", 'wp-domain-mapping' ),
                     array( 'a' => array( 'href' => array() ) )
                 );
             } else {
@@ -1355,7 +1388,7 @@ class WP_Domain_Mapping_Admin {
      * @return array Modified columns
      */
     public function add_domain_mapping_columns( $columns ) {
-        $columns['map'] = __( 'Mapping' );
+        $columns['map'] = __( 'Mapping', 'wp-domain-mapping' );
         return $columns;
     }
 

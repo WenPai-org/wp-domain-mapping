@@ -94,6 +94,14 @@ class WP_Domain_Mapping_Tools {
         add_action( 'admin_init', array( $this, 'handle_export' ) );
         add_action( 'admin_init', array( $this, 'handle_health_manual_check' ) );
         add_action( 'admin_init', array( $this, 'handle_health_settings_save' ) );
+
+        // Add debug hooks
+        add_action( 'admin_notices', array( $this, 'show_cron_debug_info' ) );
+
+        // Add manual trigger cron hook (only for debugging)
+        if ( isset( $_GET['dm_test_cron'] ) && current_user_can( 'manage_network' ) ) {
+            add_action( 'admin_init', array( $this, 'test_cron_execution' ) );
+        }
     }
 
     /**
@@ -278,32 +286,56 @@ class WP_Domain_Mapping_Tools {
     }
 
     // ========================================
-    // Health Check Functions
+    // Health Check Functions - IMPROVED
     // ========================================
 
     /**
-     * Schedule health check
+     * Schedule health check - improved version
      */
     public function schedule_health_check() {
-        if ( ! wp_next_scheduled( 'dm_domain_health_check' ) ) {
-            wp_schedule_event( time(), 'daily', 'dm_domain_health_check' );
+        // First clear existing schedules
+        $this->unschedule_health_check();
+
+        // Check if setting is enabled
+        if ( ! get_site_option( 'dm_health_check_enabled', true ) ) {
+            return;
         }
+
+        // Set next execution time (tomorrow at 2:00 AM)
+        $next_run = strtotime( 'tomorrow 2:00 AM' );
+
+        // Schedule event
+        $scheduled = wp_schedule_event( $next_run, 'daily', 'dm_domain_health_check' );
+
+        // Log scheduling status
+        if ( $scheduled !== false ) {
+            error_log( 'WP Domain Mapping: Health check scheduled for ' . date( 'Y-m-d H:i:s', $next_run ) );
+        } else {
+            error_log( 'WP Domain Mapping: Failed to schedule health check' );
+        }
+
+        // Also set an option to track scheduling status
+        update_site_option( 'dm_health_check_scheduled', array(
+            'scheduled_at' => current_time( 'timestamp' ),
+            'next_run' => $next_run,
+            'status' => $scheduled !== false ? 'scheduled' : 'failed'
+        ) );
     }
 
     /**
-     * Unschedule health check
+     * Unschedule health check - improved version
      */
     public function unschedule_health_check() {
-        $timestamp = wp_next_scheduled( 'dm_domain_health_check' );
-        if ( $timestamp ) {
-            wp_unschedule_event( $timestamp, 'dm_domain_health_check' );
-        }
+        // Clear main health check
+        wp_clear_scheduled_hook( 'dm_domain_health_check' );
 
-        // Also clear any batch processing
-        $timestamp = wp_next_scheduled( 'dm_domain_health_check_batch' );
-        if ( $timestamp ) {
-            wp_unschedule_event( $timestamp, 'dm_domain_health_check_batch' );
-        }
+        // Clear batch processing health check
+        wp_clear_scheduled_hook( 'dm_domain_health_check_batch' );
+
+        // Clear scheduling status option
+        delete_site_option( 'dm_health_check_scheduled' );
+
+        error_log( 'WP Domain Mapping: Health check unscheduled' );
     }
 
     /**
@@ -443,15 +475,25 @@ class WP_Domain_Mapping_Tools {
     }
 
     /**
-     * Scheduled health check
+     * Scheduled health check - improved version
      */
     public function scheduled_health_check() {
+        // Log execution start
+        error_log( 'WP Domain Mapping: Starting scheduled health check at ' . current_time( 'mysql' ) );
+
         // Check if health checks are enabled
         if ( ! get_site_option( 'dm_health_check_enabled', true ) ) {
+            error_log( 'WP Domain Mapping: Health check is disabled, skipping' );
             return;
         }
 
+        // Update last execution time
+        update_site_option( 'dm_last_health_check', current_time( 'timestamp' ) );
+
+        // Start batch processing
         $this->start_health_check_batch();
+
+        error_log( 'WP Domain Mapping: Scheduled health check batch started' );
     }
 
     /**
@@ -821,6 +863,73 @@ class WP_Domain_Mapping_Tools {
         wp_mail( $notification_email, $subject, $message );
     }
 
+    /**
+     * Add new method: check cron status
+     */
+    public function get_cron_status() {
+        $scheduled_info = get_site_option( 'dm_health_check_scheduled', false );
+        $next_scheduled = wp_next_scheduled( 'dm_domain_health_check' );
+        $last_check = get_site_option( 'dm_last_health_check', false );
+
+        return array(
+            'scheduled_info' => $scheduled_info,
+            'next_scheduled' => $next_scheduled,
+            'next_scheduled_formatted' => $next_scheduled ? date( 'Y-m-d H:i:s', $next_scheduled ) : 'Not scheduled',
+            'last_check' => $last_check,
+            'last_check_formatted' => $last_check ? date( 'Y-m-d H:i:s', $last_check ) : 'Never',
+            'wp_cron_disabled' => defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON,
+            'cron_running' => ! defined( 'DISABLE_WP_CRON' ) || ! DISABLE_WP_CRON
+        );
+    }
+
+    /**
+     * Show cron debug info (only show on network admin pages)
+     */
+    public function show_cron_debug_info() {
+        if ( ! is_network_admin() || ! current_user_can( 'manage_network' ) ) {
+            return;
+        }
+
+        $current_screen = get_current_screen();
+        if ( ! $current_screen || $current_screen->id !== 'settings_page_domain-mapping-network' ) {
+            return;
+        }
+
+        $status = $this->get_cron_status();
+
+        if ( $status['wp_cron_disabled'] ) {
+            echo '<div class="notice notice-warning"><p>';
+            echo '<strong>WP Domain Mapping:</strong> WordPress Cron is disabled (DISABLE_WP_CRON = true). ';
+            echo 'Automatic health checks will not work. Please set up a system cron job.';
+            echo '</p></div>';
+        }
+
+        // Show next execution time (only in debug mode)
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            echo '<div class="notice notice-info"><p>';
+            echo '<strong>Health Check Status:</strong><br>';
+            echo 'Next scheduled: ' . esc_html( $status['next_scheduled_formatted'] ) . '<br>';
+            echo 'Last check: ' . esc_html( $status['last_check_formatted'] ) . '<br>';
+            echo '<a href="' . add_query_arg( 'dm_test_cron', '1' ) . '">Test Cron Execution</a>';
+            echo '</p></div>';
+        }
+    }
+
+    /**
+     * Test cron execution (only for debugging)
+     */
+    public function test_cron_execution() {
+        if ( ! isset( $_GET['dm_test_cron'] ) || ! current_user_can( 'manage_network' ) ) {
+            return;
+        }
+
+        // Manually trigger health check
+        $this->scheduled_health_check();
+
+        wp_redirect( remove_query_arg( 'dm_test_cron' ) );
+        exit;
+    }
+
     // ========================================
     // Import/Export Functions
     // ========================================
@@ -899,7 +1008,7 @@ class WP_Domain_Mapping_Tools {
             wp_send_json_error( __( 'Invalid security token. Please try again.', 'wp-domain-mapping' ) );
         }
 
-        // 在处理文件之前添加：
+        // Check file size before processing
         if ($_FILES['csv_file']['size'] > 5 * 1024 * 1024) {
             wp_send_json_error(__('File size exceeds 5MB limit.', 'wp-domain-mapping'));
             return;
@@ -915,7 +1024,7 @@ class WP_Domain_Mapping_Tools {
         $update_existing = isset( $_POST['update_existing'] ) ? (bool) $_POST['update_existing'] : false;
         $validate_sites = isset( $_POST['validate_sites'] ) ? (bool) $_POST['validate_sites'] : true;
 
-        // 验证文件类型
+        // Validate file type
         $file_type = wp_check_filetype($_FILES['csv_file']['name']);
         if (!in_array($file_type['ext'], array('csv', 'txt'))) {
             wp_send_json_error(__('Only CSV files are allowed.', 'wp-domain-mapping'));

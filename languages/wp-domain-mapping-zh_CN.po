@@ -1,10 +1,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP Domain Mapping\n"
-"POT-Creation-Date: 2025-05-24 12:42+0800\n"
-"PO-Revision-Date: 2025-05-24 13:09+0800\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-26 11:10+0800\n"
+"PO-Revision-Date: 2025-05-26 22:26+0800\n"
 "Last-Translator: \n"
-"Language-Team: \n"
+"Language-Team: 简体中文\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,861 +18,54 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: "
 "__;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Loco-Version: 2.8.0; wp-6.8.1; php-8.3.0-dev\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 
-#: admin/domains-page.php:18 admin/pages.php:21 admin/settings-page.php:39
+#: admin/pages.php:67
+msgid "%d domain mapping imported successfully."
+msgid_plural "%d domain mappings imported successfully."
+msgstr[0] "成功导入 %d 个域名映射。"
+
+#. %s: time ago
+#: admin/logs-table.php:128
 #, php-format
-msgid "Version: %s"
-msgstr "版本：%s"
+msgid "%s ago"
+msgstr "%s之前"
 
-#: admin/domains-page.php:21 admin/pages.php:24 admin/settings-page.php:42
-msgid "Document"
-msgstr "文档"
-
-#: admin/domains-page.php:24 admin/pages.php:27 admin/settings-page.php:45
-msgid "Support"
-msgstr "支持"
-
-#: admin/domains-page.php:29
-msgid "Edit Domain"
-msgstr "编辑域名"
-
-#: admin/domains-page.php:29 admin/templates.php:386 admin/user-page.php:43
-msgid "Add New Domain"
-msgstr "添加新域名"
-
-#: admin/domains-page.php:36 admin/domains-page.php:307
-#: includes/class-tools.php:145
-msgid "Site ID"
-msgstr "站点 ID"
-
-#: admin/domains-page.php:46
+#: admin/pages.php:788
 #, php-format
-msgid ""
-"Not sure about Site ID? <a href=\"%s\" target=\"_blank\">View all sites</a> "
-"to find the ID."
-msgstr ""
+msgid "%s domain"
+msgid_plural "%s domains"
+msgstr[0] "%s 域名"
 
-#: admin/domains-page.php:57 admin/domains-page.php:309 admin/logs-table.php:73
-#: admin/pages.php:646 admin/templates.php:393 admin/templates.php:429
-#: admin/templates.php:578 admin/user-page.php:50 admin/user-page.php:86
-msgid "Domain"
-msgstr "域名"
-
-#: admin/domains-page.php:62 admin/templates.php:398 admin/user-page.php:55
-msgid "Enter the domain without http:// or https:// (e.g., example.com)"
-msgstr "输入不带 http:// 或 https:// 的域名（例如 example.com）"
-
-#: admin/domains-page.php:67 admin/domains-page.php:310 admin/templates.php:430
-#: admin/user-page.php:87
-msgid "Primary"
-msgstr "主域名"
-
-#: admin/domains-page.php:71
-msgid "Set as the primary domain for this site"
-msgstr ""
-
-#: admin/domains-page.php:78 admin/domains-page.php:368
-msgid "Warning! Primary domains are currently disabled in network settings."
-msgstr ""
-
-#: admin/domains-page.php:85
-msgid "Update Domain"
-msgstr "更新域名"
-
-#: admin/domains-page.php:86 admin/templates.php:417 admin/user-page.php:74
-msgid "Add Domain"
-msgstr "添加域名"
-
-#: admin/domains-page.php:90
-msgid "Cancel"
-msgstr ""
-
-#: admin/domains-page.php:98
-msgid "Search & Filter Domains"
-msgstr "搜索和过滤域名"
-
-#: admin/domains-page.php:103
-msgid "Domain:"
-msgstr "域名："
-
-#: admin/domains-page.php:108
-msgid "Site ID:"
-msgstr "站点 ID："
-
-#: admin/domains-page.php:113
-msgid "Primary:"
-msgstr "主域："
-
-#: admin/domains-page.php:115
-msgid "All"
-msgstr "全部"
-
-#: admin/domains-page.php:117 admin/domains-page.php:339
-#: admin/templates.php:446 admin/user-page.php:103
-msgid "Yes"
-msgstr "是"
-
-#: admin/domains-page.php:120 admin/domains-page.php:342
-msgid "No"
-msgstr "否"
-
-#: admin/domains-page.php:126 admin/logs-table.php:31
-msgid "Filter"
-msgstr "筛选"
-
-#: admin/domains-page.php:129 admin/logs-table.php:35
-msgid "Clear"
-msgstr ""
-
-#: admin/domains-page.php:140 admin/pages.php:274 admin/settings-page.php:175
-#: admin/templates.php:73
-msgid "Manage Domains"
-msgstr "管理域名"
-
-#: admin/domains-page.php:143
-msgid "Domain Logs"
-msgstr "域名日志"
-
-#: admin/domains-page.php:205 admin/logs-table.php:47 admin/logs-table.php:144
-msgid "&laquo;"
-msgstr "&laquo;"
-
-#: admin/domains-page.php:206 admin/logs-table.php:48 admin/logs-table.php:145
-msgid "&raquo;"
-msgstr "&raquo;"
-
-#. translators: %s: number of items
+#. %s: number of items
 #: admin/domains-page.php:217
 #, php-format
 msgid "%s item"
 msgid_plural "%s items"
 msgstr[0] "%s 项"
 
-#. translators: %s: IDN warning message
+#. %s: number of items
+#: admin/logs-table.php:59 admin/logs-table.php:156
+#, php-format
+msgid "%s log entry"
+msgid_plural "%s log entries"
+msgstr[0] "%s 条日志"
+
+#: admin/pages.php:329 admin/pages.php:373 admin/pages.php:442
+#: admin/pages.php:486 admin/settings-page.php:209 admin/settings-page.php:245
+msgid "(or empty)"
+msgstr "（或空）"
+
+#. %s: IDN warning message
 #: admin/domains-page.php:230
 #, php-format
 msgid "<strong>Note:</strong> %s"
 msgstr "<strong>注意：</strong> %s"
 
-#: admin/domains-page.php:245
-msgid "Domain Statistics"
-msgstr "域名统计"
-
-#: admin/domains-page.php:249
-msgid "Total Domains"
-msgstr "域名总数"
-
-#: admin/domains-page.php:253
-msgid "Primary Domains"
-msgstr "主域"
-
-#: admin/domains-page.php:257
-msgid "Sites with Mapped Domains"
-msgstr ""
-
-#: admin/domains-page.php:280 admin/pages.php:731 admin/templates.php:744
-msgid "No domains found."
-msgstr "未找到域名。"
-
-#: admin/domains-page.php:292
-msgid "Select bulk action"
-msgstr "选择批量操作"
-
-#: admin/domains-page.php:294
-msgid "Bulk Actions"
-msgstr "批量操作"
-
-#: admin/domains-page.php:295 admin/domains-page.php:355
-#: admin/templates.php:462 admin/user-page.php:119
-msgid "Delete"
-msgstr "删除"
-
-#: admin/domains-page.php:297
-msgid "Apply"
-msgstr "应用"
-
-#: admin/domains-page.php:308
-msgid "Site Name"
-msgstr "站点名称"
-
-#: admin/domains-page.php:311 admin/pages.php:652 admin/templates.php:431
-#: admin/templates.php:584 admin/user-page.php:88
-msgid "Actions"
-msgstr "操作"
-
-#: admin/domains-page.php:316 admin/pages.php:660 admin/templates.php:592
-msgid "Unknown"
-msgstr ""
-
-#: admin/domains-page.php:349
-msgid "Edit"
-msgstr "编辑"
-
-#: admin/domains-page.php:385
-msgid ""
-"Domain mapping logs table is missing. Please deactivate and reactivate the "
-"plugin."
-msgstr ""
-
-#: admin/domains-page.php:421
-msgid "No domain mapping logs available."
-msgstr ""
-
-#: admin/logs-table.php:21
-msgid "Filter by action"
-msgstr ""
-
-#: admin/logs-table.php:23
-msgid "All actions"
-msgstr ""
-
-#. translators: %s: number of items
-#: admin/logs-table.php:59 admin/logs-table.php:156
+#: admin/pages.php:1266 includes/class-admin.php:1264
 #, php-format
-msgid "%s log entry"
-msgid_plural "%s log entries"
-msgstr[0] ""
-
-#: admin/logs-table.php:71
-msgid "User"
-msgstr "用户"
-
-#: admin/logs-table.php:72
-msgid "Action"
-msgstr "操作"
-
-#: admin/logs-table.php:74 admin/pages.php:647 admin/templates.php:579
-msgid "Site"
-msgstr "站点"
-
-#: admin/logs-table.php:75
-msgid "Date"
-msgstr ""
-
-#: admin/logs-table.php:88
-#, php-format
-msgid "User #%d"
-msgstr ""
-
-#: admin/logs-table.php:102
-#, php-format
-msgid "Site #%d"
-msgstr "站点 #%d"
-
-#. translators: %s: time ago
-#: admin/logs-table.php:128
-#, php-format
-msgid "%s ago"
-msgstr ""
-
-#: admin/pages.php:38
-msgid "Settings"
-msgstr ""
-
-#: admin/pages.php:39
-msgid "Domain Health"
-msgstr "域名健康"
-
-#: admin/pages.php:40
-msgid "Import/Export"
-msgstr ""
-
-#: admin/pages.php:46 admin/templates.php:535
-msgid "Domain health check completed."
-msgstr ""
-
-#: admin/pages.php:52
-msgid "Domain health check started. The check is running in the background."
-msgstr ""
-
-#: admin/pages.php:58 admin/templates.php:541 includes/class-admin.php:610
-msgid "Settings saved."
-msgstr ""
-
-#: admin/pages.php:67 admin/templates.php:824
-#, php-format
-msgid "%d domain mapping imported successfully."
-msgid_plural "%d domain mappings imported successfully."
-msgstr[0] ""
-
-#: admin/pages.php:79 admin/templates.php:836
-msgid "Domain mappings exported successfully."
-msgstr ""
-
-#: admin/pages.php:162 admin/settings-page.php:54
-msgid "Server Configuration"
-msgstr "服务器配置"
-
-#: admin/pages.php:163 admin/settings-page.php:55
-msgid "Configure the IP address or CNAME for domain mapping."
-msgstr "配置域映射的IP地址或CNAME。"
-
-#: admin/pages.php:167 admin/settings-page.php:59
-msgid "Server IP Address:"
-msgstr "服务器 IP 地址："
-
-#: admin/pages.php:171 admin/settings-page.php:63
-msgid ""
-"Enter the IP address(es) users should point their DNS A records to. Use "
-"commas to separate multiple IPs."
-msgstr "输入用户应将其 DNS A 记录指向的 IP 地址。使用逗号分隔多个 IP。"
-
-#: admin/pages.php:176 admin/settings-page.php:77
-msgid "Server CNAME Domain:"
-msgstr "服务器 CNAME 域名："
-
-#. translators: %s: IDN warning message
-#: admin/pages.php:183 admin/settings-page.php:84
-#, php-format
-msgid "Use a CNAME instead of an IP (overrides IP settings). %s"
-msgstr "使用 CNAME 而不是 IP（覆盖 IP 设置）。%s"
-
-#: admin/pages.php:192 admin/pages.php:198 admin/settings-page.php:93
-#: admin/settings-page.php:99
-msgid "Domain Options"
-msgstr "域名选项"
-
-#: admin/pages.php:201 admin/settings-page.php:102
-msgid "Enable Remote Login"
-msgstr "启用远程登录"
-
-#: admin/pages.php:204 admin/settings-page.php:105
-msgid ""
-"Allows users to log in from mapped domains and be redirected to the original "
-"domain for authentication."
-msgstr ""
-
-#: admin/pages.php:213 admin/settings-page.php:114 admin/templates.php:12
-msgid "Permanent Redirect"
-msgstr ""
-
-#: admin/pages.php:216 admin/settings-page.php:117 admin/templates.php:15
-msgid "Use Permanent Redirect (301)"
-msgstr ""
-
-#: admin/pages.php:219 admin/settings-page.php:120 admin/templates.php:18
-msgid ""
-"Use 301 redirects instead of 302 redirects. This is better for SEO but may "
-"cause caching issues."
-msgstr ""
-
-#: admin/pages.php:228 admin/settings-page.php:129 admin/templates.php:27
-msgid "User Settings"
-msgstr ""
-
-#: admin/pages.php:231 admin/settings-page.php:132 admin/templates.php:30
-msgid "Enable User Domain Mapping Page"
-msgstr "启用用户域映射页面"
-
-#: admin/pages.php:234 admin/settings-page.php:135 admin/templates.php:33
-msgid ""
-"Allow site administrators to manage their domain mappings from the Tools "
-"menu."
-msgstr ""
-
-#: admin/pages.php:243 admin/settings-page.php:144 admin/templates.php:42
-msgid "Redirect Admin"
-msgstr ""
-
-#: admin/pages.php:246 admin/settings-page.php:147 admin/templates.php:45
-msgid "Redirect Admin Pages to Original Domain"
-msgstr "将管理页面重定向到原始域"
-
-#: admin/pages.php:249 admin/settings-page.php:150 admin/templates.php:48
-msgid ""
-"Force admin pages to use the original WordPress domain instead of the mapped "
-"domain."
-msgstr ""
-
-#: admin/pages.php:258 admin/settings-page.php:159 admin/templates.php:57
-msgid "Disable Primary Domain"
-msgstr ""
-
-#: admin/pages.php:261 admin/settings-page.php:162 admin/templates.php:60
-msgid "Disable Primary Domain Check"
-msgstr "禁用主域检查"
-
-#: admin/pages.php:264 admin/settings-page.php:165 admin/templates.php:63
-msgid ""
-"Do not redirect to the primary domain, but allow access through any mapped "
-"domain."
-msgstr ""
-
-#: admin/pages.php:272 admin/settings-page.php:173 admin/templates.php:71
-msgid "Save Configuration"
-msgstr "保存配置"
-
-#: admin/pages.php:292 admin/settings-page.php:182 admin/templates.php:80
-msgid "DNS Setup Instructions"
-msgstr ""
-
-#: admin/pages.php:296 admin/settings-page.php:186 admin/templates.php:84
-#: admin/templates.php:488 admin/user-page.php:145
-msgid "CNAME Method (Recommended)"
-msgstr ""
-
-#. translators: %s: CNAME value
-#: admin/pages.php:301 admin/settings-page.php:191 admin/templates.php:88
-#, php-format
-msgid ""
-"Tell your users to add a DNS \"CNAME\" record for their domain pointing to: "
-"%s"
-msgstr ""
-
-#: admin/pages.php:307 admin/pages.php:339 admin/settings-page.php:197
-#: admin/settings-page.php:229 admin/templates.php:94 admin/templates.php:125
-msgid "Example DNS Record"
-msgstr ""
-
-#: admin/pages.php:311 admin/pages.php:343 admin/settings-page.php:201
-#: admin/settings-page.php:233 admin/templates.php:98 admin/templates.php:129
-msgid "Type"
-msgstr ""
-
-#: admin/pages.php:312 admin/pages.php:344 admin/settings-page.php:202
-#: admin/settings-page.php:234 admin/templates.php:99 admin/templates.php:130
-msgid "Name"
-msgstr ""
-
-#: admin/pages.php:313 admin/pages.php:345 admin/pages.php:396
-#: admin/settings-page.php:203 admin/settings-page.php:235
-#: admin/settings-page.php:287 admin/templates.php:100 admin/templates.php:131
-#: admin/templates.php:183
-msgid "Value"
-msgstr ""
-
-#: admin/pages.php:319 admin/pages.php:355 admin/settings-page.php:209
-#: admin/settings-page.php:245 admin/templates.php:106 admin/templates.php:141
-msgid "(or empty)"
-msgstr ""
-
-#: admin/pages.php:328 admin/settings-page.php:218 admin/templates.php:115
-#: admin/templates.php:493 admin/user-page.php:150
-msgid "A Record Method"
-msgstr ""
-
-#. translators: %s: IP address(es)
-#: admin/pages.php:333 admin/settings-page.php:223 admin/templates.php:119
-#, php-format
-msgid ""
-"Tell your users to add a DNS \"A\" record for their domain pointing to: %s"
-msgstr ""
-
-#: admin/pages.php:367 admin/settings-page.php:257 admin/templates.php:153
-msgid ""
-"Please configure either a Server IP Address or CNAME to provide DNS setup "
-"instructions."
-msgstr ""
-
-#: admin/pages.php:372 admin/settings-page.php:262 admin/templates.php:158
-msgid "Additional DNS Tips"
-msgstr ""
-
-#: admin/pages.php:374 admin/settings-page.php:265 admin/templates.php:161
-msgid "Most DNS changes take 24-48 hours to fully propagate worldwide."
-msgstr ""
-
-#: admin/pages.php:375 admin/settings-page.php:268 admin/templates.php:164
-msgid ""
-"For \"www\" subdomain, create a separate CNAME record with \"www\" as the "
-"name pointing to the same value."
-msgstr ""
-
-#: admin/pages.php:376 admin/settings-page.php:271 admin/templates.php:167
-msgid ""
-"If you're using Cloudflare or similar services, you may need to adjust proxy "
-"settings."
-msgstr ""
-
-#: admin/pages.php:377 admin/settings-page.php:274 admin/templates.php:170
-msgid ""
-"For SSL to work properly, make sure your web server is configured with the "
-"appropriate SSL certificates for mapped domains."
-msgstr ""
-
-#: admin/pages.php:390 admin/settings-page.php:281 admin/templates.php:177
-msgid "Installation Check"
-msgstr ""
-
-#: admin/pages.php:394 admin/settings-page.php:285 admin/templates.php:181
-msgid "Status"
-msgstr ""
-
-#: admin/pages.php:395 admin/settings-page.php:286 admin/templates.php:182
-msgid "Check"
-msgstr ""
-
-#: admin/pages.php:406 admin/settings-page.php:297 admin/templates.php:193
-msgid "sunrise.php file"
-msgstr ""
-
-#: admin/pages.php:409 admin/settings-page.php:300 admin/templates.php:196
-msgid "Found"
-msgstr ""
-
-#. translators: %s: WordPress content directory
-#: admin/pages.php:414 admin/settings-page.php:305 admin/templates.php:200
-#, php-format
-msgid "Not found - copy sunrise.php to %s"
-msgstr ""
-
-#: admin/pages.php:429 admin/settings-page.php:320 admin/templates.php:215
-msgid "SUNRISE constant"
-msgstr ""
-
-#. translators: %s: SUNRISE constant value
-#: admin/pages.php:435 admin/settings-page.php:326 admin/templates.php:220
-#, php-format
-msgid "Defined as: %s"
-msgstr ""
-
-#: admin/pages.php:440 admin/settings-page.php:331 admin/templates.php:225
-msgid "Not defined - add to wp-config.php: "
-msgstr ""
-
-#: admin/pages.php:453 admin/settings-page.php:344 admin/templates.php:238
-msgid "SUNRISE_LOADED"
-msgstr ""
-
-#: admin/pages.php:456 admin/settings-page.php:347 admin/templates.php:241
-msgid "Loaded successfully"
-msgstr ""
-
-#: admin/pages.php:460 admin/settings-page.php:351 admin/templates.php:245
-msgid ""
-"Not loaded - make sure SUNRISE is defined before the require_once() in wp-"
-"config.php"
-msgstr ""
-
-#: admin/pages.php:462 admin/settings-page.php:353 admin/templates.php:247
-msgid "Not loaded - SUNRISE constant not defined"
-msgstr ""
-
-#: admin/pages.php:476 admin/settings-page.php:367 admin/templates.php:261
-msgid "COOKIE_DOMAIN"
-msgstr ""
-
-#: admin/pages.php:479 admin/settings-page.php:370 admin/templates.php:264
-msgid "Not defined (correct)"
-msgstr ""
-
-#. translators: %s: COOKIE_DOMAIN constant value
-#: admin/pages.php:484 admin/settings-page.php:375 admin/templates.php:268
-#, php-format
-msgid "Defined as: %s - remove this from wp-config.php"
-msgstr ""
-
-#: admin/pages.php:510 admin/settings-page.php:404 admin/templates.php:297
-msgid "Database tables"
-msgstr ""
-
-#: admin/pages.php:513 admin/settings-page.php:407 admin/templates.php:300
-msgid "All tables exist"
-msgstr ""
-
-#: admin/pages.php:515 admin/settings-page.php:409 admin/templates.php:302
-msgid "Some tables are missing - deactivate and reactivate the plugin"
-msgstr ""
-
-#: admin/pages.php:527 admin/settings-page.php:421 admin/templates.php:314
-msgid "Multisite"
-msgstr ""
-
-#: admin/pages.php:530 admin/settings-page.php:424 admin/templates.php:317
-msgid "Enabled"
-msgstr ""
-
-#: admin/pages.php:532 admin/settings-page.php:426 admin/templates.php:319
-msgid "Not enabled - this plugin requires WordPress Multisite"
-msgstr ""
-
-#: admin/pages.php:564 admin/templates.php:547
-msgid "Domain Health Status"
-msgstr "域名健康状态"
-
-#: admin/pages.php:569
-msgid "Health check in progress..."
-msgstr ""
-
-#: admin/pages.php:573
-#, php-format
-msgid "Processed %d of %d domains (%d%%)"
-msgstr ""
-
-#: admin/pages.php:602
-msgid "Processed "
-msgstr "正在处理"
-
-#: admin/pages.php:603
-msgid "of"
-msgstr ""
-
-#: admin/pages.php:604
-msgid "domains"
-msgstr "域名"
-
-#: admin/pages.php:620 admin/templates.php:553
-msgid "Check All Domains Now"
-msgstr ""
-
-#: admin/pages.php:631 admin/templates.php:563
-#, php-format
-msgid "%s domain"
-msgid_plural "%s domains"
-msgstr[0] "%s 域名"
-
-#: admin/pages.php:635 admin/templates.php:567
-msgid "No domains found"
-msgstr "未找到域名"
-
-#: admin/pages.php:648 admin/templates.php:580 admin/templates.php:679
-msgid "DNS Status"
-msgstr "DNS 状态"
-
-#: admin/pages.php:649 admin/templates.php:581
-msgid "SSL Status"
-msgstr "SSL 状态"
-
-#: admin/pages.php:650 admin/templates.php:582 includes/class-tools.php:177
-#: includes/class-tools.php:190
-msgid "Reachable"
-msgstr "可达"
-
-#: admin/pages.php:651 admin/templates.php:583 admin/templates.php:675
-msgid "Last Check"
-msgstr "最后检测"
-
-#: admin/pages.php:666 admin/templates.php:403 admin/templates.php:406
-#: admin/templates.php:598 admin/user-page.php:60 admin/user-page.php:63
-msgid "Primary Domain"
-msgstr "主域"
-
-#: admin/pages.php:680 admin/templates.php:612 admin/templates.php:684
-msgid "DNS correctly configured"
-msgstr ""
-
-#: admin/pages.php:685 admin/pages.php:699 admin/pages.php:710
-#: admin/templates.php:617 admin/templates.php:631 admin/templates.php:642
-msgid "Not checked yet"
-msgstr ""
-
-#: admin/pages.php:691 admin/templates.php:623
-msgid "SSL certificate valid"
-msgstr ""
-
-#: admin/pages.php:693 admin/templates.php:625
-#, php-format
-msgid "Expires: %s"
-msgstr ""
-
-#: admin/pages.php:696 admin/templates.php:628
-msgid "SSL certificate issue"
-msgstr ""
-
-#: admin/pages.php:705 admin/templates.php:637 includes/class-tools.php:243
-msgid "Site is accessible"
-msgstr ""
-
-#: admin/pages.php:707 admin/templates.php:639 includes/class-tools.php:245
-msgid "Site is not accessible"
-msgstr ""
-
-#: admin/pages.php:716 admin/templates.php:648
-msgid "ago"
-msgstr ""
-
-#: admin/pages.php:718 admin/templates.php:650
-msgid "Never"
-msgstr ""
-
-#: admin/pages.php:724 admin/pages.php:826 admin/pages.php:831
-#: admin/templates.php:656
-msgid "Check Now"
-msgstr ""
-
-#: admin/pages.php:739 admin/templates.php:752
-msgid "Health Check Settings"
-msgstr ""
-
-#: admin/pages.php:747 admin/pages.php:750 admin/templates.php:760
-#: admin/templates.php:763
-msgid "Automatic Health Checks"
-msgstr ""
-
-#: admin/pages.php:753 admin/templates.php:766
-msgid "Enable automatic daily health checks"
-msgstr ""
-
-#: admin/pages.php:759 admin/pages.php:762 admin/templates.php:772
-#: admin/templates.php:775
-msgid "Email Notifications"
-msgstr ""
-
-#: admin/pages.php:765 admin/templates.php:778
-msgid "Send email notifications when domain health issues are detected"
-msgstr ""
-
-#: admin/pages.php:771 admin/templates.php:784
-msgid "Notification Email"
-msgstr ""
-
-#: admin/pages.php:774 admin/templates.php:787
-msgid "Email address for domain health notifications."
-msgstr ""
-
-#: admin/pages.php:778 admin/templates.php:791
-msgid "SSL Expiry Warning"
-msgstr ""
-
-#: admin/pages.php:781 admin/templates.php:794
-msgid "days"
-msgstr ""
-
-#: admin/pages.php:782 admin/templates.php:795
-msgid ""
-"Send notifications when SSL certificates are expiring within this many days."
-msgstr ""
-
-#: admin/pages.php:786
-msgid "Batch Size"
-msgstr ""
-
-#: admin/pages.php:789
-msgid "domains per batch"
-msgstr ""
-
-#: admin/pages.php:790
-msgid ""
-"Number of domains to check in each batch. Lower values prevent timeouts but "
-"take longer."
-msgstr ""
-
-#: admin/pages.php:796 admin/templates.php:801
-msgid "Save Changes"
-msgstr ""
-
-#: admin/pages.php:809
-msgid "Checking..."
-msgstr "检查中..."
-
-#: admin/pages.php:825 admin/pages.php:830
-msgid "An error occurred during the health check."
-msgstr ""
-
-#: admin/pages.php:846 admin/templates.php:844
-msgid "Export Domain Mappings"
-msgstr "导出域名映射"
-
-#: admin/pages.php:847 admin/templates.php:845
-msgid "Export all domain mappings to a CSV file."
-msgstr ""
-
-#: admin/pages.php:856 admin/templates.php:854
-msgid "Include column headers"
-msgstr ""
-
-#: admin/pages.php:861 admin/templates.php:859
-msgid "Export for specific site ID (optional):"
-msgstr ""
-
-#: admin/pages.php:863 admin/templates.php:861
-msgid "Leave empty to export all domains."
-msgstr ""
-
-#: admin/pages.php:867 admin/templates.php:865
-msgid "Export to CSV"
-msgstr ""
-
-#: admin/pages.php:873 admin/templates.php:871
-msgid "Import Domain Mappings"
-msgstr "导入域名映射"
-
-#: admin/pages.php:874 admin/templates.php:872
-msgid "Import domain mappings from a CSV file."
-msgstr ""
-
-#: admin/pages.php:881 admin/templates.php:879
-msgid "CSV File:"
-msgstr ""
-
-#: admin/pages.php:884 admin/templates.php:882
-msgid "The CSV file should have the columns: blog_id, domain, active (1 or 0)."
-msgstr ""
-
-#: admin/pages.php:885 admin/templates.php:883
-msgid "Example: 1,example.com,1"
-msgstr ""
-
-#: admin/pages.php:892 admin/templates.php:890
-msgid "First row contains column headers"
-msgstr ""
-
-#: admin/pages.php:899 admin/templates.php:897
-msgid "Update existing mappings"
-msgstr ""
-
-#: admin/pages.php:901 admin/templates.php:899
-#, fuzzy
-#| msgid "New domain already exists."
-msgid "If unchecked, will skip domains that already exist."
-msgstr "新的域名已经存在。"
-
-#: admin/pages.php:907 admin/templates.php:905
-msgid "Validate site IDs"
-msgstr ""
-
-#: admin/pages.php:909 admin/templates.php:907
-msgid "If checked, will only import domains for existing sites."
-msgstr ""
-
-#: admin/pages.php:913 admin/templates.php:911
-msgid "Import from CSV"
-msgstr ""
-
-#: admin/pages.php:918 admin/templates.php:916
-#, fuzzy
-#| msgid "Processing..."
-msgid "Processing import..."
-msgstr "正在处理…"
-
-#: admin/pages.php:926 admin/templates.php:924
-msgid "Import Results"
-msgstr ""
-
-#: admin/pages.php:933 admin/templates.php:931
-msgid "CSV Format"
-msgstr ""
-
-#: admin/pages.php:934 admin/templates.php:932
-msgid "The CSV file should follow this format:"
-msgstr ""
-
-#: admin/pages.php:959 admin/templates.php:957
-msgid "The ID of the WordPress site (required)"
-msgstr ""
-
-#: admin/pages.php:960 admin/templates.php:958
-#, fuzzy
-#| msgid "Enter the domain without http:// or https:// (e.g., example.com)"
-msgid "The domain name without http:// or https:// (required)"
-msgstr "输入不带 http:// 或 https:// 的域名（例如 example.com）"
-
-#: admin/pages.php:961 admin/templates.php:959
-msgid "Set to 1 to make this the primary domain, 0 otherwise (required)"
-msgstr ""
-
-#: admin/pages.php:1029
-msgid "An error occurred during import."
-msgstr ""
-
-#: admin/pages.php:1063 includes/class-admin.php:549
-#, fuzzy, php-format
-#| msgid ""
-#| "<strong>Warning!</strong> This plugin will only work if WordPress is "
-#| "installed in the root directory of your webserver. It is currently "
-#| "installed in ’%s’."
 msgid ""
 "<strong>Warning!</strong> This plugin will only work if WordPress is "
 "installed in the root directory of your webserver. It is currently installed "
@@ -880,195 +74,985 @@ msgstr ""
 "<strong>警告！</strong>此插件仅当 WordPress 安装在您的网络服务器的根目录中时"
 "才有效。它当前安装在『%s』中。"
 
-#. translators: %s: Server IP address
+#: includes/class-tools.php:814
+#, php-format
+msgid "[%s] Domain Mapping Health Alert"
+msgstr "[%s] 域名映射健康警报"
+
+#: admin/pages.php:345 admin/pages.php:458 admin/settings-page.php:218
+#: admin/user-page.php:150
+msgid "A Record Method"
+msgstr "A 记录方法"
+
+#: admin/logs-table.php:72
+msgid "Action"
+msgstr "操作"
+
+#: admin/domains-page.php:311 admin/pages.php:809 admin/user-page.php:88
+msgid "Actions"
+msgstr "操作"
+
+#: admin/domains-page.php:86 admin/user-page.php:74
+msgid "Add Domain"
+msgstr "添加域名"
+
+#: admin/domains-page.php:29 admin/user-page.php:43
+msgid "Add New Domain"
+msgstr "添加新域名"
+
+#: includes/functions.php:507
+msgid "Added"
+msgstr "已添加"
+
+#: admin/pages.php:397 admin/pages.php:510 admin/settings-page.php:262
+msgid "Additional DNS Tips"
+msgstr "其他 DNS 提示"
+
+#: admin/pages.php:873
+msgid "ago"
+msgstr "之前"
+
+#: admin/domains-page.php:115
+msgid "All"
+msgstr "全部"
+
+#: admin/logs-table.php:23
+msgid "All actions"
+msgstr "所有操作"
+
+#: includes/class-admin.php:613
+msgid "All domains are healthy!"
+msgstr "全部域名都健康！"
+
+#: includes/class-admin.php:293
+msgid "All Mapped Domains"
+msgstr "全部映射域名"
+
+#: admin/pages.php:671 admin/settings-page.php:427
+msgid "All tables exist"
+msgstr "所有表都存在"
+
+#: admin/pages.php:249 admin/settings-page.php:135
+msgid ""
+"Allow site administrators to manage their domain mappings from the Tools "
+"menu."
+msgstr "允许站点管理员从工具菜单管理他们的域名映射。"
+
+#: admin/pages.php:219 admin/settings-page.php:105
+msgid ""
+"Allows users to log in from mapped domains and be redirected to the original "
+"domain for authentication."
+msgstr "允许用户从映射域名登录，并重定向到原始域名进行身份验证。"
+
+#: admin/pages.php:1231
+msgid "An error occurred during import."
+msgstr "导入过程中发生错误。"
+
+#: admin/pages.php:979 admin/pages.php:984
+msgid "An error occurred during the health check."
+msgstr "健康检查过程中发生错误。"
+
+#: includes/class-admin.php:1046
+msgid "An error occurred while deleting domains."
+msgstr "删除域名时发生错误。"
+
+#: includes/class-admin.php:980
+msgid "An error occurred while saving domain."
+msgstr "保存域名时发生错误。"
+
+#: includes/class-admin.php:750
+msgid "An error occurred."
+msgstr "发生了错误。"
+
+#: admin/domains-page.php:297
+msgid "Apply"
+msgstr "应用"
+
+#: admin/user-page.php:118
+msgid "Are you sure you want to delete this domain?"
+msgstr "您确定要删除此域名吗？"
+
+#: admin/pages.php:902 admin/pages.php:905
+msgid "Automatic Health Checks"
+msgstr "自动健康检查"
+
+#: admin/pages.php:941
+msgid "Batch Size"
+msgstr "批处理大小"
+
+#: admin/domains-page.php:294
+msgid "Bulk Actions"
+msgstr "批量操作"
+
+#: includes/class-admin.php:367
+#, php-format
+msgid "by %s %s ago"
+msgstr "%s于%s前"
+
+#: admin/domains-page.php:90
+msgid "Cancel"
+msgstr "取消"
+
+#: includes/class-admin.php:1211
+msgid ""
+"Cannot delete the primary domain. Please set another domain as primary first."
+msgstr "无法删除主域名，请先设置其他域名为主域名。"
+
+#: includes/class-tools.php:679
+msgid "Cannot verify DNS configuration."
+msgstr "无法验证 DNS 配置。"
+
+#: admin/pages.php:533 admin/settings-page.php:286
+msgid "Check"
+msgstr "检查"
+
+#: admin/pages.php:777
+msgid "Check All Domains Now"
+msgstr "立即检查所有域名"
+
+#: includes/class-admin.php:386
+msgid "Check Health"
+msgstr "健康检查"
+
+#: admin/pages.php:881 admin/pages.php:980 admin/pages.php:985
+msgid "Check Now"
+msgstr "立即检查"
+
+#: admin/pages.php:963 includes/class-admin.php:753
+msgid "Checking..."
+msgstr "检查中..."
+
+#: admin/domains-page.php:129 admin/logs-table.php:35
+msgid "Clear"
+msgstr "清除"
+
+#: admin/pages.php:305 admin/pages.php:418 admin/settings-page.php:186
+#: admin/user-page.php:145
+msgid "CNAME Method (Recommended)"
+msgstr "CNAME 方法（推荐）"
+
+#: admin/pages.php:178 admin/settings-page.php:55
+msgid "Configure the IP address or CNAME for domain mapping."
+msgstr "配置域映射的IP地址或CNAME。"
+
+#: admin/pages.php:620 admin/settings-page.php:373
+msgid "COOKIE_DOMAIN"
+msgstr "COOKIE_DOMAIN"
+
+#: includes/class-tools.php:1037
+msgid "Could not open the uploaded file."
+msgstr "无法打开上传的文件。"
+
+#: admin/user-page.php:146
+#, php-format
+msgid "Create a CNAME record for your domain pointing to: <code>%s</code>"
+msgstr "为您的域名创建指向 <code>%s</code> 的 CNAME 记录"
+
+#: admin/user-page.php:151
+#, php-format
+msgid "Create an A record for your domain pointing to: <code>%s</code>"
+msgstr "为您的域名创建指向 <code>%s</code> 的 A 记录"
+
+#: admin/pages.php:1084
+msgid "CSV File:"
+msgstr "CSV 文件："
+
+#: admin/pages.php:1135
+msgid "CSV Format"
+msgstr "CSV 格式"
+
+#: includes/class-tools.php:138
+msgid "Current site ID"
+msgstr "当前站点 ID"
+
+#: admin/pages.php:668 admin/settings-page.php:424
+msgid "Database tables"
+msgstr "数据库表"
+
+#: admin/logs-table.php:75
+msgid "Date"
+msgstr "日期"
+
+#: admin/pages.php:936
+msgid "days"
+msgstr "天"
+
+#. %s: SUNRISE constant value
+#: admin/pages.php:573 admin/settings-page.php:326
+#, php-format
+msgid "Defined as: %s"
+msgstr "定义为：%s"
+
+#: admin/pages.php:1396
+msgid "Defined in wp-config.php (may affect some domain mapping features)"
+msgstr "在 wp-config.php 中定义（可能会影响某些域映射功能）"
+
+#: admin/pages.php:1393
+msgid "Defined in wp-config.php but currently working"
+msgstr "在 wp-config.php 中定义但当前正在运行"
+
+#: admin/domains-page.php:295 admin/domains-page.php:355
+#: admin/user-page.php:119
+msgid "Delete"
+msgstr "删除"
+
+#: includes/functions.php:511
+msgid "Deleted"
+msgstr "已删除"
+
+#. %s: Server IP address
 #: admin/settings-page.php:69
 #, php-format
 msgid "Detected server IP: %s"
-msgstr ""
+msgstr "检测到的服务器 IP：%s"
 
-#: admin/templates.php:367 admin/user-page.php:23 includes/class-admin.php:298
+#: admin/pages.php:273 admin/settings-page.php:159
+msgid "Disable Primary Domain"
+msgstr "禁用主域名"
+
+#: admin/pages.php:276 admin/settings-page.php:162
+msgid "Disable Primary Domain Check"
+msgstr "禁用主域检查"
+
+#: admin/user-page.php:154
+msgid ""
+"DNS changes may take 24-48 hours to fully propagate across the internet."
+msgstr "DNS 更改可能需要 24-48 小时才能在互联网上完全传播。"
+
+#: includes/class-tools.php:635
+msgid "DNS check not performed"
+msgstr "未执行 DNS 检查"
+
+#: includes/class-admin.php:333
+msgid "DNS Configuration"
+msgstr "DNS 配置"
+
+#: admin/user-page.php:131
+msgid "DNS Configuration Instructions"
+msgstr "DNS 配置说明"
+
+#: admin/pages.php:837
+msgid "DNS correctly configured"
+msgstr "DNS 配置正确"
+
+#: includes/class-admin.php:601
+msgid "DNS issue"
+msgstr "DNS 问题"
+
+#: includes/class-tools.php:825
+#, php-format
+msgid "DNS Issue: %s"
+msgstr "DNS 问题：%s"
+
+#: admin/pages.php:39
+msgid "DNS Setup"
+msgstr "DNS 配置"
+
+#: admin/pages.php:301 admin/pages.php:414 admin/settings-page.php:182
+msgid "DNS Setup Instructions"
+msgstr "DNS 设置说明"
+
+#: admin/pages.php:805
+msgid "DNS Status"
+msgstr "DNS 状态"
+
+#: admin/pages.php:279 admin/settings-page.php:165
+msgid ""
+"Do not redirect to the primary domain, but allow access through any mapped "
+"domain."
+msgstr "不重定向到主域名，但允许通过任何映射域名访问。"
+
+#: admin/domains-page.php:21 admin/pages.php:24 admin/settings-page.php:42
+msgid "Document"
+msgstr "文档"
+
+#: admin/domains-page.php:57 admin/domains-page.php:309 admin/logs-table.php:73
+#: admin/pages.php:803 admin/user-page.php:50 admin/user-page.php:86
+msgid "Domain"
+msgstr "域名"
+
+#: includes/class-admin.php:880
+#, php-format
+msgid "Domain %s is already mapped to site ID %d."
+msgstr "域名 %s 已映射到站点 ID %d。"
+
+#: includes/class-admin.php:1101
+#, php-format
+msgid "Domain '%s' is already mapped to another site."
+msgstr "域名 '%s' 已映射到另一个站点。"
+
+#: includes/class-tools.php:654
+msgid "Domain A record is correctly pointing to server IP."
+msgstr "域名 A 记录正确指向服务器 IP。"
+
+#: admin/user-page.php:23 includes/class-admin.php:921
 msgid "Domain added successfully."
 msgstr "域名添加成功。"
 
-#: admin/templates.php:370 admin/user-page.php:26
-#, fuzzy
-#| msgid "New domain already exists."
-msgid "This domain is already mapped to a site."
-msgstr "新的域名已经存在。"
+#: includes/functions.php:709
+msgid "Domain cannot be empty"
+msgstr "域名不能为空"
 
-#: admin/templates.php:373 admin/user-page.php:29
-msgid "Primary domain updated."
-msgstr ""
+#: includes/functions.php:730
+msgid "Domain cannot contain consecutive dots"
+msgstr "域名不能包含连续的点"
 
-#: admin/templates.php:376 admin/user-page.php:32 includes/class-admin.php:377
-#, fuzzy, php-format
-#| msgid "Domain updated successfully."
+#: includes/functions.php:725
+msgid "Domain cannot start or end with a dot"
+msgstr "域名不能以点开头或结尾"
+
+#: includes/class-tools.php:674
+msgid "Domain CNAME record is correctly configured."
+msgstr "域名 CNAME 记录配置正确。"
+
+#: includes/functions.php:720
+msgid "Domain contains invalid characters"
+msgstr "域名包含无效字符"
+
+#: admin/user-page.php:32 includes/class-admin.php:1030
 msgid "Domain deleted successfully."
-msgid_plural "%d domains deleted successfully."
-msgstr[0] "域名更新成功。"
+msgstr "域名已删除成功。"
 
-#: admin/templates.php:383 admin/user-page.php:15 includes/class-admin.php:108
-#: includes/class-admin.php:109 includes/class-admin.php:123
-#: includes/class-admin.php:124
+#: includes/class-admin.php:1444
+msgid "Domain deleted."
+msgstr "域名已删除。"
+
+#: includes/class-tools.php:682
+msgid "Domain does not resolve to an IP address."
+msgstr "域名无法解析为 IP 地址。"
+
+#: admin/pages.php:40
+msgid "Domain Health"
+msgstr "域名健康"
+
+#: admin/pages.php:47
+msgid "Domain health check completed."
+msgstr "域名健康检查已完成。"
+
+#: admin/pages.php:53
+msgid "Domain health check started. The check is running in the background."
+msgstr "域名健康检查已开始。检查正在后台运行。"
+
+#: includes/class-tools.php:817
+#, php-format
+msgid "Domain health issues were detected on %s."
+msgstr "在 %s 上检测到域名健康问题。"
+
+#: admin/pages.php:721
+msgid "Domain Health Status"
+msgstr "域名健康状态"
+
+#: includes/class-tools.php:676
+msgid "Domain is not pointing to the correct server."
+msgstr "域名未指向正确的服务器。"
+
+#: includes/class-admin.php:746
+msgid "Domain is required."
+msgstr "域名是必填项。"
+
+#: admin/domains-page.php:143
+msgid "Domain Logs"
+msgstr "域名日志"
+
+#: admin/user-page.php:15 includes/class-admin.php:115
+#: includes/class-admin.php:116 includes/class-admin.php:130
+#: includes/class-admin.php:131
 msgid "Domain Mapping"
 msgstr "域名映射"
 
-#: admin/templates.php:409 admin/user-page.php:66
-msgid "Set this domain as the primary domain for this site"
-msgstr ""
+#: includes/class-core.php:182
+msgid "Domain mapping database tables created."
+msgstr "域映射数据库表已创建。"
 
-#: admin/templates.php:424 admin/user-page.php:81
-#, fuzzy
-#| msgid "Manage Domains"
-msgid "Your Mapped Domains"
-msgstr "管理域名"
+#: includes/class-admin.php:813
+msgid "Domain Mapping Disabled."
+msgstr "域映射已禁用。"
 
-#: admin/templates.php:452 admin/user-page.php:109
-#, fuzzy
-#| msgid "Primary"
-msgid "Make Primary"
-msgstr "主域名"
-
-#: admin/templates.php:461 admin/user-page.php:118
-msgid "Are you sure you want to delete this domain?"
-msgstr ""
-
-#: admin/templates.php:474 admin/user-page.php:131
-#, fuzzy
-#| msgid "Save Configuration"
-msgid "DNS Configuration Instructions"
-msgstr "保存配置"
-
-#: admin/templates.php:482 admin/user-page.php:139
+#: admin/domains-page.php:385
 msgid ""
-"The site administrator has not configured the DNS settings. Please contact "
-"them for assistance."
-msgstr ""
+"Domain mapping logs table is missing. Please deactivate and reactivate the "
+"plugin."
+msgstr "域名映射日志表缺失。请先停用再重新激活插件。"
 
-#: admin/templates.php:485 admin/user-page.php:142
-msgid ""
-"To map your domain to this site, you need to update your DNS records with "
-"your domain registrar."
-msgstr ""
+#: includes/class-admin.php:163
+msgid "Domain Mapping Status"
+msgstr "域名映射状态"
 
-#: admin/templates.php:489 admin/user-page.php:146
-#, fuzzy, php-format
-#| msgid "Add a DNS \"CNAME\" record pointing to: <strong>%s</strong>"
-msgid "Create a CNAME record for your domain pointing to: <code>%s</code>"
-msgstr "添加指向以下地址的 DNS“CNAME”记录：<strong>%s</strong>"
+#: admin/pages.php:80
+msgid "Domain mappings exported successfully."
+msgstr "域名映射导出成功。"
 
-#: admin/templates.php:494 admin/user-page.php:151
+#: includes/functions.php:738
+msgid "Domain must have at least two parts (e.g., domain.com)"
+msgstr "域名必须至少包含两部分（例如，domain.com）"
+
+#: includes/functions.php:715
+msgid "Domain name too long (max 253 characters)"
+msgstr "域名太长（最多 253 个字符）"
+
+#: includes/class-admin.php:1158 includes/class-admin.php:1206
+msgid "Domain not found or does not belong to this site."
+msgstr "未找到该域名或该域名不属于此站点。"
+
+#: admin/pages.php:207 admin/pages.php:213 admin/settings-page.php:93
+#: admin/settings-page.php:99
+msgid "Domain Options"
+msgstr "域名选项"
+
+#: includes/functions.php:753
 #, php-format
-msgid "Create an A record for your domain pointing to: <code>%s</code>"
-msgstr ""
+msgid "Domain part \"%s\" cannot start or end with hyphen"
+msgstr "域名部分\"%s\"不能以连字符开头或结尾"
 
-#: admin/templates.php:497 admin/user-page.php:154
-msgid ""
-"DNS changes may take 24-48 hours to fully propagate across the internet."
-msgstr ""
-
-#: admin/templates.php:510 admin/templates.php:815
-msgid "You do not have sufficient permissions to access this page."
-msgstr ""
-
-#: admin/templates.php:661
-msgid "Details"
-msgstr ""
-
-#: admin/templates.php:670
+#: includes/functions.php:757
 #, php-format
-msgid "Health Details for %s"
-msgstr ""
+msgid "Domain part \"%s\" contains invalid characters"
+msgstr "域名部分\"%s\"包含无效字符"
 
-#: admin/templates.php:690 admin/templates.php:710 includes/class-tools.php:248
-msgid "Not checked"
-msgstr ""
+#: includes/functions.php:749
+#, php-format
+msgid "Domain part \"%s\" too long (max 63 characters)"
+msgstr "域名部分\"%s\"太长（最多 63 个字符）"
 
-#: admin/templates.php:695
-msgid "Resolved IP"
-msgstr ""
+#: includes/functions.php:744
+msgid "Domain part %d is empty"
+msgstr "域名部分 %d 为空"
 
-#: admin/templates.php:699
-msgid "SSL Valid"
-msgstr ""
+#: admin/domains-page.php:245 includes/class-admin.php:273
+msgid "Domain Statistics"
+msgstr "域名统计"
 
-#: admin/templates.php:704
-msgid "Valid"
-msgstr ""
+#: includes/class-admin.php:971
+msgid "Domain updated successfully."
+msgstr "域名更新成功。"
 
-#: admin/templates.php:707
-msgid "Invalid"
-msgstr "无效"
+#: admin/domains-page.php:103
+msgid "Domain:"
+msgstr "域名："
 
-#: admin/templates.php:715
-msgid "SSL Expiry"
-msgstr ""
+#: includes/class-tools.php:821
+#, php-format
+msgid "Domain: %s"
+msgstr "域名： %s"
 
-#: admin/templates.php:719
-msgid "Response Code"
-msgstr ""
-
-#: includes/class-admin.php:103
-msgid ""
-"The domain mapping plugin only works if the site is installed in /. This is "
-"a limitation of how virtual servers work and is very difficult to work "
-"around."
-msgstr ""
-"域映射插件只能在站点是安装位于根目录时才有效。这是虚拟服务器工作方式的限制，"
-"很难解决。"
-
-#: includes/class-admin.php:132 includes/class-admin.php:133
-#: includes/class-admin.php:664
+#: includes/class-admin.php:139 includes/class-admin.php:140
+#: includes/class-admin.php:1379
 msgid "Domains"
 msgstr "域名"
 
-#: includes/class-admin.php:168
-#, fuzzy
-#| msgid "Domain deleted."
-msgid "Domain is required."
-msgstr "域名已删除。"
+#: admin/pages.php:761
+msgid "domains"
+msgstr "域名"
 
-#: includes/class-admin.php:169
-msgid "Site ID is required."
+#: admin/pages.php:944
+msgid "domains per batch"
+msgstr "每批处理域名数"
+
+#: admin/domains-page.php:349
+msgid "Edit"
+msgstr "编辑"
+
+#: admin/domains-page.php:29
+msgid "Edit Domain"
+msgstr "编辑域名"
+
+#: includes/class-tools.php:138
+msgid "Edit this site"
+msgstr "编辑此站点"
+
+#: admin/pages.php:929
+msgid "Email address for domain health notifications."
+msgstr "用于域名健康通知的邮箱地址。"
+
+#: admin/pages.php:914 admin/pages.php:917
+msgid "Email Notifications"
+msgstr "邮件通知"
+
+#: admin/pages.php:908
+msgid "Enable automatic daily health checks"
+msgstr "启用每日自动健康检查"
+
+#: admin/pages.php:216 admin/settings-page.php:102
+msgid "Enable Remote Login"
+msgstr "启用远程登录"
+
+#: admin/pages.php:246 admin/settings-page.php:132
+msgid "Enable User Domain Mapping Page"
+msgstr "启用用户域映射页面"
+
+#: admin/pages.php:688 admin/settings-page.php:444
+msgid "Enabled"
+msgstr "已启用"
+
+#: admin/domains-page.php:62 admin/user-page.php:55
+msgid "Enter the domain without http:// or https:// (e.g., example.com)"
+msgstr "输入不带 http:// 或 https:// 的域名（例如 example.com）"
+
+#: admin/pages.php:186 admin/settings-page.php:63
+msgid ""
+"Enter the IP address(es) users should point their DNS A records to. Use "
+"commas to separate multiple IPs."
+msgstr "输入用户应将其 DNS A 记录指向的 IP 地址。使用逗号分隔多个 IP。"
+
+#: admin/pages.php:316 admin/pages.php:356 admin/pages.php:429
+#: admin/pages.php:469 admin/settings-page.php:197 admin/settings-page.php:229
+msgid "Example DNS Record"
+msgstr "DNS 记录示例"
+
+#: admin/pages.php:1088
+msgid "Example: 1,example.com,1"
+msgstr "示例：1,example.com,1"
+
+#: admin/pages.php:850
+#, php-format
+msgid "Expires: %s"
+msgstr "过期时间：%s"
+
+#: admin/pages.php:1050
+msgid "Export all domain mappings to a CSV file."
+msgstr "将所有域名映射导出到 CSV 文件。"
+
+#: admin/pages.php:1048
+msgid "Export Domain Mappings"
+msgstr "导出域名映射"
+
+#: admin/pages.php:1064
+msgid "Export for specific site ID (optional):"
+msgstr "导出特定站点 ID（可选）："
+
+#: admin/pages.php:1070
+msgid "Export to CSV"
+msgstr "导出为 CSV"
+
+#: includes/class-admin.php:924
+msgid "Failed to add domain."
+msgstr "添加域名失败。"
+
+#: includes/class-tools.php:1013
+msgid "File size exceeds 5MB limit."
+msgstr "文件大小超过5MB限制。"
+
+#: admin/domains-page.php:126 admin/logs-table.php:31
+msgid "Filter"
+msgstr "筛选"
+
+#: admin/logs-table.php:21
+msgid "Filter by action"
+msgstr "按操作筛选"
+
+#: admin/pages.php:1095
+msgid "First row contains column headers"
+msgstr "第一行包含列标题"
+
+#: admin/pages.php:400 admin/pages.php:513 admin/settings-page.php:268
+msgid ""
+"For \"www\" subdomain, create a separate CNAME record with \"www\" as the "
+"name pointing to the same value."
 msgstr ""
+"对于 \"www\" 子域名，创建一个单独的 CNAME 记录，名称为 \"www\"，指向相同的"
+"值。"
 
-#: includes/class-admin.php:170
-msgid "Saving..."
-msgstr "正在保存..."
+#: admin/pages.php:402 admin/pages.php:515 admin/settings-page.php:274
+msgid ""
+"For SSL to work properly, make sure your web server is configured with the "
+"appropriate SSL certificates for mapped domains."
+msgstr ""
+"为了使 SSL 正常工作，请确保您的 Web 服务器配置了映射域名的适当 SSL 证书。"
 
-#: includes/class-admin.php:171
-msgid "Processing..."
-msgstr "正在处理…"
+#: admin/pages.php:264 admin/settings-page.php:150
+msgid ""
+"Force admin pages to use the original WordPress domain instead of the mapped "
+"domain."
+msgstr "强制管理页面使用原始 WordPress 域名而不是映射域名。"
 
-#: includes/class-admin.php:172
-#, fuzzy
-#| msgid "Server error occurred."
-msgid "An error occurred."
-msgstr "发生服务器错误。"
+#: admin/pages.php:547 admin/settings-page.php:300
+msgid "Found"
+msgstr "已找到"
 
-#: includes/class-admin.php:173
-msgid "Please select at least one domain."
-msgstr "请至少选择一个域名。"
+#: includes/class-admin.php:687 includes/class-tools.php:567
+msgid "Health check completed."
+msgstr "健康检查已完成。"
 
-#. translators: %1$s: Content directory, %2$s: WordPress install path
-#: includes/class-admin.php:191
-#, fuzzy, php-format
-#| msgid ""
-#| "Please copy sunrise.php to %s/sunrise.php and ensure the SUNRISE "
-#| "definition is in %swp-config.php"
+#: admin/pages.php:726
+msgid "Health check in progress..."
+msgstr "健康检查进行中..."
+
+#: admin/pages.php:894
+msgid "Health Check Settings"
+msgstr "健康检查设置"
+
+#: includes/class-admin.php:314
+msgid "Health Status"
+msgstr "域名健康状态"
+
+#: includes/class-tools.php:849
+msgid "HTTP Response Code: %d"
+msgstr "HTTP 响应代码：%d"
+
+#. URI of the plugin
+msgid "https://wenpai.org/plugins/wp-domain-mapping/"
+msgstr "https://wenpai.org/plugins/wp-domain-mapping/"
+
+#. Author URI of the plugin
+msgid "https://wpdomain.com/"
+msgstr "https://wpdomain.com/"
+
+#: admin/pages.php:1112
+msgid "If checked, will only import domains for existing sites."
+msgstr "如果选中，将仅导入现有站点的域名。"
+
+#: admin/pages.php:1104
+msgid "If unchecked, will skip domains that already exist."
+msgstr "如果未选中，将跳过已存在的域名。"
+
+#: admin/pages.php:401 admin/pages.php:514 admin/settings-page.php:271
+msgid ""
+"If you're using Cloudflare or similar services, you may need to adjust proxy "
+"settings."
+msgstr "如果您使用 Cloudflare 或类似服务，您可能需要调整代理设置。"
+
+#: includes/class-tools.php:1187
+msgid "Import completed: %d imported, %d skipped, %d errors."
+msgstr "导入完成：%d 个已导入，%d 个已跳过，%d 个错误。"
+
+#: admin/pages.php:1075
+msgid "Import Domain Mappings"
+msgstr "导入域名映射"
+
+#: admin/pages.php:1077
+msgid "Import domain mappings from a CSV file."
+msgstr "从 CSV 文件导入域名映射。"
+
+#: admin/pages.php:1116
+msgid "Import from CSV"
+msgstr "从 CSV 导入"
+
+#: admin/pages.php:1129
+msgid "Import Results"
+msgstr "导入结果"
+
+#: admin/pages.php:41
+msgid "Import/Export"
+msgstr "导入/导出"
+
+#: includes/functions.php:513
+msgid "Imported"
+msgstr "已导入"
+
+#: admin/pages.php:1059
+msgid "Include column headers"
+msgstr "包含列标题"
+
+#: includes/class-core.php:559
+msgid "Incorrect or out of date login key"
+msgstr "登录密钥不正确或过期"
+
+#: admin/pages.php:1036
+#, php-format
+msgid ""
+"Install the %s high-performance component to use batch domain import/export."
+msgstr "请先下载并安装 %s 高性能组件，以启用域名批量导入/导出功能。"
+
+#: admin/pages.php:528 admin/settings-page.php:281
+msgid "Installation Check"
+msgstr "安装检查"
+
+#. %s: URL to punycode converter
+#: includes/functions.php:171
+#, php-format
+msgid ""
+"International Domain Names should be in <a href=\"%s\" "
+"target=\"_blank\">punycode</a> format."
+msgstr "国际域名应采用<a href=\"%s\" target=\"_blank\">punycode</a>格式。"
+
+#: includes/class-admin.php:851 includes/class-admin.php:1051
+msgid "Invalid action."
+msgstr "无效操作。"
+
+#: includes/class-admin.php:1082
+msgid "Invalid domain format"
+msgstr "无效的域名格式"
+
+#: includes/class-admin.php:752 includes/class-admin.php:863
+msgid "Invalid domain format."
+msgstr "无效的域名格式。"
+
+#: includes/class-tools.php:952 includes/class-tools.php:1008
+msgid "Invalid security token. Please try again."
+msgstr "无效的安全令牌。请重试。"
+
+#: includes/class-admin.php:858
+msgid "Invalid site ID."
+msgstr "无效的站点 ID。"
+
+#: includes/functions.php:765
+msgid "Invalid top-level domain (TLD)"
+msgstr "无效的顶级域名 (TLD)"
+
+#: admin/pages.php:808
+msgid "Last Check"
+msgstr "最后检测"
+
+#: includes/class-admin.php:630
+#, php-format
+msgid "Last checked: %s ago"
+msgstr "最后检测：%s前"
+
+#: admin/pages.php:1066
+msgid "Leave empty to export all domains."
+msgstr "留空以导出所有域名。"
+
+#: admin/pages.php:594 admin/settings-page.php:347
+msgid "Loaded successfully"
+msgstr "加载成功"
+
+#: includes/class-core.php:535
+msgid "Login key expired"
+msgstr "登录密钥已过期"
+
+#: includes/class-core.php:574
+msgid "Logout key expired"
+msgstr "登录密钥已过期"
+
+#: includes/class-tools.php:228
+msgid "Main site is accessible"
+msgstr "主站点可访问"
+
+#: includes/class-tools.php:434
+msgid "Main site is always accessible"
+msgstr "主站点始终可访问"
+
+#: admin/user-page.php:109
+msgid "Make Primary"
+msgstr "设为主域"
+
+#: admin/domains-page.php:140 admin/pages.php:289 admin/settings-page.php:175
+#: includes/class-admin.php:382
+msgid "Manage Domains"
+msgstr "管理域名"
+
+#. Description of the plugin
+msgid ""
+"Map any site on a WordPress website to another domain with enhanced "
+"management features."
+msgstr "使用增强的管理功能将 WordPress 网站上的任何站点映射到另一个域名。"
+
+#: includes/class-admin.php:1391
+msgid "Mapping"
+msgstr "映射"
+
+#: admin/pages.php:399 admin/pages.php:512 admin/settings-page.php:265
+msgid "Most DNS changes take 24-48 hours to fully propagate worldwide."
+msgstr "大多数 DNS 更改需要 24-48 小时才能在全球完全传播。"
+
+#: admin/pages.php:685 admin/settings-page.php:441
+msgid "Multisite"
+msgstr "多站点"
+
+#: admin/pages.php:321 admin/pages.php:361 admin/pages.php:434
+#: admin/pages.php:474 admin/settings-page.php:202 admin/settings-page.php:234
+msgid "Name"
+msgstr "名称"
+
+#: admin/pages.php:875
+msgid "Never"
+msgstr "从未"
+
+#: includes/class-admin.php:1435
+msgid "New domain added."
+msgstr "已添加新域名。"
+
+#: includes/class-admin.php:1438
+msgid "New domain already exists."
+msgstr "新的域名已经存在。"
+
+#: includes/class-admin.php:1441
+msgid "New primary domain."
+msgstr "新的主域名。"
+
+#: admin/domains-page.php:120 admin/domains-page.php:342
+msgid "No"
+msgstr "否"
+
+#: includes/class-admin.php:974
+msgid "No changes were made or update failed."
+msgstr "未进行任何更改或更新失败。"
+
+#: includes/class-tools.php:259
+msgid "No domain"
+msgstr "无域名"
+
+#: admin/domains-page.php:421
+msgid "No domain mapping logs available."
+msgstr "没有可用的域名映射日志。"
+
+#: includes/class-tools.php:423
+msgid "No domain specified."
+msgstr "未指定域名。"
+
+#: admin/pages.php:792
+msgid "No domains found"
+msgstr "未找到域名"
+
+#: admin/domains-page.php:280 admin/pages.php:888 includes/class-admin.php:667
+msgid "No domains found."
+msgstr "未找到域名。"
+
+#: includes/class-admin.php:578
+msgid "No domains to check."
+msgstr "无域名可检查。"
+
+#: includes/class-admin.php:1041
+msgid "No domains were deleted."
+msgstr "没有域名被删除。"
+
+#: includes/class-tools.php:1019
+msgid "No file uploaded or upload error."
+msgstr "没有上传文件或上传错误。"
+
+#: includes/class-admin.php:253 includes/class-tools.php:220
+msgid "No SSL"
+msgstr "无 SSL"
+
+#: includes/class-admin.php:993
+msgid "No valid domains provided for deletion."
+msgstr "未提供可供删除的有效域。"
+
+#: includes/class-admin.php:591
+msgid "Not accessible"
+msgstr "不可访问"
+
+#: includes/class-tools.php:256
+msgid "Not checked"
+msgstr "未检查"
+
+#: admin/pages.php:842 admin/pages.php:856 admin/pages.php:867
+msgid "Not checked yet"
+msgstr "尚未检查"
+
+#: admin/pages.php:578 admin/settings-page.php:331
+msgid "Not defined - add to wp-config.php: "
+msgstr "未定义 - 添加到 wp-config.php："
+
+#: admin/pages.php:1387
+msgid "Not defined in wp-config.php (optimal for domain mapping)"
+msgstr "wp-config.php 中未定义（最适合域映射）"
+
+#: admin/pages.php:1385
+msgid ""
+"Not defined in wp-config.php (optimal). Currently managed by domain mapping."
+msgstr "wp-config.php 中未定义（最佳）。目前由域名映射管理。"
+
+#: admin/pages.php:690 admin/settings-page.php:446
+msgid "Not enabled - this plugin requires WordPress Multisite"
+msgstr "未启用 - 此插件需要 WordPress 多站点"
+
+#. %s: WordPress content directory
+#: admin/pages.php:552 admin/settings-page.php:305
+#, php-format
+msgid "Not found - copy sunrise.php to %s"
+msgstr "未找到 - 将 sunrise.php 复制到 %s"
+
+#: admin/pages.php:598 admin/settings-page.php:351
+msgid ""
+"Not loaded - make sure SUNRISE is defined before the require_once() in wp-"
+"config.php"
+msgstr "未加载 - 确保在 wp-config.php 中的 require_once() 之前定义 SUNRISE"
+
+#: admin/pages.php:600 admin/settings-page.php:353
+msgid "Not loaded - SUNRISE constant not defined"
+msgstr "未加载 - SUNRISE 常量未定义"
+
+#. %s: URL to sites list
+#: admin/domains-page.php:46
+#, php-format
+msgid ""
+"Not sure about Site ID? <a href=\"%s\" target=\"_blank\">View all sites</a> "
+"to find the ID."
+msgstr ""
+"不确定站点 ID？<a href=\"%s\" target=\"_blank\">查看所有站点</a>以找到 ID。"
+
+#: admin/pages.php:926
+msgid "Notification Email"
+msgstr "通知邮箱"
+
+#: admin/pages.php:945
+msgid ""
+"Number of domains to check in each batch. Lower values prevent timeouts but "
+"take longer."
+msgstr "每批检查的域名数量。较低的值可防止超时，但耗时更长。"
+
+#: admin/pages.php:760
+msgid "of"
+msgstr "/"
+
+#: includes/class-tools.php:1030
+msgid "Only CSV files are allowed."
+msgstr "仅支持CSV格式文件。"
+
+#: includes/class-admin.php:931
+msgid "Original domain not found or access denied."
+msgstr "未找到原始域或拒绝访问。"
+
+#: admin/pages.php:228 admin/settings-page.php:114
+msgid "Permanent Redirect"
+msgstr "永久重定向"
+
+#: includes/class-admin.php:643 includes/class-admin.php:660
+#: includes/class-admin.php:835
+msgid "Permission denied."
+msgstr "没有权限。"
+
+#: admin/pages.php:392
+msgid ""
+"Please configure either a Server IP Address or CNAME in the Settings tab to "
+"provide DNS setup instructions."
+msgstr "请在“设置”选项卡中配置服务器 IP 地址或 CNAME 以提供 DNS 设置说明。"
+
+#: admin/pages.php:505 admin/settings-page.php:257
+msgid ""
+"Please configure either a Server IP Address or CNAME to provide DNS setup "
+"instructions."
+msgstr "请配置服务器 IP 地址或 CNAME 以提供 DNS 设置说明。"
+
+#. %1$s: Content directory, %2$s: WordPress install path
+#: includes/class-admin.php:771
+#, php-format
 msgid ""
 "Please copy sunrise.php to %1$s/sunrise.php and ensure the SUNRISE "
 "definition is in %2$swp-config.php"
 msgstr ""
-"请复制sunrise.php到 %s/sunrise.php，并确保SUNRISE定义在%swp-config.php文件"
+"请复制sunrise.php到 %1$s/sunrise.php，并确保SUNRISE定义在%2$swp-config.php文"
+"件"
 
-#: includes/class-admin.php:197 includes/class-admin.php:210
-#: includes/class-admin.php:223 includes/class-admin.php:638
-msgid "This plugin has not been configured correctly yet."
-msgstr "该插件尚未正确配置。"
+#. %s: WordPress install path
+#: includes/class-admin.php:798
+#, php-format
+msgid ""
+"Please edit your %swp-config.php and move the line <em>define( 'SUNRISE', "
+"'on' );</em> above the last require_once() in that file or make sure you "
+"updated sunrise.php."
+msgstr ""
+"请编辑您的 %swp-config.php 和移动行<em>define( 'SUNRISE', 'on' );</em>上面最"
+"后一次()需要在文件或确保您sunrise.php更新。"
 
-#. translators: %s: WordPress install path
-#: includes/class-admin.php:205
+#: includes/class-admin.php:751
+msgid "Please select at least one domain."
+msgstr "请至少选择一个域名。"
+
+#: includes/class-admin.php:1349
+#| msgid ""
+#| "Please set the IP address or CNAME of your server in the <a href='wpmu-"
+#| "admin.php?page=domain-mapping'>site admin page</a>."
+msgid ""
+"Please set the IP address or CNAME of your server in the <a href='wp-admin/"
+"network/settings.php?page=domain-mapping'>site admin page</a>."
+msgstr ""
+"请在<a href='wp-admin/network/settings.php?page=domain-mapping'>站点管理页面"
+"</a>中设置您服务器的 IP 地址或 CNAME。"
+
+#. %s: WordPress install path
+#: includes/class-admin.php:785
 #, php-format
 msgid ""
 "Please uncomment the line <em>define( 'SUNRISE', 'on' );</em> or add it to "
@@ -1077,415 +1061,530 @@ msgstr ""
 "请取消注释行 <em>define( 'SUNRISE', 'on' );</em> 或将其添加到您的 %swp-"
 "config.php"
 
-#. translators: %s: WordPress install path
-#: includes/class-admin.php:218
+#: includes/class-admin.php:338
+#, php-format
+msgid "Point your domain A record to: %s"
+msgstr "请将您的域名A记录指向：%s"
+
+#: includes/class-admin.php:336
+#, php-format
+msgid "Point your domain CNAME to: %s"
+msgstr "请将您的域名CNAME记录指向：%s"
+
+#: admin/domains-page.php:67 admin/domains-page.php:310 admin/user-page.php:87
+#: includes/class-admin.php:281 includes/class-admin.php:302
+msgid "Primary"
+msgstr "主域名"
+
+#: admin/pages.php:823 admin/user-page.php:60 admin/user-page.php:63
+#: includes/class-admin.php:236
+msgid "Primary Domain"
+msgstr "主域"
+
+#: admin/user-page.php:29
+msgid "Primary domain updated."
+msgstr "主域名已更新。"
+
+#: admin/domains-page.php:253
+msgid "Primary Domains"
+msgstr "主域"
+
+#: admin/domains-page.php:113
+msgid "Primary:"
+msgstr "主域："
+
+#: admin/pages.php:759
+msgid "Processed "
+msgstr "正在处理"
+
+#: admin/pages.php:730
+#, php-format
+msgid "Processed %d of %d domains (%d%%)"
+msgstr "已处理 %d 个域名，共 %d 个（%d%%）"
+
+#: admin/pages.php:1121
+msgid "Processing import..."
+msgstr "正在处理导入..."
+
+#: admin/user-page.php:168 includes/class-admin.php:749
+msgid "Processing..."
+msgstr "正在处理…"
+
+#: admin/pages.php:807 includes/class-tools.php:185
+#: includes/class-tools.php:198
+msgid "Reachable"
+msgstr "可达"
+
+#: includes/class-admin.php:353
+msgid "Recent Activity"
+msgstr "近期活动"
+
+#: admin/pages.php:258 admin/settings-page.php:144
+msgid "Redirect Admin"
+msgstr "重定向管理"
+
+#: admin/pages.php:261 admin/settings-page.php:147
+msgid "Redirect Admin Pages to Original Domain"
+msgstr "将管理页面重定向到原始域"
+
+#: includes/class-admin.php:317
+msgid "Refresh"
+msgstr "刷新"
+
+#: admin/pages.php:638 admin/settings-page.php:391
+msgid ""
+"Remove the define('COOKIE_DOMAIN', ...) line from wp-config.php to enable "
+"dynamic cookie domain handling."
+msgstr ""
+"从 wp-config.php 中删除 Define('COOKIE_DOMAIN', ...) 行以启用动态 cookie 域处"
+"理。"
+
+#: includes/class-tools.php:1166
+#, php-format
+msgid "Row %d: Added domain %s for blog ID %d."
+msgstr "第 %d 行：已添加站点 ID %d 的域名 %s。"
+
+#: includes/class-tools.php:1135
+#, php-format
+msgid "Row %d: Domain %s already exists for blog ID %d. Skipped."
+msgstr "第 %d 行：域名 %s 已存在于站点 ID %d。已跳过。"
+
+#: includes/class-tools.php:1078
+#, php-format
+msgid "Row %d: Domain %s already processed in this import. Skipped duplicate."
+msgstr "第 %d 行：域名 %s 在此次导入中已处理。跳过重复项。"
+
+#: includes/class-tools.php:1128
+#, php-format
+msgid "Row %d: Domain %s is already mapped to blog ID %d."
+msgstr "第 %d 行：域名 %s 已映射到站点 ID %d。"
+
+#: includes/class-tools.php:1173
+#, php-format
+msgid "Row %d: Failed to add domain %s for blog ID %d."
+msgstr "第 %d 行：无法为站点 ID %d 添加域名 %s。"
+
+#: includes/class-tools.php:1153
+#, php-format
+msgid "Row %d: Failed to update domain %s for blog ID %d."
+msgstr "第 %d 行：无法更新站点 ID %d 的域名 %s。"
+
+#: includes/class-tools.php:1092
+msgid "Row %d: Invalid blog ID: %d"
+msgstr "第 %d 行：无效的站点 ID：%d"
+
+#: includes/class-tools.php:1114
+#, php-format
+msgid "Row %d: Invalid domain format: %s"
+msgstr "第 %d 行：域名格式无效：%s"
+
+#: includes/class-tools.php:1062
+msgid "Row %d: Invalid format. Expected at least 3 columns."
+msgstr "第 %d 行：格式无效。至少需要 3 列。"
+
+#: includes/class-tools.php:1103
+msgid "Row %d: Site ID %d does not exist."
+msgstr "第 %d 行：站点 ID %d 不存在。"
+
+#: includes/class-tools.php:1146
+#, php-format
+msgid "Row %d: Updated domain %s for blog ID %d."
+msgstr "第 %d 行：已更新站点 ID %d 的域名 %s。"
+
+#: admin/pages.php:951
+msgid "Save Changes"
+msgstr "保存更改"
+
+#: admin/pages.php:287 admin/settings-page.php:173
+msgid "Save Configuration"
+msgstr "保存配置"
+
+#: includes/class-admin.php:748
+msgid "Saving..."
+msgstr "正在保存..."
+
+#: admin/domains-page.php:98
+msgid "Search & Filter Domains"
+msgstr "搜索和过滤域名"
+
+#: includes/class-admin.php:285
+msgid "Secondary"
+msgstr "二级"
+
+#: includes/class-admin.php:830 includes/class-tools.php:348
+#: includes/class-tools.php:372 includes/class-tools.php:417
+#: includes/class-tools.php:468
+msgid "Security check failed."
+msgstr "安全检查失败。"
+
+#: admin/domains-page.php:292
+msgid "Select bulk action"
+msgstr "选择批量操作"
+
+#: admin/pages.php:920
+msgid "Send email notifications when domain health issues are detected"
+msgstr "检测到域名健康问题时发送邮件通知"
+
+#: admin/pages.php:937
+msgid ""
+"Send notifications when SSL certificates are expiring within this many days."
+msgstr "当 SSL 证书在指定天数内过期时发送通知。"
+
+#: admin/pages.php:191 admin/settings-page.php:77
+msgid "Server CNAME Domain:"
+msgstr "服务器 CNAME 域名："
+
+#: admin/pages.php:177 admin/settings-page.php:54
+msgid "Server Configuration"
+msgstr "服务器配置"
+
+#: admin/pages.php:182 admin/settings-page.php:59
+msgid "Server IP Address:"
+msgstr "服务器 IP 地址："
+
+#: admin/domains-page.php:71
+msgid "Set as the primary domain for this site"
+msgstr "设置为此站点的主域名"
+
+#: admin/user-page.php:66
+msgid "Set this domain as the primary domain for this site"
+msgstr "将此域名设置为此站点的主域名"
+
+#: admin/pages.php:1163
+msgid "Set to 1 to make this the primary domain, 0 otherwise (required)"
+msgstr "设置为 1 以使其成为主域名，否则为 0（必需）"
+
+#: admin/pages.php:38
+msgid "Settings"
+msgstr "设置"
+
+#: admin/pages.php:59 includes/class-admin.php:1325
+msgid "Settings saved."
+msgstr "设置已保存。"
+
+#: includes/class-admin.php:555
+msgid "Show health status"
+msgstr "显示健康状态"
+
+#: admin/logs-table.php:74 admin/pages.php:804
+msgid "Site"
+msgstr "站点"
+
+#: admin/logs-table.php:102
+msgid "Site #%d"
+msgstr "站点 #%d"
+
+#: includes/class-admin.php:868
+msgid "Site does not exist."
+msgstr "站点不存在。"
+
+#: admin/domains-page.php:36 admin/domains-page.php:307
+#: includes/class-tools.php:153
+msgid "Site ID"
+msgstr "站点 ID"
+
+#: includes/class-admin.php:747
+msgid "Site ID is required."
+msgstr "站点 ID 是必填项。"
+
+#: admin/domains-page.php:108
+msgid "Site ID:"
+msgstr "站点 ID："
+
+#: includes/class-tools.php:135
+msgid "Site ID: %d"
+msgstr "站点 ID：%d"
+
+#: admin/pages.php:862 includes/class-tools.php:251
+msgid "Site is accessible"
+msgstr "站点可访问"
+
+#: admin/pages.php:864 includes/class-tools.php:253
+msgid "Site is not accessible"
+msgstr "站点不可访问"
+
+#: includes/class-tools.php:847
+msgid "Site is not accessible."
+msgstr "站点不可访问。"
+
+#: admin/domains-page.php:308
+msgid "Site Name"
+msgstr "站点名称"
+
+#: admin/domains-page.php:257
+msgid "Sites with Mapped Domains"
+msgstr "已映射域名站点"
+
+#: admin/pages.php:673 admin/settings-page.php:429
+msgid "Some tables are missing - deactivate and reactivate the plugin"
+msgstr "某些表缺失 - 请停用并重新激活插件"
+
+#: includes/class-tools.php:184 includes/class-tools.php:197
+msgid "SSL"
+msgstr "SSL"
+
+#: includes/class-admin.php:251
+msgid "SSL Active"
+msgstr "SSL 可用"
+
+#: includes/class-tools.php:838
+#, php-format
+msgid "SSL Certificate expires on %s (within %d days)."
+msgstr "SSL 证书将于 %s 过期（%d 天内）。"
+
+#: includes/class-tools.php:830
+msgid "SSL Certificate is invalid or missing."
+msgstr "SSL 证书无效或缺失。"
+
+#: admin/pages.php:853
+msgid "SSL certificate issue"
+msgstr "SSL 证书问题"
+
+#: admin/pages.php:848
+msgid "SSL certificate valid"
+msgstr "SSL 证书有效"
+
+#: includes/class-tools.php:218
+msgid "SSL Enabled"
+msgstr "SSL 已启用"
+
+#: admin/pages.php:933
+msgid "SSL Expiry Warning"
+msgstr "SSL 过期警告"
+
+#: includes/class-admin.php:596
+msgid "SSL issue"
+msgstr "SSL 问题"
+
+#: admin/pages.php:806
+msgid "SSL Status"
+msgstr "SSL 状态"
+
+#: admin/pages.php:532 admin/settings-page.php:285
+msgid "Status"
+msgstr "状态"
+
+#: admin/pages.php:567 admin/settings-page.php:320
+msgid "SUNRISE constant"
+msgstr "SUNRISE 常量"
+
+#: admin/pages.php:544 admin/settings-page.php:297
+msgid "sunrise.php file"
+msgstr "sunrise.php 文件"
+
+#: admin/pages.php:591 admin/settings-page.php:344
+msgid "SUNRISE_LOADED"
+msgstr "SUNRISE_LOADED"
+
+#: admin/domains-page.php:24 admin/pages.php:27 admin/settings-page.php:45
+msgid "Support"
+msgstr "支持"
+
+#. %s: IP address(es)
+#: admin/pages.php:350 admin/pages.php:463 admin/settings-page.php:223
 #, php-format
 msgid ""
-"Please edit your %swp-config.php and move the line <em>define( 'SUNRISE', "
-"'on' );</em> above the last require_once() in that file or make sure you "
-"updated sunrise.php."
+"Tell your users to add a DNS \"A\" record for their domain pointing to: %s"
+msgstr "告诉您的用户为他们的域名添加指向 %s 的 DNS \"A\" 记录："
+
+#. %s: CNAME value
+#: admin/pages.php:310 admin/pages.php:423 admin/settings-page.php:191
+#, php-format
+msgid ""
+"Tell your users to add a DNS \"CNAME\" record for their domain pointing to: "
+"%s"
+msgstr "告诉您的用户为他们的域名添加指向 %s 的 DNS \"CNAME\" 记录："
+
+#: admin/pages.php:1136
+msgid "The CSV file should follow this format:"
+msgstr "CSV 文件应遵循以下格式："
+
+#: admin/pages.php:1087
+msgid "The CSV file should have the columns: blog_id, domain, active (1 or 0)."
+msgstr "CSV 文件应包含以下列：blog_id、domain、active（1 或 0）。"
+
+#: includes/class-admin.php:110
+#, php-format
+msgid ""
+"The domain mapping plugin only works if WordPress is installed in the root "
+"directory of your webserver. It is currently installed in '%s'."
+msgstr "域名映射插件仅当WordPress安装在网站根目录时有效，当前安装路径为'%s'。"
+
+#: admin/pages.php:1162
+msgid "The domain name without http:// or https:// (required)"
+msgstr "不带 http:// 或 https:// 的域名（必需）"
+
+#: includes/class-tools.php:818
+msgid "The following domains have issues:"
+msgstr "以下域名存在问题："
+
+#: admin/pages.php:1161
+msgid "The ID of the WordPress site (required)"
+msgstr "WordPress 站点的 ID（必需）"
+
+#: admin/user-page.php:139
+msgid ""
+"The site administrator has not configured the DNS settings. Please contact "
+"them for assistance."
+msgstr "站点管理员尚未配置 DNS 设置。请联系他们获取帮助。"
+
+#: admin/user-page.php:26
+msgid "This domain is already mapped to a site."
+msgstr "此域名已映射到一个站点。"
+
+#: admin/pages.php:631 admin/settings-page.php:384
+msgid ""
+"This may cause login issues on mapped domains. Consider removing the "
+"COOKIE_DOMAIN definition from wp-config.php."
 msgstr ""
-"请编辑你的 %swp-config.php 和移动行<em>define( 'SUNRISE', 'on' );</em>上面最"
-"后一次()需要在文件或确保您sunrise.php更新。"
+"这可能会导致映射域名的登录问题。请考虑从 wp-config.php 中删除 COOKIE_DOMAIN "
+"定义。"
 
-#: includes/class-admin.php:233
-msgid "Domain Mapping Disabled."
-msgstr "域映射已禁用。"
+#: includes/class-admin.php:777 includes/class-admin.php:790
+#: includes/class-admin.php:803 includes/class-admin.php:1353
+msgid "This plugin has not been configured correctly yet."
+msgstr "该插件尚未正确配置。"
 
-#: includes/class-admin.php:237
+#: admin/user-page.php:142
+msgid ""
+"To map your domain to this site, you need to update your DNS records with "
+"your domain registrar."
+msgstr "要将您的域名映射到此站点，您需要在域名注册商那里更新您的 DNS 记录。"
+
+#: includes/class-tools.php:858
+#, php-format
+msgid "To view and manage these issues, please visit: %s"
+msgstr "要查看和管理这些问题，请访问：%s"
+
+#: admin/domains-page.php:249 includes/class-admin.php:277
+msgid "Total Domains"
+msgstr "域名总数"
+
+#: admin/pages.php:323 admin/pages.php:363 admin/pages.php:436
+#: admin/pages.php:476
+msgid "TTL"
+msgstr "TTL"
+
+#: admin/pages.php:320 admin/pages.php:360 admin/pages.php:433
+#: admin/pages.php:473 admin/settings-page.php:201 admin/settings-page.php:233
+msgid "Type"
+msgstr "类型"
+
+#: admin/domains-page.php:316 admin/pages.php:817 includes/class-admin.php:357
+msgid "Unknown"
+msgstr "未知"
+
+#: includes/class-core.php:562
+msgid "Unknown login key"
+msgstr "未知的登录密钥"
+
+#: includes/class-core.php:588
+msgid "Unknown logout key"
+msgstr "未知的退出密钥"
+
+#: admin/domains-page.php:85
+msgid "Update Domain"
+msgstr "更新域名"
+
+#: admin/pages.php:1102
+msgid "Update existing mappings"
+msgstr "更新现有映射"
+
+#: includes/functions.php:509
+msgid "Updated"
+msgstr "已更新"
+
+#: admin/pages.php:234 admin/settings-page.php:120
+msgid ""
+"Use 301 redirects instead of 302 redirects. This is better for SEO but may "
+"cause caching issues."
+msgstr "使用 301 重定向而不是 302 重定向。这对 SEO 更好，但可能导致缓存问题。"
+
+#. %s: IDN warning message
+#: admin/pages.php:198 admin/settings-page.php:84
+#, php-format
+msgid "Use a CNAME instead of an IP (overrides IP settings). %s"
+msgstr "使用 CNAME 而不是 IP（覆盖 IP 设置）。%s"
+
+#: admin/pages.php:231 admin/settings-page.php:117
+msgid "Use Permanent Redirect (301)"
+msgstr "使用永久重定向（301）"
+
+#: admin/logs-table.php:71
+msgid "User"
+msgstr "用户"
+
+#: admin/logs-table.php:88
+msgid "User #%d"
+msgstr "用户 #%d"
+
+#: admin/pages.php:243 admin/settings-page.php:129
+msgid "User Settings"
+msgstr "用户设置"
+
+#: includes/class-admin.php:263
+msgid "Using original domain:"
+msgstr "使用原域名："
+
+#: admin/pages.php:1110
+msgid "Validate site IDs"
+msgstr "验证站点 ID"
+
+#: admin/pages.php:322 admin/pages.php:362 admin/pages.php:435
+#: admin/pages.php:475 admin/pages.php:534 admin/settings-page.php:203
+#: admin/settings-page.php:235 admin/settings-page.php:287
+msgid "Value"
+msgstr "数值"
+
+#: admin/domains-page.php:18 admin/pages.php:21 admin/settings-page.php:39
+#, php-format
+msgid "Version: %s"
+msgstr "版本：%s"
+
+#: admin/domains-page.php:78 admin/domains-page.php:368
+msgid "Warning! Primary domains are currently disabled in network settings."
+msgstr "警告！主域名功能当前在网络设置中被禁用。"
+
+#. Name of the plugin
+msgid "WP Domain Mapping"
+msgstr "文派域名映射"
+
+#. Author of the plugin
+msgid "WPDomain.com"
+msgstr "WPDomain.com"
+
+#: admin/domains-page.php:117 admin/domains-page.php:339
+#: admin/user-page.php:103
+msgid "Yes"
+msgstr "是"
+
+#: includes/class-tools.php:947
+msgid "You do not have sufficient permissions to export data."
+msgstr "您没有足够的权限导出数据。"
+
+#: includes/class-tools.php:1003
+msgid "You do not have sufficient permissions to import data."
+msgstr "您没有足够的权限导入数据。"
+
+#: includes/class-tools.php:353 includes/class-tools.php:377
+#: includes/class-tools.php:412 includes/class-tools.php:463
+msgid "You do not have sufficient permissions to perform this action."
+msgstr "您没有足够的权限执行此操作。"
+
+#. %s: URL to WordPress network creation documentation
+#: includes/class-admin.php:817
 #, php-format
 msgid "You must <a href=\"%1$s\">create a network</a> for it to work."
 msgstr "您必须<a href=\"%1$s\">创建网络</a>才能使其正常工作。"
 
-#: includes/class-admin.php:251
-msgid "Permission denied."
-msgstr "没有权限。"
-
-#: includes/class-admin.php:268
-#, fuzzy
-#| msgid "Invalid action."
-msgid "Invalid domain format."
-msgstr "无效操作。"
-
-#: includes/class-admin.php:301
-#, fuzzy
-#| msgid "Failed to save domain."
-msgid "Failed to add domain."
-msgstr "无法保存域名。"
-
-#: includes/class-admin.php:322
-msgid "Domain updated successfully."
-msgstr "域名更新成功。"
-
-#: includes/class-admin.php:325
-msgid "No changes were made or update failed."
-msgstr ""
-
-#: includes/class-admin.php:330
-msgid "An error occurred while saving domain."
-msgstr ""
-
-#: includes/class-admin.php:333
-#, fuzzy
-#| msgid "New domain already exists."
-msgid "Domain already exists for another site."
-msgstr "新的域名已经存在。"
-
-#: includes/class-admin.php:336
-msgid "Invalid site ID."
-msgstr ""
-
-#: includes/class-admin.php:387
-#, fuzzy
-#| msgid "Domain deleted."
-msgid "No domains were deleted."
-msgstr "域名已删除。"
-
-#: includes/class-admin.php:391
-msgid "An error occurred while deleting domains."
-msgstr ""
-
-#: includes/class-admin.php:396
-msgid "Invalid action."
-msgstr "无效操作。"
-
-#: includes/class-admin.php:412 includes/class-admin.php:503
+#: includes/class-admin.php:1069 includes/class-admin.php:1146
 msgid "You must enter a domain"
 msgstr "您必须输入一个域名"
 
-#: includes/class-admin.php:425
-msgid "Invalid domain format"
-msgstr ""
-
-#: includes/class-admin.php:634
-msgid ""
-"Please set the IP address or CNAME of your server in the <a href='wpmu-"
-"admin.php?page=domain-mapping'>site admin page</a>."
-msgstr ""
-"请在<a href='wpmu-admin.php?page=domain-mapping'>站点管理页面</a>中设置您服务"
-"器的 IP 地址或 CNAME。"
-
-#: includes/class-admin.php:676
-msgid "Mapping"
-msgstr "映射"
-
-#: includes/class-admin.php:720
-msgid "New domain added."
-msgstr "已添加新域名。"
-
-#: includes/class-admin.php:723
-msgid "New domain already exists."
-msgstr "新的域名已经存在。"
-
-#: includes/class-admin.php:726
-msgid "New primary domain."
-msgstr "新的主域名。"
-
-#: includes/class-admin.php:729
-msgid "Domain deleted."
-msgstr "域名已删除。"
-
-#: includes/class-core.php:173
-#, fuzzy
-#| msgid "Domain mapping database table created."
-msgid "Domain mapping database tables created."
-msgstr "域映射创建数据库表。"
-
-#: includes/class-core.php:545
-msgid "Incorrect or out of date login key"
-msgstr "登录密钥不正确或过期"
-
-#: includes/class-core.php:548
-msgid "Unknown login key"
-msgstr "未知的登录密钥"
-
-#: includes/class-core.php:569
-msgid "Unknown logout key"
-msgstr "未知的退出密钥"
-
-#: includes/class-tools.php:127
-#, php-format
-msgid "Site ID: %d"
-msgstr "站点 ID：%d"
-
-#: includes/class-tools.php:130
-msgid "Edit this site"
-msgstr ""
-
-#: includes/class-tools.php:130
-msgid "Current site ID"
-msgstr ""
-
-#: includes/class-tools.php:176 includes/class-tools.php:189
-msgid "SSL"
-msgstr ""
-
-#: includes/class-tools.php:210
-msgid "SSL Enabled"
-msgstr ""
-
-#: includes/class-tools.php:212
-msgid "No SSL"
-msgstr ""
-
-#: includes/class-tools.php:220
-msgid "Main site is accessible"
-msgstr ""
-
-#: includes/class-tools.php:251
-msgid "No domain"
-msgstr ""
-
-#: includes/class-tools.php:316 includes/class-tools.php:340
-#: includes/class-tools.php:385 includes/class-tools.php:436
-msgid "Security check failed."
-msgstr ""
-
-#: includes/class-tools.php:321 includes/class-tools.php:345
-#: includes/class-tools.php:380 includes/class-tools.php:431
-msgid "You do not have sufficient permissions to perform this action."
-msgstr ""
-
-#: includes/class-tools.php:391
-#, fuzzy
-#| msgid "No domains found."
-msgid "No domain specified."
-msgstr "未找到域名。"
-
-#: includes/class-tools.php:402
-msgid "Main site is always accessible"
-msgstr ""
-
-#: includes/class-tools.php:525
-msgid "Health check completed."
-msgstr ""
-
-#: includes/class-tools.php:593
-msgid "DNS check not performed"
-msgstr ""
-
-#: includes/class-tools.php:612
-msgid "Domain A record is correctly pointing to server IP."
-msgstr ""
-
-#: includes/class-tools.php:632
-msgid "Domain CNAME record is correctly configured."
-msgstr ""
-
-#: includes/class-tools.php:634
-msgid "Domain is not pointing to the correct server."
-msgstr ""
-
-#: includes/class-tools.php:637
-msgid "Cannot verify DNS configuration."
-msgstr ""
-
-#: includes/class-tools.php:640
-msgid "Domain does not resolve to an IP address."
-msgstr ""
-
-#: includes/class-tools.php:772
-#, php-format
-msgid "[%s] Domain Mapping Health Alert"
-msgstr ""
-
-#: includes/class-tools.php:775
-#, php-format
-msgid "Domain health issues were detected on %s."
-msgstr ""
-
-#: includes/class-tools.php:776
-msgid "The following domains have issues:"
-msgstr ""
-
-#: includes/class-tools.php:779
-#, php-format
-msgid "Domain: %s"
-msgstr "域名： %s"
-
-#: includes/class-tools.php:783
-#, php-format
-msgid "DNS Issue: %s"
-msgstr ""
-
-#: includes/class-tools.php:788
-msgid "SSL Certificate is invalid or missing."
-msgstr ""
-
-#: includes/class-tools.php:796
-#, php-format
-msgid "SSL Certificate expires on %s (within %d days)."
-msgstr ""
-
-#: includes/class-tools.php:805
-msgid "Site is not accessible."
-msgstr ""
-
-#: includes/class-tools.php:807
-#, php-format
-msgid "HTTP Response Code: %d"
-msgstr ""
-
-#: includes/class-tools.php:816
-#, php-format
-msgid "To view and manage these issues, please visit: %s"
-msgstr ""
-
-#: includes/class-tools.php:838
-msgid "You do not have sufficient permissions to export data."
-msgstr ""
-
-#: includes/class-tools.php:843 includes/class-tools.php:899
-msgid "Invalid security token. Please try again."
-msgstr ""
-
-#: includes/class-tools.php:894
-msgid "You do not have sufficient permissions to import data."
-msgstr ""
-
-#: includes/class-tools.php:904
-msgid "No file uploaded or upload error."
-msgstr ""
-
-#: includes/class-tools.php:915
-msgid "Could not open the uploaded file."
-msgstr ""
-
-#: includes/class-tools.php:940
-#, php-format
-msgid "Row %d: Invalid format. Expected at least 3 columns."
-msgstr ""
-
-#: includes/class-tools.php:956
-#, php-format
-msgid "Row %d: Domain %s already processed in this import. Skipped duplicate."
-msgstr ""
-
-#: includes/class-tools.php:970
-#, php-format
-msgid "Row %d: Invalid blog ID: %d"
-msgstr ""
-
-#: includes/class-tools.php:981
-#, php-format
-msgid "Row %d: Site ID %d does not exist."
-msgstr ""
-
-#: includes/class-tools.php:992
-#, php-format
-msgid "Row %d: Invalid domain format: %s"
-msgstr ""
-
-#: includes/class-tools.php:1006
-#, php-format
-msgid "Row %d: Domain %s is already mapped to blog ID %d."
-msgstr ""
-
-#: includes/class-tools.php:1013
-#, php-format
-msgid "Row %d: Domain %s already exists for blog ID %d. Skipped."
-msgstr ""
-
-#: includes/class-tools.php:1024
-#, php-format
-msgid "Row %d: Updated domain %s for blog ID %d."
-msgstr ""
-
-#: includes/class-tools.php:1031
-#, php-format
-msgid "Row %d: Failed to update domain %s for blog ID %d."
-msgstr ""
-
-#: includes/class-tools.php:1044
-#, php-format
-msgid "Row %d: Added domain %s for blog ID %d."
-msgstr ""
-
-#: includes/class-tools.php:1051
-#, php-format
-msgid "Row %d: Failed to add domain %s for blog ID %d."
-msgstr ""
-
-#: includes/class-tools.php:1065
-#, php-format
-msgid "Import completed: %d imported, %d skipped, %d errors."
-msgstr ""
-
-#: includes/functions.php:73
-#, php-format
-msgid ""
-"International Domain Names should be in <a href=\"%s\" "
-"target=\"_blank\">punycode</a> format."
-msgstr "国际域名应采用<a href=\"%s\" target=\"_blank\">punycode</a>格式。"
-
-#: includes/functions.php:331
-msgid "Added"
-msgstr ""
-
-#: includes/functions.php:333
-#, fuzzy
-#| msgid "Update Domain"
-msgid "Updated"
-msgstr "更新域名"
-
-#: includes/functions.php:335
-#, fuzzy
-#| msgid "Delete"
-msgid "Deleted"
-msgstr "删除"
-
-#: includes/functions.php:337
-msgid "Imported"
-msgstr ""
-
-#. Plugin Name of the plugin/theme
-msgid "WP Domain Mapping"
-msgstr "文派域名映射"
-
-#. Plugin URI of the plugin/theme
-msgid "https://wenpai.org/plugins/wp-domain-mapping/"
-msgstr "https://wenpai.org/plugins/wp-domain-mapping/"
-
-#. Description of the plugin/theme
-msgid ""
-"Map any site on a WordPress website to another domain with enhanced "
-"management features."
-msgstr "使用增强的管理功能将 WordPress 网站上的任何站点映射到另一个域名。"
-
-#. Author of the plugin/theme
-msgid "WPDomain.com"
-msgstr "WPDomain.com"
-
-#. Author URI of the plugin/theme
-msgid "https://wpdomain.com/"
-msgstr "https://wpdomain.com/"
-
-#~ msgid "Add a DNS \"A\" record pointing to: <strong>%s</strong>"
-#~ msgstr "添加指向 <strong>%s</strong> 的 DNS “A” 记录"
-
-#~ msgid "Add"
-#~ msgstr "添加"
-
-#~ msgid "* The primary domain cannot be deleted."
-#~ msgstr "*主域名不能被删除。"
-
-#~ msgid "Set Primary Domain"
-#~ msgstr "设置为主域"
-
-#~ msgid "Active Domains"
-#~ msgstr "活跃域名"
-
-#~ msgid "Domain Mapping Configuration"
-#~ msgstr "域映射配置"
-
-#~ msgid "Timestamp"
-#~ msgstr "时间戳"
-
-#~ msgid "Failed to delete domains."
-#~ msgstr "无法删除域名。"
-
-#~ msgid "Selected domains deleted successfully."
-#~ msgstr "选定的域名已成功删除。"
-
-#~ msgid "Invalid site ID or domain already exists."
-#~ msgstr "无效的站点 ID 或域名已存在。"
+#: admin/user-page.php:81
+msgid "Your Mapped Domains"
+msgstr "您的映射域名"
+
+#: admin/pages.php:1040
+msgid "文派叶子 🍃（WPCY.COM）"
+msgstr "文派叶子 🍃（WPCY.COM）"

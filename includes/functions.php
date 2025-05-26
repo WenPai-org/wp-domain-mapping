@@ -25,7 +25,7 @@ function dm_ensure_protocol( $domain ) {
 
 /**
  * Clean domain name (remove protocol and trailing slash)
- * UPDATED: Keep www prefix to distinguish www.domain.com from domain.com
+ * UPDATED: Improved domain cleaning function, preserves www prefix
  *
  * @param string $domain Domain name
  * @return string Cleaned domain
@@ -49,10 +49,15 @@ function dm_clean_domain( $domain ) {
     if ( function_exists( 'idn_to_ascii' ) && preg_match( '/[^a-z0-9\-\.]/i', $domain ) ) {
         if (defined('INTL_IDNA_VARIANT_UTS46')) {
             // PHP 7.2+
-            $domain = idn_to_ascii( $domain, 0, INTL_IDNA_VARIANT_UTS46 );
+            $ascii_domain = idn_to_ascii( $domain, 0, INTL_IDNA_VARIANT_UTS46 );
         } else {
             // PHP < 7.2
-            $domain = idn_to_ascii( $domain );
+            $ascii_domain = idn_to_ascii( $domain );
+        }
+
+        // Only use converted result if conversion was successful
+        if ($ascii_domain !== false) {
+            $domain = $ascii_domain;
         }
     }
 
@@ -61,14 +66,82 @@ function dm_clean_domain( $domain ) {
 
 /**
  * Validate a domain name
- * UPDATED: Accept www prefix as valid
+ * UPDATED: More flexible domain validation, supports www prefix and more valid formats
  *
  * @param string $domain The domain
  * @return bool True if valid
  */
 function dm_validate_domain( $domain ) {
-    // Basic validation - now accepts www prefix
-    return (bool) preg_match( '/^(www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}$/i', $domain );
+    // Remove possible protocol and path
+    $domain = preg_replace('#^https?://#', '', $domain);
+    $domain = preg_replace('#/.*$#', '', $domain);
+    $domain = trim($domain);
+
+    // Check if empty
+    if (empty($domain)) {
+        return false;
+    }
+
+    // Check length limit (RFC 1035)
+    if (strlen($domain) > 253) {
+        return false;
+    }
+
+    // Check if contains only valid characters (letters, numbers, dots, hyphens)
+    if (!preg_match('/^[a-zA-Z0-9.-]+$/', $domain)) {
+        return false;
+    }
+
+    // Check if starts or ends with dot
+    if (substr($domain, 0, 1) === '.' || substr($domain, -1) === '.') {
+        return false;
+    }
+
+    // Check for consecutive dots
+    if (strpos($domain, '..') !== false) {
+        return false;
+    }
+
+    // Split domain into parts
+    $parts = explode('.', $domain);
+
+    // Need at least two parts (domain.tld)
+    if (count($parts) < 2) {
+        return false;
+    }
+
+    // Check each part
+    foreach ($parts as $part) {
+        // Each part cannot be empty
+        if (empty($part)) {
+            return false;
+        }
+
+        // Each part cannot exceed 63 characters (RFC 1035)
+        if (strlen($part) > 63) {
+            return false;
+        }
+
+        // Each part cannot start or end with hyphen
+        if (substr($part, 0, 1) === '-' || substr($part, -1) === '-') {
+            return false;
+        }
+
+        // Each part can only contain letters, numbers and hyphens
+        if (!preg_match('/^[a-zA-Z0-9-]+$/', $part)) {
+            return false;
+        }
+    }
+
+    // Check TLD (last part) validity
+    $tld = end($parts);
+
+    // TLD needs at least 2 characters and can only contain letters
+    if (strlen($tld) < 2 || !preg_match('/^[a-zA-Z]+$/', $tld)) {
+        return false;
+    }
+
+    return true;
 }
 
 /**
@@ -443,20 +516,302 @@ function dm_format_action_name( $action ) {
     }
 }
 
-// Cache functions
+/**
+ * Enhanced caching functions for better performance
+ */
+
+// Cache functions - IMPROVED
 function dm_get_domains_by_blog_id_cached($blog_id) {
     $cache_key = 'dm_domains_' . $blog_id;
-    $domains = wp_cache_get($cache_key, 'domain_mapping');
+    $cache_group = 'domain_mapping';
+
+    $domains = wp_cache_get($cache_key, $cache_group);
 
     if (false === $domains) {
         $domains = dm_get_domains_by_blog_id($blog_id);
-        wp_cache_set($cache_key, $domains, 'domain_mapping', HOUR_IN_SECONDS);
+        // Cache for 1 hour, or until manually cleared
+        wp_cache_set($cache_key, $domains, $cache_group, HOUR_IN_SECONDS);
     }
 
     return $domains;
 }
 
-// Clear cache function
-function dm_clear_domain_cache($blog_id) {
-    wp_cache_delete('dm_domains_' . $blog_id, 'domain_mapping');
+// Clear cache function - IMPROVED
+function dm_clear_domain_cache($blog_id = null) {
+    $cache_group = 'domain_mapping';
+
+    if ($blog_id) {
+        // Clear specific blog cache
+        wp_cache_delete('dm_domains_' . $blog_id, $cache_group);
+        wp_cache_delete('dm_domain_exists_' . $blog_id, $cache_group);
+    } else {
+        // Clear all domain mapping caches
+        wp_cache_flush_group($cache_group);
+    }
+
+    // Also clear object cache if available
+    if (function_exists('wp_cache_flush_group')) {
+        wp_cache_flush_group($cache_group);
+    }
+}
+
+/**
+ * Cached domain existence check
+ */
+function dm_domain_exists_cached($domain) {
+    $cache_key = 'dm_domain_exists_' . md5($domain);
+    $cache_group = 'domain_mapping';
+
+    $exists = wp_cache_get($cache_key, $cache_group);
+
+    if (false === $exists) {
+        $exists = dm_get_domain_by_name($domain);
+        // Cache for 30 minutes
+        wp_cache_set($cache_key, $exists, $cache_group, 30 * MINUTE_IN_SECONDS);
+    }
+
+    return $exists;
+}
+
+/**
+ * Batch clear cache for multiple blogs
+ */
+function dm_clear_multiple_domain_cache($blog_ids) {
+    if (!is_array($blog_ids)) {
+        $blog_ids = array($blog_ids);
+    }
+
+    foreach ($blog_ids as $blog_id) {
+        dm_clear_domain_cache($blog_id);
+    }
+}
+
+/**
+ * Health check results caching
+ */
+function dm_get_health_result_cached($domain) {
+    $cache_key = 'dm_health_' . md5($domain);
+    $cache_group = 'domain_mapping_health';
+
+    $result = wp_cache_get($cache_key, $cache_group);
+
+    if (false === $result) {
+        $result = dm_get_health_result($domain);
+        if ($result) {
+            // Cache for 1 hour
+            wp_cache_set($cache_key, $result, $cache_group, HOUR_IN_SECONDS);
+        }
+    }
+
+    return $result;
+}
+
+/**
+ * Clear health check cache
+ */
+function dm_clear_health_cache($domain = null) {
+    $cache_group = 'domain_mapping_health';
+
+    if ($domain) {
+        wp_cache_delete('dm_health_' . md5($domain), $cache_group);
+    } else {
+        if (function_exists('wp_cache_flush_group')) {
+            wp_cache_flush_group($cache_group);
+        }
+    }
+}
+/**
+ * Enhanced error handling and logging functions
+ */
+
+/**
+ * Log domain mapping errors
+ */
+function dm_log_error($message, $context = array()) {
+    if (!defined('WP_DEBUG') || !WP_DEBUG) {
+        return;
+    }
+
+    $log_message = '[WP Domain Mapping] ' . $message;
+
+    if (!empty($context)) {
+        $log_message .= ' Context: ' . json_encode($context);
+    }
+
+    error_log($log_message);
+}
+
+/**
+ * Log domain mapping info
+ */
+function dm_log_info($message, $context = array()) {
+    if (!defined('WP_DEBUG') || !WP_DEBUG) {
+        return;
+    }
+
+    $log_message = '[WP Domain Mapping INFO] ' . $message;
+
+    if (!empty($context)) {
+        $log_message .= ' Context: ' . json_encode($context);
+    }
+
+    error_log($log_message);
+}
+
+/**
+ * Safe database query execution
+ */
+function dm_safe_query($query, $params = array()) {
+    global $wpdb;
+
+    try {
+        if (!empty($params)) {
+            $prepared = $wpdb->prepare($query, $params);
+        } else {
+            $prepared = $query;
+        }
+
+        $result = $wpdb->query($prepared);
+
+        if ($result === false) {
+            dm_log_error('Database query failed', array(
+                'query' => $query,
+                'params' => $params,
+                'error' => $wpdb->last_error
+            ));
+        }
+
+        return $result;
+    } catch (Exception $e) {
+        dm_log_error('Database exception', array(
+            'query' => $query,
+            'params' => $params,
+            'exception' => $e->getMessage()
+        ));
+        return false;
+    }
+}
+
+/**
+ * Enhanced domain validation with error details
+ */
+function dm_validate_domain_with_errors($domain) {
+    $errors = array();
+
+    // Remove possible protocol and path
+    $original_domain = $domain;
+    $domain = preg_replace('#^https?://#', '', $domain);
+    $domain = preg_replace('#/.*$#', '', $domain);
+    $domain = trim($domain);
+
+    // Check if empty
+    if (empty($domain)) {
+        $errors[] = __('Domain cannot be empty', 'wp-domain-mapping');
+        return array('valid' => false, 'errors' => $errors, 'domain' => $domain);
+    }
+
+    // Check length limit (RFC 1035)
+    if (strlen($domain) > 253) {
+        $errors[] = __('Domain name too long (max 253 characters)', 'wp-domain-mapping');
+    }
+
+    // Check if contains only valid characters
+    if (!preg_match('/^[a-zA-Z0-9.-]+$/', $domain)) {
+        $errors[] = __('Domain contains invalid characters', 'wp-domain-mapping');
+    }
+
+    // Check if starts or ends with dot
+    if (substr($domain, 0, 1) === '.' || substr($domain, -1) === '.') {
+        $errors[] = __('Domain cannot start or end with a dot', 'wp-domain-mapping');
+    }
+
+    // Check for consecutive dots
+    if (strpos($domain, '..') !== false) {
+        $errors[] = __('Domain cannot contain consecutive dots', 'wp-domain-mapping');
+    }
+
+    // Split domain into parts
+    $parts = explode('.', $domain);
+
+    // Need at least two parts
+    if (count($parts) < 2) {
+        $errors[] = __('Domain must have at least two parts (e.g., domain.com)', 'wp-domain-mapping');
+    }
+
+    // Check each part
+    foreach ($parts as $i => $part) {
+        if (empty($part)) {
+            $errors[] = sprintf(__('Domain part %d is empty', 'wp-domain-mapping'), $i + 1);
+            continue;
+        }
+
+        if (strlen($part) > 63) {
+            $errors[] = sprintf(__('Domain part "%s" too long (max 63 characters)', 'wp-domain-mapping'), $part);
+        }
+
+        if (substr($part, 0, 1) === '-' || substr($part, -1) === '-') {
+            $errors[] = sprintf(__('Domain part "%s" cannot start or end with hyphen', 'wp-domain-mapping'), $part);
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9-]+$/', $part)) {
+            $errors[] = sprintf(__('Domain part "%s" contains invalid characters', 'wp-domain-mapping'), $part);
+        }
+    }
+
+    // Check TLD
+    if (count($parts) >= 2) {
+        $tld = end($parts);
+        if (strlen($tld) < 2 || !preg_match('/^[a-zA-Z]+$/', $tld)) {
+            $errors[] = __('Invalid top-level domain (TLD)', 'wp-domain-mapping');
+        }
+    }
+
+    $is_valid = empty($errors);
+
+    // Log validation attempts if debugging
+    if (!$is_valid) {
+        dm_log_info('Domain validation failed', array(
+            'original' => $original_domain,
+            'cleaned' => $domain,
+            'errors' => $errors
+        ));
+    }
+
+    return array(
+        'valid' => $is_valid,
+        'errors' => $errors,
+        'domain' => $domain,
+        'original' => $original_domain
+    );
+}
+
+/**
+ * Enhanced health check with error handling
+ */
+function dm_check_domain_health_safe($domain) {
+    try {
+        $tools = WP_Domain_Mapping_Tools::get_instance();
+        $result = $tools->check_domain_health($domain);
+
+        dm_log_info('Health check completed', array(
+            'domain' => $domain,
+            'result' => $result
+        ));
+
+        return $result;
+    } catch (Exception $e) {
+        dm_log_error('Health check failed', array(
+            'domain' => $domain,
+            'exception' => $e->getMessage()
+        ));
+
+        return array(
+            'domain' => $domain,
+            'last_check' => current_time('mysql'),
+            'error' => $e->getMessage(),
+            'dns_status' => 'error',
+            'ssl_valid' => false,
+            'accessible' => false
+        );
+    }
 }
