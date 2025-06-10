@@ -85,10 +85,12 @@ class WP_Domain_Mapping_Tools {
         add_action( 'wp_ajax_dm_check_domain_health', array( $this, 'ajax_check_domain_health' ) );
         add_action( 'wp_ajax_dm_check_domain_health_batch', array( $this, 'ajax_check_domain_health_batch' ) );
         add_action( 'wp_ajax_dm_import_csv', array( $this, 'ajax_import_csv' ) );
+        add_action( 'wp_ajax_dm_stop_health_check', array( $this, 'ajax_stop_health_check' ) );
 
         // Scheduled tasks
         add_action( 'dm_domain_health_check', array( $this, 'scheduled_health_check' ) );
         add_action( 'dm_domain_health_check_batch', array( $this, 'process_health_check_batch' ) );
+        add_action( 'dm_cleanup_stuck_health_check', array( $this, 'cleanup_stuck_health_check' ) );
 
         // Admin init actions
         add_action( 'admin_init', array( $this, 'handle_export' ) );
@@ -101,6 +103,11 @@ class WP_Domain_Mapping_Tools {
         // Add manual trigger cron hook (only for debugging)
         if ( isset( $_GET['dm_test_cron'] ) && current_user_can( 'manage_network' ) ) {
             add_action( 'admin_init', array( $this, 'test_cron_execution' ) );
+        }
+
+        // Add cleanup hook - check for stuck health checks every hour
+        if ( ! wp_next_scheduled( 'dm_cleanup_stuck_health_check' ) ) {
+            wp_schedule_event( time(), 'hourly', 'dm_cleanup_stuck_health_check' );
         }
     }
 
@@ -332,6 +339,9 @@ class WP_Domain_Mapping_Tools {
         // Clear batch processing health check
         wp_clear_scheduled_hook( 'dm_domain_health_check_batch' );
 
+        // Clear cleanup hook
+        wp_clear_scheduled_hook( 'dm_cleanup_stuck_health_check' );
+
         // Clear scheduling status option
         delete_site_option( 'dm_health_check_scheduled' );
 
@@ -353,11 +363,26 @@ class WP_Domain_Mapping_Tools {
                 wp_die( __( 'You do not have sufficient permissions to perform this action.', 'wp-domain-mapping' ) );
             }
 
-            // Start batch processing
-            $this->start_health_check_batch();
+            // Clear any existing progress data
+            delete_site_option( 'dm_health_check_queue' );
+            delete_site_option( 'dm_health_check_progress' );
 
-            // Redirect back to health page
-            wp_redirect( add_query_arg( array( 'page' => 'domain-mapping', 'tab' => 'health', 'checking' => 1 ), network_admin_url( 'settings.php' ) ) );
+            // Start batch processing
+            $started = $this->start_health_check_batch();
+
+            if ( $started ) {
+                wp_redirect( add_query_arg( array(
+                    'page' => 'domain-mapping',
+                    'tab' => 'health',
+                    'checking' => 1
+                ), network_admin_url( 'settings.php' ) ) );
+            } else {
+                wp_redirect( add_query_arg( array(
+                    'page' => 'domain-mapping',
+                    'tab' => 'health',
+                    'error' => 'no_domains'
+                ), network_admin_url( 'settings.php' ) ) );
+            }
             exit;
         }
     }
@@ -382,13 +407,13 @@ class WP_Domain_Mapping_Tools {
             $health_notifications_enabled = isset( $_POST['health_notifications_enabled'] ) ? (bool) $_POST['health_notifications_enabled'] : false;
             $notification_email = isset( $_POST['notification_email'] ) ? sanitize_email( $_POST['notification_email'] ) : '';
             $ssl_expiry_threshold = isset( $_POST['ssl_expiry_threshold'] ) ? intval( $_POST['ssl_expiry_threshold'] ) : 14;
-            $batch_size = isset( $_POST['health_check_batch_size'] ) ? intval( $_POST['health_check_batch_size'] ) : 10;
+            $batch_size = isset( $_POST['health_check_batch_size'] ) ? intval( $_POST['health_check_batch_size'] ) : 5;
 
             update_site_option( 'dm_health_check_enabled', $health_check_enabled );
             update_site_option( 'dm_health_notifications_enabled', $health_notifications_enabled );
             update_site_option( 'dm_notification_email', $notification_email );
             update_site_option( 'dm_ssl_expiry_threshold', $ssl_expiry_threshold );
-            update_site_option( 'dm_health_check_batch_size', max( 5, min( 50, $batch_size ) ) );
+            update_site_option( 'dm_health_check_batch_size', max( 3, min( 20, $batch_size ) ) );
 
             // If auto check is enabled, ensure cron is set
             if ( $health_check_enabled ) {
@@ -468,10 +493,48 @@ class WP_Domain_Mapping_Tools {
             wp_send_json_error( __( 'Security check failed.', 'wp-domain-mapping' ) );
         }
 
+        // Check if there's a health check in progress
+        $progress = get_site_option( 'dm_health_check_progress', false );
+        $queue = get_site_option( 'dm_health_check_queue', array() );
+
+        if ( $progress === false && empty( $queue ) ) {
+            wp_send_json_success( array(
+                'complete' => true,
+                'message' => __( 'No health check in progress.', 'wp-domain-mapping' )
+            ) );
+            return;
+        }
+
         // Process next batch
         $result = $this->process_health_check_batch( true );
 
         wp_send_json_success( $result );
+    }
+
+    /**
+     * AJAX handler to stop health check
+     */
+    public function ajax_stop_health_check() {
+        // Check permissions
+        if ( ! current_user_can( 'manage_network' ) ) {
+            wp_send_json_error( __( 'You do not have sufficient permissions to perform this action.', 'wp-domain-mapping' ) );
+        }
+
+        // Verify nonce
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'dm_stop_health_check' ) ) {
+            wp_send_json_error( __( 'Security check failed.', 'wp-domain-mapping' ) );
+        }
+
+        // Clear health check progress data
+        delete_site_option( 'dm_health_check_queue' );
+        delete_site_option( 'dm_health_check_progress' );
+
+        // Clear related cron tasks
+        wp_clear_scheduled_hook( 'dm_domain_health_check_batch' );
+
+        error_log( 'WP Domain Mapping: Health check stopped by user' );
+
+        wp_send_json_success( __( 'Health check stopped successfully.', 'wp-domain-mapping' ) );
     }
 
     /**
@@ -502,30 +565,44 @@ class WP_Domain_Mapping_Tools {
     private function start_health_check_batch() {
         global $wpdb;
 
-        // Get all domains
-        $domains = $wpdb->get_col( "SELECT domain FROM {$this->tables['domains']}" );
+        // Clear any existing progress data
+        delete_site_option( 'dm_health_check_queue' );
+        delete_site_option( 'dm_health_check_progress' );
+
+        // Get all domains to check
+        $domains = array();
+
+        // Get mapped domains
+        $mapped_domains = $wpdb->get_col( "SELECT domain FROM {$this->tables['domains']}" );
+        if ( $mapped_domains ) {
+            $domains = array_merge( $domains, $mapped_domains );
+        }
 
         // Add original domains for sites without mapped domains (excluding main site)
-        $sites = get_sites( array( 'number' => 0 ) );
-        foreach ( $sites as $site ) {
-            // Skip main site
-            if ( is_main_site( $site->blog_id ) ) {
-                continue;
-            }
+        $sites = get_sites( array(
+            'number' => 0,
+            'site__not_in' => array( get_main_site_id() ) // Exclude main site
+        ) );
 
+        foreach ( $sites as $site ) {
             // Check if this site has a mapped domain
             $has_mapped = $wpdb->get_var( $wpdb->prepare(
                 "SELECT COUNT(*) FROM {$this->tables['domains']} WHERE blog_id = %d",
                 $site->blog_id
             ));
 
+            // If no mapped domain, add original domain
             if ( ! $has_mapped ) {
                 $domains[] = $site->domain;
             }
         }
 
+        // Remove duplicates
+        $domains = array_unique( $domains );
+
         if ( empty( $domains ) ) {
-            return;
+            error_log( 'WP Domain Mapping: No domains found for health check' );
+            return false;
         }
 
         // Store domains in queue
@@ -539,6 +616,9 @@ class WP_Domain_Mapping_Tools {
 
         // Schedule first batch
         wp_schedule_single_event( time() + 1, 'dm_domain_health_check_batch' );
+
+        error_log( 'WP Domain Mapping: Health check batch started with ' . count( $domains ) . ' domains' );
+        return true;
     }
 
     /**
@@ -549,10 +629,16 @@ class WP_Domain_Mapping_Tools {
      */
     public function process_health_check_batch( $return_data = false ) {
         $queue = get_site_option( 'dm_health_check_queue', array() );
-        $progress = get_site_option( 'dm_health_check_progress', array() );
+        $progress = get_site_option( 'dm_health_check_progress', array(
+            'total' => 0,
+            'processed' => 0,
+            'started' => current_time( 'mysql' ),
+            'issues' => array()
+        ) );
 
+        // If queue is empty, complete the process
         if ( empty( $queue ) ) {
-            // Batch processing complete
+            // Send notification if there are issues and notifications are enabled
             if ( ! empty( $progress['issues'] ) && get_site_option( 'dm_health_notifications_enabled', true ) ) {
                 $this->send_health_notification( $progress['issues'] );
             }
@@ -561,21 +647,26 @@ class WP_Domain_Mapping_Tools {
             delete_site_option( 'dm_health_check_queue' );
             delete_site_option( 'dm_health_check_progress' );
 
+            // Update last check time
+            update_site_option( 'dm_last_health_check', current_time( 'timestamp' ) );
+
             if ( $return_data ) {
                 return array(
                     'complete' => true,
-                    'message' => __( 'Health check completed.', 'wp-domain-mapping' )
+                    'total' => isset($progress['total']) ? $progress['total'] : 0,
+                    'processed' => isset($progress['processed']) ? $progress['processed'] : 0,
+                    'message' => __( 'Health check completed successfully.', 'wp-domain-mapping' )
                 );
             }
             return;
         }
 
         // Get batch size
-        $batch_size = get_site_option( 'dm_health_check_batch_size', 10 );
+        $batch_size = get_site_option( 'dm_health_check_batch_size', 5 ); // Reduced default batch size
 
         // Process batch
         $batch = array_splice( $queue, 0, $batch_size );
-        $processed = 0;
+        $processed_in_batch = 0;
 
         // Get main site domain to skip it
         $main_site = get_site( get_main_site_id() );
@@ -584,40 +675,101 @@ class WP_Domain_Mapping_Tools {
         foreach ( $batch as $domain ) {
             // Skip main site domain
             if ( $domain === $main_domain ) {
-                $processed++;
                 $progress['processed']++;
+                $processed_in_batch++;
                 continue;
             }
 
-            $result = $this->check_domain_health( $domain );
-            dm_save_health_result( $domain, $result );
+            try {
+                // Execute health check with timeout control
+                $start_time = microtime(true);
+                $result = $this->check_domain_health_with_timeout( $domain, 10 ); // 10 second timeout
+                $end_time = microtime(true);
 
-            // Check for issues
-            if ( $this->has_health_issues( $result ) ) {
-                $progress['issues'][$domain] = $result;
+                // Record check duration
+                $result['check_duration'] = round($end_time - $start_time, 2);
+
+                // Save result
+                dm_save_health_result( $domain, $result );
+
+                // Check for issues
+                if ( $this->has_health_issues( $result ) ) {
+                    $progress['issues'][$domain] = $result;
+                }
+
+            } catch ( Exception $e ) {
+                // Log error but continue processing
+                error_log( 'WP Domain Mapping: Health check error for ' . $domain . ': ' . $e->getMessage() );
+
+                // Save error result
+                $error_result = array(
+                    'domain' => $domain,
+                    'last_check' => current_time( 'mysql' ),
+                    'error' => $e->getMessage(),
+                    'dns_status' => 'error',
+                    'ssl_valid' => false,
+                    'accessible' => false
+                );
+                dm_save_health_result( $domain, $error_result );
             }
 
-            $processed++;
             $progress['processed']++;
+            $processed_in_batch++;
+
+            // Prevent memory leaks
+            if ( function_exists( 'wp_cache_flush' ) ) {
+                wp_cache_flush();
+            }
         }
 
         // Update queue and progress
         update_site_option( 'dm_health_check_queue', $queue );
         update_site_option( 'dm_health_check_progress', $progress );
 
-        // Schedule next batch if needed
+        // If there are still unprocessed domains, schedule next batch
         if ( ! empty( $queue ) && ! $return_data ) {
-            wp_schedule_single_event( time() + 2, 'dm_domain_health_check_batch' );
+            wp_schedule_single_event( time() + 3, 'dm_domain_health_check_batch' ); // 3 second interval
         }
 
         if ( $return_data ) {
+            $remaining = count( $queue );
+            $percentage = $progress['total'] > 0 ? round( ( $progress['processed'] / $progress['total'] ) * 100 ) : 100;
+
             return array(
                 'complete' => empty( $queue ),
                 'total' => $progress['total'],
                 'processed' => $progress['processed'],
-                'remaining' => count( $queue ),
-                'percentage' => round( ( $progress['processed'] / $progress['total'] ) * 100 )
+                'remaining' => $remaining,
+                'percentage' => $percentage,
+                'processed_in_batch' => $processed_in_batch,
+                'message' => sprintf(
+                    __( 'Processed %d of %d domains (%d%% complete)', 'wp-domain-mapping' ),
+                    $progress['processed'],
+                    $progress['total'],
+                    $percentage
+                )
             );
+        }
+    }
+
+    /**
+     * Domain health check with timeout control
+     */
+    private function check_domain_health_with_timeout( $domain, $timeout = 10 ) {
+        // Set maximum execution time
+        $original_time_limit = ini_get('max_execution_time');
+        if ( function_exists('set_time_limit') ) {
+            set_time_limit( $timeout + 5 );
+        }
+
+        try {
+            $result = $this->check_domain_health( $domain );
+            return $result;
+        } finally {
+            // Restore original time limit
+            if ( function_exists('set_time_limit') && $original_time_limit ) {
+                set_time_limit( $original_time_limit );
+            }
         }
     }
 
@@ -696,45 +848,64 @@ class WP_Domain_Mapping_Tools {
     }
 
     /**
-     * Test domain connection
+     * Test domain connection - improved with better timeout control
      *
      * @param string $domain Domain to test
      * @return array|false Connection test result
      */
     private function test_domain_connection( $domain ) {
         if ( ! function_exists( 'curl_init' ) ) {
-            return false;
+            return array(
+                'accessible' => false,
+                'response_code' => 0,
+                'ssl_valid' => false,
+                'ssl_expiry' => '',
+                'error' => 'cURL not available'
+            );
         }
 
         $result = array(
             'accessible' => false,
             'response_code' => 0,
             'ssl_valid' => false,
-            'ssl_expiry' => ''
+            'ssl_expiry' => '',
+            'error' => ''
         );
 
         // Test HTTPS connection
         $ch = curl_init( 'https://' . $domain );
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-        curl_setopt( $ch, CURLOPT_HEADER, true );
-        curl_setopt( $ch, CURLOPT_NOBODY, true );
-        curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
-        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
-        curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
-        curl_setopt( $ch, CURLOPT_CERTINFO, true );
+        curl_setopt_array( $ch, array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => true,
+            CURLOPT_NOBODY => true,
+            CURLOPT_TIMEOUT => 8, // Reduced timeout
+            CURLOPT_CONNECTTIMEOUT => 5, // Connection timeout
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_CERTINFO => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 3,
+            CURLOPT_USERAGENT => 'WP Domain Mapping Health Check/1.0'
+        ));
 
         $response = curl_exec( $ch );
         $response_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+        $ssl_error = curl_error( $ch );
+
         $result['response_code'] = $response_code;
 
         if ( $response !== false && $response_code > 0 ) {
             $result['accessible'] = ( $response_code >= 200 && $response_code < 400 );
-            $result['ssl_valid'] = ( $response !== false );
+            $result['ssl_valid'] = empty( $ssl_error );
 
             // Get SSL certificate info
-            $cert_info = curl_getinfo( $ch, CURLINFO_CERTINFO );
-            if ( ! empty( $cert_info ) && isset( $cert_info[0]['Expire date'] ) ) {
-                $result['ssl_expiry'] = $cert_info[0]['Expire date'];
+            if ( $result['ssl_valid'] ) {
+                $cert_info = curl_getinfo( $ch, CURLINFO_CERTINFO );
+                if ( ! empty( $cert_info ) && isset( $cert_info[0]['Expire date'] ) ) {
+                    $result['ssl_expiry'] = $cert_info[0]['Expire date'];
+                }
+            } else {
+                $result['error'] = $ssl_error;
             }
         }
 
@@ -743,17 +914,26 @@ class WP_Domain_Mapping_Tools {
         // If HTTPS failed, try HTTP
         if ( ! $result['accessible'] ) {
             $ch = curl_init( 'http://' . $domain );
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch, CURLOPT_HEADER, true );
-            curl_setopt( $ch, CURLOPT_NOBODY, true );
-            curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
+            curl_setopt_array( $ch, array(
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HEADER => true,
+                CURLOPT_NOBODY => true,
+                CURLOPT_TIMEOUT => 8,
+                CURLOPT_CONNECTTIMEOUT => 5,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_MAXREDIRS => 3,
+                CURLOPT_USERAGENT => 'WP Domain Mapping Health Check/1.0'
+            ));
 
             $response = curl_exec( $ch );
             $response_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+            $http_error = curl_error( $ch );
 
             if ( $response !== false && $response_code > 0 ) {
                 $result['accessible'] = ( $response_code >= 200 && $response_code < 400 );
                 $result['response_code'] = $response_code;
+            } else {
+                $result['error'] = $http_error;
             }
 
             curl_close( $ch );
@@ -864,7 +1044,30 @@ class WP_Domain_Mapping_Tools {
     }
 
     /**
-     * Add new method: check cron status
+     * Clean up stuck health checks
+     */
+    public function cleanup_stuck_health_check() {
+        $progress = get_site_option( 'dm_health_check_progress', false );
+
+        if ( $progress !== false ) {
+            $started_time = strtotime( $progress['started'] );
+            $current_time = current_time( 'timestamp' );
+
+            // If health check running for more than 30 minutes, consider it stuck
+            if ( ( $current_time - $started_time ) > 1800 ) {
+                delete_site_option( 'dm_health_check_queue' );
+                delete_site_option( 'dm_health_check_progress' );
+
+                error_log( 'WP Domain Mapping: Cleaned up stuck health check that started at ' . $progress['started'] );
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get cron status
      */
     public function get_cron_status() {
         $scheduled_info = get_site_option( 'dm_health_check_scheduled', false );
@@ -995,7 +1198,7 @@ class WP_Domain_Mapping_Tools {
     }
 
     /**
-     * AJAX handler for CSV import
+     * AJAX handler for CSV import - FIXED
      */
     public function ajax_import_csv() {
         // Check permissions
@@ -1008,15 +1211,84 @@ class WP_Domain_Mapping_Tools {
             wp_send_json_error( __( 'Invalid security token. Please try again.', 'wp-domain-mapping' ) );
         }
 
+        // Check if file was uploaded
+        if ( ! isset( $_FILES['csv_file'] ) || $_FILES['csv_file']['error'] != UPLOAD_ERR_OK ) {
+            wp_send_json_error( __( 'No file uploaded or upload error.', 'wp-domain-mapping' ) );
+        }
+
         // Check file size before processing
         if ($_FILES['csv_file']['size'] > 5 * 1024 * 1024) {
             wp_send_json_error(__('File size exceeds 5MB limit.', 'wp-domain-mapping'));
             return;
         }
 
-        // Check file
-        if ( ! isset( $_FILES['csv_file'] ) || $_FILES['csv_file']['error'] != UPLOAD_ERR_OK ) {
-            wp_send_json_error( __( 'No file uploaded or upload error.', 'wp-domain-mapping' ) );
+        // Improved file type validation
+        $uploaded_filename = $_FILES['csv_file']['name'];
+        $file_extension = strtolower(pathinfo($uploaded_filename, PATHINFO_EXTENSION));
+
+        // Check file extension
+        if (!in_array($file_extension, array('csv', 'txt'))) {
+            wp_send_json_error(__('Only CSV files are allowed. File extension detected: ' . $file_extension, 'wp-domain-mapping'));
+            return;
+        }
+
+        // Additional MIME type check (more reliable)
+        $allowed_mime_types = array(
+            'text/csv',
+            'text/plain',
+            'application/csv',
+            'application/excel',
+            'application/vnd.ms-excel',
+            'application/vnd.msexcel'
+        );
+
+        $file_mime_type = '';
+
+        // Method 1: Use finfo if available (most reliable)
+        if (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $file_mime_type = finfo_file($finfo, $_FILES['csv_file']['tmp_name']);
+            finfo_close($finfo);
+        }
+        // Method 2: Fallback to mime_content_type if available
+        elseif (function_exists('mime_content_type')) {
+            $file_mime_type = mime_content_type($_FILES['csv_file']['tmp_name']);
+        }
+        // Method 3: Use WordPress built-in function
+        else {
+            $file_type_check = wp_check_filetype_and_ext($_FILES['csv_file']['tmp_name'], $uploaded_filename);
+            $file_mime_type = $file_type_check['type'];
+        }
+
+        // Validate MIME type (but be more lenient since CSV files can have various MIME types)
+        if (!empty($file_mime_type) && !in_array($file_mime_type, $allowed_mime_types)) {
+            // Additional check: try to detect if file content looks like CSV
+            $file_handle = fopen($_FILES['csv_file']['tmp_name'], 'r');
+            if ($file_handle) {
+                $first_line = fgets($file_handle);
+                fclose($file_handle);
+
+                // Basic CSV content check - look for common CSV patterns
+                $csv_patterns = array(
+                    '/,/',           // Contains commas
+                    '/;/',           // Contains semicolons (common in European CSV)
+                    '/\t/',          // Contains tabs (TSV)
+                    '/\r\n|\r|\n/'   // Contains line breaks
+                );
+
+                $looks_like_csv = false;
+                foreach ($csv_patterns as $pattern) {
+                    if (preg_match($pattern, $first_line)) {
+                        $looks_like_csv = true;
+                        break;
+                    }
+                }
+
+                if (!$looks_like_csv) {
+                    wp_send_json_error(__('File does not appear to be a valid CSV format. MIME type detected: ' . $file_mime_type, 'wp-domain-mapping'));
+                    return;
+                }
+            }
         }
 
         // Get options
@@ -1024,18 +1296,19 @@ class WP_Domain_Mapping_Tools {
         $update_existing = isset( $_POST['update_existing'] ) ? (bool) $_POST['update_existing'] : false;
         $validate_sites = isset( $_POST['validate_sites'] ) ? (bool) $_POST['validate_sites'] : true;
 
-        // Validate file type
-        $file_type = wp_check_filetype($_FILES['csv_file']['name']);
-        if (!in_array($file_type['ext'], array('csv', 'txt'))) {
-            wp_send_json_error(__('Only CSV files are allowed.', 'wp-domain-mapping'));
-            return;
-        }
-
         // Open file
         $file = fopen( $_FILES['csv_file']['tmp_name'], 'r' );
         if ( ! $file ) {
             wp_send_json_error( __( 'Could not open the uploaded file.', 'wp-domain-mapping' ) );
         }
+
+        // Check for UTF-8 BOM and remove it
+        $first_bytes = fread($file, 3);
+        if ($first_bytes !== "\xEF\xBB\xBF") {
+            // If no BOM found, rewind to beginning
+            rewind($file);
+        }
+        // If BOM found, it's already skipped
 
         // Initialize counters and log
         $imported = 0;
@@ -1048,28 +1321,42 @@ class WP_Domain_Mapping_Tools {
 
         // Skip header row
         if ( $has_header ) {
-            fgetcsv( $file );
+            $header_row = fgetcsv( $file );
+            if ($header_row === false) {
+                fclose($file);
+                wp_send_json_error(__('Could not read CSV file or file is empty.', 'wp-domain-mapping'));
+                return;
+            }
         }
 
         // Process each row
         $row_num = $has_header ? 2 : 1; // Account for header row
+        $processed_rows = 0;
 
         while ( ( $data = fgetcsv( $file ) ) !== false ) {
+            $processed_rows++;
+
+            // Skip empty rows
+            if (empty($data) || (count($data) == 1 && empty($data[0]))) {
+                $row_num++;
+                continue;
+            }
+
             // Check data format
             if ( count( $data ) < 3 ) {
                 $log[] = array(
                     'status' => 'error',
-                    'message' => sprintf( __( 'Row %d: Invalid format. Expected at least 3 columns.', 'wp-domain-mapping' ), $row_num )
+                    'message' => sprintf( __( 'Row %d: Invalid format. Expected at least 3 columns, got %d.', 'wp-domain-mapping' ), $row_num, count($data) )
                 );
                 $errors++;
                 $row_num++;
                 continue;
             }
 
-            // Parse data
-            $blog_id = intval( $data[0] );
+            // Parse data with trimming
+            $blog_id = intval( trim($data[0]) );
             $domain = dm_clean_domain( trim( $data[1] ) );
-            $active = intval( $data[2] );
+            $active = intval( trim($data[2]) );
 
             // Check if we've already processed this domain
             if ( isset( $processed_domains[$domain] ) ) {
@@ -1178,6 +1465,14 @@ class WP_Domain_Mapping_Tools {
             }
 
             $row_num++;
+
+            // Prevent timeout on large files
+            if ($processed_rows % 100 == 0) {
+                // Flush output and extend time limit
+                if (function_exists('set_time_limit')) {
+                    set_time_limit(30);
+                }
+            }
         }
 
         fclose( $file );
@@ -1193,7 +1488,8 @@ class WP_Domain_Mapping_Tools {
             'imported' => $imported,
             'skipped' => $skipped,
             'errors' => $errors,
-            'details' => $log
+            'details' => $log,
+            'processed_rows' => $processed_rows
         ) );
     }
 }
