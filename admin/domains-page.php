@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <a href="https://wpmultisite.com/document/wp-domain-mapping" target="_blank" class="button button-secondary" style="margin-left: 10px;">
             <?php esc_html_e( 'Document', 'wp-domain-mapping' ); ?>
         </a>
-        <a href="https://wpmultisite.com/forums/" target="_blank" class="button button-secondary">
+        <a href="https://wpmultisite.com/support/" target="_blank" class="button button-secondary">
             <?php esc_html_e( 'Support', 'wp-domain-mapping' ); ?>
         </a>
     </h1>
